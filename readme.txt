@@ -1,5 +1,5 @@
 === Alpine PhotoTile for Flickr ===
-Contributors: thealpinepress
+Contributors: theAlpinePress
 Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
 Requires at least: 2.8
