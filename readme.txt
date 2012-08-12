@@ -1,0 +1,32 @@
+=== Alpine PhotoTile for Flickr ===
+Contributors: thealpinepress
+Donate link: thealpinepress.com
+Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
+Requires at least: 2.8
+Tested up to: 3.4.1
+Stable tag: 1.0.1
+
+
+== Description == 
+The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description and demonstration is available at the Alpine Press (http://thealpinepress.com/alpine-phototile-for-flickr/).
+
+
+== Installation ==
+
+1. Upload `alpine-photo-tile-for-flickr` folder to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Use the widget like any other widget.
+4. Customize based on your preference.
+
+== Frequently Asked Questions ==
+
+None yet, but I'd like to hear from you. Leave a message at http://thealpinepress.com/
+
+
+== Changelog ==
+
+= 1.0.0 =
+* First Release
+
+= 1.0.1 =
+* Added caching functions

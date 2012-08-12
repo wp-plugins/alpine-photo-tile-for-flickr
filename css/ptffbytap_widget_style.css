@@ -1,0 +1,213 @@
+/* The style of the Display Link below the images */
+/* Global styles for the container and parent class */
+.PTFFbyTAP_container_class{
+  position:relative;
+  width:100%;
+  display:block;
+}
+.PTFFbyTAP_container_class img{
+  margin:0;
+  margin-bottom: 5px;
+}
+
+img.PTFFbyTAP-img-shadow{
+  box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4) ! important;
+  margin-left: 1% ! important;
+  margin-right: 1% ! important;
+  max-width: 96% ! important;
+}
+img.PTFFbyTAP-img-noshadow{
+  box-shadow:none ! important;
+  margin-left: 0 ! important;
+  margin-right: 0 ! important;
+  max-width: 98% ! important;
+}
+
+img.PTFFbyTAP-img-border{
+  background: none repeat scroll 0 0 #FFFFFF ! important;
+  padding:1% ! important;
+}
+img.PTFFbyTAP-img-noborder{
+  padding:0 ! important; 
+}
+
+img.PTFFbyTAP-img-corners{
+  border-radius: 3px 3px 3px 3px ! important;
+}
+img.PTFFbyTAP-img-nocorners{
+  border-radius: 0 0 0 0 ! important;
+}
+
+.PTFFbyTAP_cascade_column{
+  margin:0;
+  padding:0;
+  max-width:100%;
+  float:left;
+}
+
+.PTFFbyTAP_breakline{
+  width:100%;
+  float:left;
+  position:relative;
+  clear:both;
+  height:1px;
+}
+
+
+.PTFFbyTAP_parent_class{
+  position:relative;
+  max-width:100%;
+  clear:both;
+  display:block;
+  height:auto;
+  overflow: hidden;
+}
+
+
+.PTFFbyTAP-row{
+  position:relative;
+  padding: 0 0 4px 0;
+  clear:both;
+  display:block;
+  height:auto;
+}
+.PTFFbyTAP-tile{
+  display:block;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-position:center;
+  margin:0 0 0 4px;
+  float:left;
+}
+.PTFFbyTAP-half-tile{
+  
+}
+.PTFFbyTAP-half-tile-first{
+
+}
+.PTFFbyTAP-half-tile-last{
+
+}
+
+.PTFFbyTAP-bookshelf{
+  padding: 5px 0;
+}
+.PTFFbyTAP-book{
+  position:absolute;
+  bottom:5px;
+  margin:0 0 0 4px;
+}
+
+.PTFFbyTAP-riftline{
+  padding: 0 0 5px 0;
+}
+.PTFFbyTAP-rift{
+  position:absolute;
+  bottom:5px;
+  margin:0 0 0 4px;
+}
+.PTFFbyTAP-rift.PTFFbyTAP-float-0{
+  top:0px;
+}
+.PTFFbyTAP-rift.PTFFbyTAP-float-1{
+  bottom:5px;
+}
+
+
+.PTFFbyTAP-image-div-container{
+  overflow:hidden;
+}
+.PTFFbyTAP-gallery-container{
+  margin:0 0 0 4px;
+}
+
+.PTFFbyTAP-image-div{
+  display:block;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-position:center;
+  width:100%;
+  height:100%;
+}
+.PTFFbyTAP-link{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.PTFFbyTAP-border-div{
+  background: none repeat scroll 0 0 #FFFFFF;
+  padding:5px;
+}
+.PTFFbyTAP-shadow-div{
+  box-shadow: 1px 1px 3px rgba(34, 25, 25, 0.4);
+}
+.PTFFbyTAP-curve-div{
+  border-radius: 3px 3px 3px 3px;
+}
+
+
+.PTFFbyTAP-display-link{
+  width:100%;
+  text-align:center;
+  /*font-size:10px; */
+  margin:3px 0 3px 0;
+  position:relative;
+}
+.PTFFbyTAP-image-link{
+  margin:0px;
+  border:0px;
+  padding:3px 0 3px 0;
+}
+.PTFFbyTAP-display-link-container{
+  position:relative;
+  clear:both;
+  display:block;
+  width:100%;
+}
+
+
+
+/* Styles specific to the images of each display style */
+.PTFFbyTAP-vertical-img{
+  position:relative;
+  width:100%;
+  margin:4px 0 0 0;
+  padding:0;
+  border:0;
+  outline:0;  
+}
+.PTFFbyTAP-vertical-link{
+  line-height:0;
+  display:block;
+}
+.PTFFbyTAP-tile-img{
+  width:100%;
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+}
+
+
+/* Style for the little corner link to ETH & KU */
+.PTFFbyTAP-by-link{
+  position:absolute;
+  bottom:0px;
+  left:5px;
+  display:block;
+  height:auto;
+  width:50px;
+  color:#C0C0C0;
+  padding:5px;
+  text-align:left;
+  font-size:12px;
+  z-index:100;
+}
+.PTFFbyTAP-by-link a{
+  font-size:8px;
+  line-height:8px;
+  opacity:0.9;
+  filter:alpha(opacity=90);
+  COLOR:#C0C0C0;
+  text-decoration:none;
+}
