@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.0.2
+Version: 1.0.2.1
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 
@@ -13,7 +13,7 @@ Author URI: http://thealpinepress.com/
 
 /* Prevent direct access to the plugin */
 if (!defined('ABSPATH')) {
-	exit(__( "Sorry, you are not allowed to access this page directly.", PTFFbyTAP_DOMAIN ));
+	exit(__( "Sorry, you are not allowed to access this page directly.", APTFFbyTAP_DOMAIN ));
 }
 
 /* Pre-2.6 compatibility to find directories */
@@ -28,13 +28,13 @@ if ( ! defined( 'WP_PLUGIN_DIR' ) )
 
 
 /* Set constants for plugin */
-define( 'PTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
-define( 'PTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
-define( 'PTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
-define( 'PTFFbyTAP_VER', '1.0.2' );
-define( 'PTFFbyTAP_DOMAIN', 'PTFFbyTAP_Domain' );
-define( 'PTFFbyTAP_HOOK', 'PTFFbyTAP_hook' );
-define( 'PTFFbyTAP_ID', 'PTFF_by_TAP' );
+define( 'APTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
+define( 'APTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
+define( 'APTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
+define( 'APTFFbyTAP_VER', '1.0.2.1' );
+define( 'APTFFbyTAP_DOMAIN', 'APTFFbyTAP_Domain' );
+define( 'APTFFbyTAP_HOOK', 'APTFFbyTAP_hook' );
+define( 'APTFFbyTAP_ID', 'PTFF_by_TAP' );
 
 register_deactivation_hook( __FILE__, 'TAP_PhotoTile_Flickr_remove' );
 function TAP_PhotoTile_Flickr_remove(){
@@ -42,13 +42,13 @@ function TAP_PhotoTile_Flickr_remove(){
   $cache->clearAll();
 }
 
-class TAP_PhotoTile_Flickr extends WP_Widget {
 
+class Alpine_PhotoTile_for_Flickr extends WP_Widget {
 
-	function TAP_PhotoTile_Flickr() {
-		$widget_ops = array('classname' => 'PTFFbyTAP_widget', 'description' => __('Add images from Flickr to your sidebar'));
+	function Alpine_PhotoTile_for_Flickr() {
+		$widget_ops = array('classname' => 'APTFFbyTAP_widget', 'description' => __('Add images from Flickr to your sidebar'));
 		$control_ops = array('width' => 550, 'height' => 350);
-		$this->WP_Widget(PTFFbyTAP_DOMAIN, __('Alpine PhotoTile for Flickr'), $widget_ops, $control_ops);
+		$this->WP_Widget(APTFFbyTAP_DOMAIN, __('Alpine PhotoTile for Flickr'), $widget_ops, $control_ops);
 	}
   
 	function widget( $args, $options ) {
@@ -56,34 +56,34 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
         
     // Set Important Widget Options    
     $id = $args["widget_id"];
-    $defaults = thealpinepress_plugin_defaults();
+    $defaults = APTFFbyTAP_option_defaults();
     
-    $source_results = theAlpinePress_flickr_photo_retrieval($id, $options, $defaults);
+    $source_results = APTFFbyTAP_photo_retrieval($id, $options, $defaults);
     
     echo $before_widget . $before_title . $options['widget_title'] . $after_title;
     echo $source_results['hidden'];
     if( $source_results['continue'] ){  
       switch ($options['style_option']) {
         case "vertical":
-          theAlpinePress_flickr_display_vertical($id, $options, $source_results);
+          APTFFbyTAP_display_vertical($id, $options, $source_results);
         break;
         case "windows":
-         theAlpinePress_flickr_display_hidden($id, $options, $source_results);
+         APTFFbyTAP_display_hidden($id, $options, $source_results);
         break; 
         case "bookshelf":
-          theAlpinePress_flickr_display_hidden($id, $options, $source_results);
+          APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
         case "rift":
-          theAlpinePress_flickr_display_hidden($id, $options, $source_results);
+          APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
         case "floor":
-         theAlpinePress_flickr_display_hidden($id, $options, $source_results);
+         APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
         case "cascade":
-          theAlpinePress_flickr_display_cascade($id, $options, $source_results);
+          APTFFbyTAP_display_cascade($id, $options, $source_results);
         break;
         case "gallery":
-          theAlpinePress_flickr_display_hidden($id, $options, $source_results);
+          APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
       }
     }
@@ -97,9 +97,9 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
   }
     
 	function update( $newoptions, $oldoptions ) {
-    $optiondetails = thealpinepress_plugin_defaults();
+    $optiondetails = APTFFbyTAP_option_defaults();
     foreach( $newoptions as $id=>$input ){
-      $options[$id] = thealpinepress_flickr_options_validate( $input,$oldoptions[$id],$optiondetails[$id] );
+      $options[$id] = theAlpinePressMenuOptionsValidateV1( $input,$oldoptions[$id],$optiondetails[$id] );
     }
     return $options;
 	}
@@ -116,37 +116,38 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
   // Load Admin JS and CSS
-	function PTFFbyTAP_admin_head_script(){ 
+	function APTFFbyTAP_admin_head_script(){ 
     // TODO - CREATE SEPERATE FUNCTIONS TO LOAD ADMIN PAGE AND WIDGET PAGE SCRIPTS
     wp_enqueue_script( 'jquery');
     // Replication Error caused by not loading new version of JS and CSS
     // Fix by always changing version number if changes were made
-    wp_deregister_script('PTFFbyTAP_widget_menu');
-    wp_register_script('PTFFbyTAP_widget_menu',PTFFbyTAP_URL.'/js/ptffbytap_widget_menu.js','',PTFFbyTAP_VER);
-    wp_enqueue_script('PTFFbyTAP_widget_menu');
+    wp_deregister_script('APTFFbyTAP_widget_menu');
+    wp_register_script('APTFFbyTAP_widget_menu',APTFFbyTAP_URL.'/js/aptffbytap_widget_menu.js','',APTFFbyTAP_VER);
+    wp_enqueue_script('APTFFbyTAP_widget_menu');
         
-    wp_deregister_style('PTFFbyTAP_admin_css');   
-    wp_register_style('PTFFbyTAP_admin_css',PTFFbyTAP_URL.'/css/admin_style.css','',PTFFbyTAP_VER);
-    wp_enqueue_style('PTFFbyTAP_admin_css');
+    wp_deregister_style('APTFFbyTAP_admin_css');   
+    wp_register_style('APTFFbyTAP_admin_css',APTFFbyTAP_URL.'/css/aptffbytap_admin_style.css','',APTFFbyTAP_VER);
+    wp_enqueue_style('APTFFbyTAP_admin_css');
     
-    add_action('admin_print_footer_scripts', 'menu_toggles');
+    add_action('admin_print_footer_scripts', 'APTFFbyTAP_menu_toggles');
     
     // Only admin can trigger two week cache cleaning
     $cache = new theAlpinePressSimpleCacheV1();
-    $cache->setCacheDir( PTFFbyTAP_CACHE );
+    $cache->setCacheDir( APTFFbyTAP_CACHE );
     $cache->clean();
 	}
-  add_action('admin_enqueue_scripts', 'PTFFbyTAP_admin_head_script'); // admin_init so that it is ready when page loads
+  add_action('admin_enqueue_scripts', 'APTFFbyTAP_admin_head_script'); // admin_init so that it is ready when page loads
   
-  function menu_toggles(){
+  function APTFFbyTAP_menu_toggles(){
     ?>
     <script type="text/javascript">
     if( jQuery().theAlpinePressWidgetMenuPlugin  ){
       jQuery(document).ready(function(){
-        jQuery('.PTFFbyTAP-flickr .PTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
-      });
-      jQuery(document).ajaxComplete(function() {
-        jQuery('.PTFFbyTAP-flickr .PTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+        jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+        
+        jQuery(document).ajaxComplete(function() {
+          jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+        });
       });
     }
     </script>  
@@ -154,30 +155,29 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
   }
   
   // Load Display JS and CSS
-  function PTFFbyTAP_enqueue_display_scripts() {
+  function APTFFbyTAP_enqueue_display_scripts() {
     wp_enqueue_script( 'jquery' );
     
-    wp_deregister_script('PTFFbyTAP_tiles_and_slideshow');
-    wp_enqueue_script('PTFFbyTAP_tiles',PTFFbyTAP_URL.'/js/ptffbytap_tiles.js','',PTFFbyTAP_VER);
+    wp_deregister_script('APTFFbyTAP_tiles_and_slideshow');
+    wp_enqueue_script('APTFFbyTAP_tiles',APTFFbyTAP_URL.'/js/aptffbytap_tiles.js','',APTFFbyTAP_VER);
     
-    wp_deregister_style('PTFFbyTAP_widget_css'); // Since I wrote the scripts, deregistering and updating version are redundant in this case
-    wp_register_style('PTFFbyTAP_widget_css',PTFFbyTAP_URL.'/css/ptffbytap_widget_style.css','',PTFFbyTAP_VER);
-    wp_enqueue_style('PTFFbyTAP_widget_css');
-    
+    wp_deregister_style('APTFFbyTAP_widget_css'); // Since I wrote the scripts, deregistering and updating version are redundant in this case
+    wp_register_style('APTFFbyTAP_widget_css',APTFFbyTAP_URL.'/css/aptffbytap_widget_style.css','',APTFFbyTAP_VER);
+    wp_enqueue_style('APTFFbyTAP_widget_css');
     
   }
-  add_action('wp_enqueue_scripts', 'PTFFbyTAP_enqueue_display_scripts');
+  add_action('wp_enqueue_scripts', 'APTFFbyTAP_enqueue_display_scripts');
   
 	  
    // Register Widget
-	function PTFFbyTAP_widget_register() {register_widget( 'TAP_PhotoTile_Flickr' );}
-  add_action('widgets_init','PTFFbyTAP_widget_register');
+	function APTFFbyTAP_widget_register() {register_widget( 'Alpine_PhotoTile_for_Flickr' );}
+  add_action('widgets_init','APTFFbyTAP_widget_register');
  
   include_once( 'admin/widget-options.php');
-  include_once( 'admin/widget-options-display.php'); 
-  include_once( 'admin/widget-options-sanitize.php'); 
+  include_once( 'admin/function-options-display.php'); 
+  include_once( 'admin/function-options-sanitize.php'); 
   include_once( 'gears/source-flickr.php');
   include_once( 'gears/display-functions.php');
-  include_once( 'gears/source-cache.php');
+  include_once( 'gears/function-cache.php');
     
 ?>

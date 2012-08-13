@@ -1,38 +1,38 @@
 <?php
 /**
- * The functions for displaying all styles.
+ * Alpine PhotoTile for Flickr: Style Display Functions
  *
  * @since 1.0.0
  */
  
  
-function theAlpinePress_flickr_display_vertical($id, $options, $source_results){
-  $PTFFbyTAP_linkurl = $source_results['image_perms'];
-  $PTFFbyTAP_photocap = $source_results['image_captions'];
-  $PTFFbyTAP_photourl = $source_results['image_urls'];
-  $PTFFbyTAP_user_link = $source_results['user_link'];
+function APTFFbyTAP_display_vertical($id, $options, $source_results){
+  $APTFFbyTAP_linkurl = $source_results['image_perms'];
+  $APTFFbyTAP_photocap = $source_results['image_captions'];
+  $APTFFbyTAP_photourl = $source_results['image_urls'];
+  $APTFFbyTAP_user_link = $source_results['user_link'];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////       Check Content      /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if($options['flickr_photo_number'] != count($PTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($PTFFbyTAP_linkurl);}
+  if($options['flickr_photo_number'] != count($APTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($APTFFbyTAP_linkurl);}
   
-  for($i = 0;$i<count($PTFFbyTAP_photocap);$i++){
-    $PTFFbyTAP_photocap[$i] = str_replace('"','',$PTFFbyTAP_photocap[$i]);
+  for($i = 0;$i<count($APTFFbyTAP_photocap);$i++){
+    $APTFFbyTAP_photocap[$i] = str_replace('"','',$APTFFbyTAP_photocap[$i]);
   }
   
-  if($PTFFbyTAP_reduced_width && $PTFFbyTAP_reduced_width<$PTFFbyTAP_size ){
-    $PTFFbyTAP_style_width = $PTFFbyTAP_reduced_width."px";   }
-  else{   $PTFFbyTAP_style_width = $PTFFbyTAP_size."px";    }
+  if($APTFFbyTAP_reduced_width && $APTFFbyTAP_reduced_width<$APTFFbyTAP_size ){
+    $APTFFbyTAP_style_width = $APTFFbyTAP_reduced_width."px";   }
+  else{   $APTFFbyTAP_style_width = $APTFFbyTAP_size."px";    }
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     
-  $output .= '<div id="'.$id.'-PTFFbyTAP_container" class="PTFFbyTAP_container_class">';     
+  $output .= '<div id="'.$id.'-APTFFbyTAP_container" class="APTFFbyTAP_container_class">';     
   
   // Align photos
-  $output .= '<div id="'.$id.'-vertical-parent" class="PTFFbyTAP_parent_class" style="width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;padding:0px;';
+  $output .= '<div id="'.$id.'-vertical-parent" class="APTFFbyTAP_parent_class" style="width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;padding:0px;';
   if( 'center' == $options['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
     $output .= 'margin:0px auto;text-align:center;';
   }
@@ -41,33 +41,33 @@ function theAlpinePress_flickr_display_vertical($id, $options, $source_results){
   } 
   $output .= '">';
   
-  $shadow = ($options['style_shadow']?'PTFFbyTAP-img-shadow':'PTFFbyTAP-img-noshadow');
-  $border = ($options['style_border']?'PTFFbyTAP-img-border':'PTFFbyTAP-img-noborder');
-  $curves = ($options['style_curve_corners']?'PTFFbyTAP-img-corners':'PTFFbyTAP-img-nocorners');
+  $shadow = ($options['style_shadow']?'APTFFbyTAP-img-shadow':'APTFFbyTAP-img-noshadow');
+  $border = ($options['style_border']?'APTFFbyTAP-img-border':'APTFFbyTAP-img-noborder');
+  $curves = ($options['style_curve_corners']?'APTFFbyTAP-img-corners':'APTFFbyTAP-img-nocorners');
   
   for($i = 0;$i<$options['flickr_photo_number'];$i++){
-    if( $options['flickr_image_link'] ){ $output .= '<a href="' . $PTFFbyTAP_linkurl[$i] . '" class="PTFFbyTAP-vertical-link" target="_blank" title='."'". $PTFFbyTAP_photocap[$i] ."'".'>'; }
-    $output .= '<img id="'.$id.'-tile-'.$i.'" class="PTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $PTFFbyTAP_photourl[$i] . '" ';
-    $output .= 'title='."'". $PTFFbyTAP_photocap[$i] ."'".' alt='."'". $PTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
+    if( $options['flickr_image_link'] ){ $output .= '<a href="' . $APTFFbyTAP_linkurl[$i] . '" class="APTFFbyTAP-vertical-link" target="_blank" title='."'". $APTFFbyTAP_photocap[$i] ."'".'>'; }
+    $output .= '<img id="'.$id.'-tile-'.$i.'" class="APTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $APTFFbyTAP_photourl[$i] . '" ';
+    $output .= 'title='."'". $APTFFbyTAP_photocap[$i] ."'".' alt='."'". $APTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
     $output .= 'border="0" hspace="0" vspace="0" />'; // Override the max-width set by theme
     if( $options['flickr_image_link'] ){ $output .= '</a>'; }
   }
   
-  $PTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="PTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';   
+  $APTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="APTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';   
   if( !$options['widget_disable_credit_link'] ){
-    $output .=  $PTFFbyTAP_by_link;    
+    $output .=  $APTFFbyTAP_by_link;    
   }          
   // Close vertical-parent
   $output .= '</div>';    
 
-  if($PTFFbyTAP_user_link){ 
-    $output .= '<div id="'.$id.'-display-link" class="PTFFbyTAP-display-link-container" ';
-    $output .= 'style="text-align:' . $options['widget_alignment'] . ';">'.$PTFFbyTAP_user_link.'</div>'; // Only breakline if floating
+  if($APTFFbyTAP_user_link){ 
+    $output .= '<div id="'.$id.'-display-link" class="APTFFbyTAP-display-link-container" ';
+    $output .= 'style="text-align:' . $options['widget_alignment'] . ';">'.$APTFFbyTAP_user_link.'</div>'; // Only breakline if floating
   }
 
   // Close container
   $output .= '</div>';
-  $output .= '<div class="PTFFbyTAP_breakline"></div>';
+  $output .= '<div class="APTFFbyTAP_breakline"></div>';
  
   echo $output;
   
@@ -80,33 +80,33 @@ function theAlpinePress_flickr_display_vertical($id, $options, $source_results){
   }
 }  
 
-function theAlpinePress_flickr_display_cascade($id, $options, $source_results){
-  $PTFFbyTAP_linkurl = $source_results['image_perms'];
-  $PTFFbyTAP_photocap = $source_results['image_captions'];
-  $PTFFbyTAP_photourl = $source_results['image_urls'];
-  $PTFFbyTAP_user_link = $source_results['user_link'];
+function APTFFbyTAP_display_cascade($id, $options, $source_results){
+  $APTFFbyTAP_linkurl = $source_results['image_perms'];
+  $APTFFbyTAP_photocap = $source_results['image_captions'];
+  $APTFFbyTAP_photourl = $source_results['image_urls'];
+  $APTFFbyTAP_user_link = $source_results['user_link'];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////       Check Content      /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if($options['flickr_photo_number'] != count($PTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($PTFFbyTAP_linkurl);}
+  if($options['flickr_photo_number'] != count($APTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($APTFFbyTAP_linkurl);}
   
-  for($i = 0;$i<count($PTFFbyTAP_photocap);$i++){
-    $PTFFbyTAP_photocap[$i] = str_replace('"','',$PTFFbyTAP_photocap[$i]);
+  for($i = 0;$i<count($APTFFbyTAP_photocap);$i++){
+    $APTFFbyTAP_photocap[$i] = str_replace('"','',$APTFFbyTAP_photocap[$i]);
   }
   
-  if($PTFFbyTAP_reduced_width && $PTFFbyTAP_reduced_width<$PTFFbyTAP_size ){
-    $PTFFbyTAP_style_width = $PTFFbyTAP_reduced_width."px";   }
-  else{   $PTFFbyTAP_style_width = $PTFFbyTAP_size."px";    }
+  if($APTFFbyTAP_reduced_width && $APTFFbyTAP_reduced_width<$APTFFbyTAP_size ){
+    $APTFFbyTAP_style_width = $APTFFbyTAP_reduced_width."px";   }
+  else{   $APTFFbyTAP_style_width = $APTFFbyTAP_size."px";    }
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           
-  $output .= '<div id="'.$id.'-PTFFbyTAP_container" class="PTFFbyTAP_container_class">';     
+  $output .= '<div id="'.$id.'-APTFFbyTAP_container" class="APTFFbyTAP_container_class">';     
   
   // Align photos
-  $output .= '<div id="'.$id.'-cascade-parent" class="PTFFbyTAP_parent_class" style="width:100%;max-width:'.$options['widget_max_width'].'%;padding:0px;';
+  $output .= '<div id="'.$id.'-cascade-parent" class="APTFFbyTAP_parent_class" style="width:100%;max-width:'.$options['widget_max_width'].'%;padding:0px;';
   if( 'center' == $options['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
     $output .= 'margin:0px auto;text-align:center;';
   }
@@ -115,47 +115,47 @@ function theAlpinePress_flickr_display_cascade($id, $options, $source_results){
   } 
   $output .= '">';
   
-  $shadow = ($options['style_shadow']?'PTFFbyTAP-img-shadow':'PTFFbyTAP-img-noshadow');
-  $border = ($options['style_border']?'PTFFbyTAP-img-border':'PTFFbyTAP-img-noborder');
-  $curves = ($options['style_curve_corners']?'PTFFbyTAP-img-corners':'PTFFbyTAP-img-nocorners'); 
+  $shadow = ($options['style_shadow']?'APTFFbyTAP-img-shadow':'APTFFbyTAP-img-noshadow');
+  $border = ($options['style_border']?'APTFFbyTAP-img-border':'APTFFbyTAP-img-noborder');
+  $curves = ($options['style_curve_corners']?'APTFFbyTAP-img-corners':'APTFFbyTAP-img-nocorners'); 
    
   for($col = 0; $col<$options['style_column_number'];$col++){
-    $output .= '<div class="PTFFbyTAP_cascade_column" style="width:'.(100/$options['style_column_number']- 1 - 1/$options['style_column_number']).'%;float:left;margin:0 0 0 1%;">';
+    $output .= '<div class="APTFFbyTAP_cascade_column" style="width:'.(100/$options['style_column_number']- 1 - 1/$options['style_column_number']).'%;float:left;margin:0 0 0 1%;">';
     for($i = $col;$i<$options['flickr_photo_number'];$i+=$options['style_column_number']){
-      if( $options['flickr_image_link'] ){ $output .= '<a href="' . $PTFFbyTAP_linkurl[$i] . '" class="PTFFbyTAP-vertical-link" target="_blank" title='."'". $PTFFbyTAP_photocap[$i] ."'".'>'; }
-      $output .= '<img id="'.$id.'-tile-'.$i.'" class="PTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $PTFFbyTAP_photourl[$i] . '" ';
-      $output .= 'title='."'". $PTFFbyTAP_photocap[$i] ."'".' alt='."'". $PTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
+      if( $options['flickr_image_link'] ){ $output .= '<a href="' . $APTFFbyTAP_linkurl[$i] . '" class="APTFFbyTAP-vertical-link" target="_blank" title='."'". $APTFFbyTAP_photocap[$i] ."'".'>'; }
+      $output .= '<img id="'.$id.'-tile-'.$i.'" class="APTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $APTFFbyTAP_photourl[$i] . '" ';
+      $output .= 'title='."'". $APTFFbyTAP_photocap[$i] ."'".' alt='."'". $APTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
       $output .= 'border="0" hspace="0" vspace="0" />'; // Override the max-width set by theme
       if( $options['flickr_image_link'] ){ $output .= '</a>'; }
     }
     $output .= '</div>';
   }
   
-  $output .= '<div class="PTFFbyTAP_breakline"></div>';
+  $output .= '<div class="APTFFbyTAP_breakline"></div>';
     
-  $PTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="PTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';      
+  $APTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="APTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';      
   if( !$options['widget_disable_credit_link'] ){
-    $output .=  $PTFFbyTAP_by_link;    
+    $output .=  $APTFFbyTAP_by_link;    
   }          
   // Close vertical-parent
   $output .= '</div>';    
 
-  $output .= '<div class="PTFFbyTAP_breakline"></div>';
+  $output .= '<div class="APTFFbyTAP_breakline"></div>';
   
-  if($PTFFbyTAP_user_link){ 
+  if($APTFFbyTAP_user_link){ 
     if($options['widget_alignment'] == 'center'){                          //  Optional: Set text alignment (left/right) or center
-      $output .= '<div id="'.$id.'-display-link" class="PTFFbyTAP-display-link-container" ';
-      $output .= 'style="width:100%;margin:0px auto;">'.$PTFFbyTAP_user_link.'</div>';
+      $output .= '<div id="'.$id.'-display-link" class="APTFFbyTAP-display-link-container" ';
+      $output .= 'style="width:100%;margin:0px auto;">'.$APTFFbyTAP_user_link.'</div>';
     }
     else{
-      $output .= '<div id="'.$id.'-display-link" class="PTFFbyTAP-display-link-container" ';
-      $output .= 'style="float:' . $options['widget_alignment'] . ';width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;"><center>'.$PTFFbyTAP_user_link.'</center></div>'; // Only breakline if floating
+      $output .= '<div id="'.$id.'-display-link" class="APTFFbyTAP-display-link-container" ';
+      $output .= 'style="float:' . $options['widget_alignment'] . ';width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;"><center>'.$APTFFbyTAP_user_link.'</center></div>'; // Only breakline if floating
     } 
   }
 
   // Close container
   $output .= '</div>';
-  $output .= '<div class="PTFFbyTAP_breakline"></div>';
+  $output .= '<div class="APTFFbyTAP_breakline"></div>';
  
   echo $output;
   
@@ -167,34 +167,34 @@ function theAlpinePress_flickr_display_cascade($id, $options, $source_results){
 }
 
 
-function theAlpinePress_flickr_display_hidden($id, $options, $source_results){
-  $PTFFbyTAP_linkurl = $source_results['image_perms'];
-  $PTFFbyTAP_photocap = $source_results['image_captions'];
-  $PTFFbyTAP_photourl = $source_results['image_urls'];
-  $PTFFbyTAP_user_link = $source_results['user_link'];
-  $PTFFbyTAP_originalurl = $source_results['image_originals'];
+function APTFFbyTAP_display_hidden($id, $options, $source_results){
+  $APTFFbyTAP_linkurl = $source_results['image_perms'];
+  $APTFFbyTAP_photocap = $source_results['image_captions'];
+  $APTFFbyTAP_photourl = $source_results['image_urls'];
+  $APTFFbyTAP_user_link = $source_results['user_link'];
+  $APTFFbyTAP_originalurl = $source_results['image_originals'];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////       Check Content      /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if($options['flickr_photo_number'] != count($PTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($PTFFbyTAP_linkurl);}
+  if($options['flickr_photo_number'] != count($APTFFbyTAP_linkurl)){$options['flickr_photo_number']=count($APTFFbyTAP_linkurl);}
   
-  for($i = 0;$i<count($PTFFbyTAP_photocap);$i++){
-    $PTFFbyTAP_photocap[$i] = str_replace('"','',$PTFFbyTAP_photocap[$i]);
+  for($i = 0;$i<count($APTFFbyTAP_photocap);$i++){
+    $APTFFbyTAP_photocap[$i] = str_replace('"','',$APTFFbyTAP_photocap[$i]);
   }
   
-  if($PTFFbyTAP_reduced_width && $PTFFbyTAP_reduced_width<$PTFFbyTAP_size ){
-    $PTFFbyTAP_style_width = $PTFFbyTAP_reduced_width."px";   }
-  else{   $PTFFbyTAP_style_width = $PTFFbyTAP_size."px";    }
+  if($APTFFbyTAP_reduced_width && $APTFFbyTAP_reduced_width<$APTFFbyTAP_size ){
+    $APTFFbyTAP_style_width = $APTFFbyTAP_reduced_width."px";   }
+  else{   $APTFFbyTAP_style_width = $APTFFbyTAP_size."px";    }
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           
-  $output .= '<div id="'.$id.'-PTFFbyTAP_container" class="PTFFbyTAP_container_class">';     
+  $output .= '<div id="'.$id.'-APTFFbyTAP_container" class="APTFFbyTAP_container_class">';     
   
   // Align photos
-  $output .= '<div id="'.$id.'-hidden-parent" class="PTFFbyTAP_parent_class" style="width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;padding:0px;';
+  $output .= '<div id="'.$id.'-hidden-parent" class="APTFFbyTAP_parent_class" style="width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;padding:0px;';
   if( 'center' == $options['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
     $output .= 'margin:0px auto;text-align:center;';
   }
@@ -203,42 +203,42 @@ function theAlpinePress_flickr_display_hidden($id, $options, $source_results){
   } 
   $output .= '">';
   
-  $output .= '<div id="'.$id.'-image-list" class="PTFFbyTAP_image_list_class" style="display:none;visibility:hidden;">'; 
+  $output .= '<div id="'.$id.'-image-list" class="APTFFbyTAP_image_list_class" style="display:none;visibility:hidden;">'; 
   
-  $shadow = ($options['style_shadow']?'PTFFbyTAP-img-shadow':'PTFFbyTAP-img-noshadow');
-  $border = ($options['style_border']?'PTFFbyTAP-img-border':'PTFFbyTAP-img-noborder');
-  $curves = ($options['style_curve_corners']?'PTFFbyTAP-img-corners':'PTFFbyTAP-img-nocorners');
+  $shadow = ($options['style_shadow']?'APTFFbyTAP-img-shadow':'APTFFbyTAP-img-noshadow');
+  $border = ($options['style_border']?'APTFFbyTAP-img-border':'APTFFbyTAP-img-noborder');
+  $curves = ($options['style_curve_corners']?'APTFFbyTAP-img-corners':'APTFFbyTAP-img-nocorners');
   
   for($i = 0;$i<$options['flickr_photo_number'];$i++){
-    if( $options['flickr_image_link'] ){ $output .= '<a href="' . $PTFFbyTAP_linkurl[$i] . '" class="PTFFbyTAP-link" target="_blank" title='."'". $PTFFbyTAP_photocap[$i] ."'".'>'; }
-    $output .= '<img id="'.$id.'-tile-'.$i.'" class="PTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $PTFFbyTAP_photourl[$i] . '" ';
-    $output .= 'title='."'". $PTFFbyTAP_photocap[$i] ."'".' alt='."'". $PTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
+    if( $options['flickr_image_link'] ){ $output .= '<a href="' . $APTFFbyTAP_linkurl[$i] . '" class="APTFFbyTAP-link" target="_blank" title='."'". $APTFFbyTAP_photocap[$i] ."'".'>'; }
+    $output .= '<img id="'.$id.'-tile-'.$i.'" class="APTFFbyTAP-image '.$shadow.' '.$border.' '.$curves.'" src="' . $APTFFbyTAP_photourl[$i] . '" ';
+    $output .= 'title='."'". $APTFFbyTAP_photocap[$i] ."'".' alt='."'". $APTFFbyTAP_photocap[$i] ."' "; // Careful about caps with ""
     $output .= 'border="0" hspace="0" vspace="0" />'; // Override the max-width set by theme
     
     // Load original image size
-    if( "gallery" == $options['style_option'] && $PTFFbyTAP_originalurl[$i] ){
-      $output .= '<img class="PTFFbyTAP-original-image" src="' . $PTFFbyTAP_originalurl[$i]. '" />';
+    if( "gallery" == $options['style_option'] && $APTFFbyTAP_originalurl[$i] ){
+      $output .= '<img class="APTFFbyTAP-original-image" src="' . $APTFFbyTAP_originalurl[$i]. '" />';
     }
     
     if( $options['flickr_image_link'] ){ $output .= '</a>'; }
   }
   $output .= '</div>';
   
-  $PTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="PTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';   
+  $APTFFbyTAP_by_link  =  '<div id="'.$id.'-by-link" class="APTFFbyTAP-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';   
   if( !$options['widget_disable_credit_link'] ){
-    $output .=  $PTFFbyTAP_by_link;    
+    $output .=  $APTFFbyTAP_by_link;    
   }          
   // Close vertical-parent
   $output .= '</div>';      
 
-  if($PTFFbyTAP_user_link){ 
+  if($APTFFbyTAP_user_link){ 
     if($options['widget_alignment'] == 'center'){                          //  Optional: Set text alignment (left/right) or center
-      $output .= '<div id="'.$id.'-display-link" class="PTFFbyTAP-display-link-container" ';
-      $output .= 'style="width:100%;margin:0px auto;">'.$PTFFbyTAP_user_link.'</div>';
+      $output .= '<div id="'.$id.'-display-link" class="APTFFbyTAP-display-link-container" ';
+      $output .= 'style="width:100%;margin:0px auto;">'.$APTFFbyTAP_user_link.'</div>';
     }
     else{
-      $output .= '<div id="'.$id.'-display-link" class="PTFFbyTAP-display-link-container" ';
-      $output .= 'style="float:' . $options['widget_alignment'] . ';width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;"><center>'.$PTFFbyTAP_user_link.'</center></div>'; // Only breakline if floating
+      $output .= '<div id="'.$id.'-display-link" class="APTFFbyTAP-display-link-container" ';
+      $output .= 'style="float:' . $options['widget_alignment'] . ';width:'.$options['flickr_photo_size'].'px;max-width:'.$options['widget_max_width'].'%;"><center>'.$APTFFbyTAP_user_link.'</center></div>'; // Only breakline if floating
     } 
   }
 

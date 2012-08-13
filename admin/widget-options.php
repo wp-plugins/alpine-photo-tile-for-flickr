@@ -1,11 +1,12 @@
 <?php
 /**
- * Alpine PhotoTile for Flickr: Options
+ * Alpine PhotoTile for Flickr: Widget Options
  *
- * @since PhotoTiles 1.0.0
+ * @since 1.0.0
  *
  */
-  function thealpinepress_option_positions(){
+ 
+  function APTFFbyTAP_option_positions(){
     $options = array(
       'top' => array(
         'title' => '',
@@ -26,7 +27,8 @@
     );
     return $options;
   }
-  function thealpinepress_plugin_defaults(){
+  
+  function APTFFbyTAP_option_defaults(){
     $options = array(
       'widget_title' => array(
         'name' => 'widget_title',
@@ -64,7 +66,7 @@
           )      
         ),
         'description' => '',
-        'link' => 'PTFFbyTAP-parent', 
+        'link' => 'APTFFbyTAP-parent', 
         'trigger' => 'flickr_source',
         'default' => 'user'
       ),
@@ -193,7 +195,7 @@
           )           
         ),
         'description' => '',
-        'link' => 'PTFFbyTAP-parent',
+        'link' => 'APTFFbyTAP-parent',
         'trigger' => 'style_option',
         'since' => '1.1',
         'default' => 'vertical'

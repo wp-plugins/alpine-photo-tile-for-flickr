@@ -1,18 +1,18 @@
 <?php
 /**
- * The PHP for widget form function
+ * Alpine PhotoTile for Flickr: Widget Form Generation
  *
  * @since 1.0.0
  *
  */
 ?>
   
-  <?php $widget_container = $this->get_field_id( 'PTFFbyTAP-flickr' ); ?>
+  <?php $widget_container = $this->get_field_id( 'APTFFbyTAP-flickr' ); ?>
 
-  <div id="<?php echo $widget_container ?>" class="PTFFbyTAP-flickr">
+  <div id="<?php echo $widget_container ?>" class="APTFFbyTAP-flickr">
   <?php
-    $defaults = thealpinepress_plugin_defaults();
-    $positions = thealpinepress_option_positions();
+    $defaults = APTFFbyTAP_option_defaults();
+    $positions = APTFFbyTAP_option_positions();
  
   if( count($positions) ){
     foreach( $positions as $position=>$positionsinfo){
@@ -31,7 +31,7 @@
                 $hidden = ($option['hidden']?' '.$option['hidden']:'');
                 $trigger = ($option['trigger']?('data-trigger="'.($option['trigger']).'"'):'');
                 ?> <tr valign="top"> <td class="<?php echo $class; ?><?php echo $hidden; ?>"  <?php echo $trigger; ?> ><?php
-                  thealpinepress_display_callback($options,$option,$fieldname,$fieldid);
+                  theAlpinePressMenuDisplayCallbackV1($options,$option,$fieldname,$fieldid);
                 ?> </td></tr> <?php
               }
             }?>
