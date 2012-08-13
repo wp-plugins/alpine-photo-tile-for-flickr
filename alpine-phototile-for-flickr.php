@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.0.1.1
+Version: 1.0.2
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 
@@ -31,7 +31,7 @@ if ( ! defined( 'WP_PLUGIN_DIR' ) )
 define( 'PTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
 define( 'PTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
 define( 'PTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
-define( 'PTFFbyTAP_VER', '1.0.1' );
+define( 'PTFFbyTAP_VER', '1.0.2' );
 define( 'PTFFbyTAP_DOMAIN', 'PTFFbyTAP_Domain' );
 define( 'PTFFbyTAP_HOOK', 'PTFFbyTAP_hook' );
 define( 'PTFFbyTAP_ID', 'PTFF_by_TAP' );
@@ -56,7 +56,7 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
         
     // Set Important Widget Options    
     $id = $args["widget_id"];
-    $defaults = tap_plugin_defaults();
+    $defaults = thealpinepress_plugin_defaults();
     
     $source_results = theAlpinePress_flickr_photo_retrieval($id, $options, $defaults);
     
@@ -97,7 +97,7 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
   }
     
 	function update( $newoptions, $oldoptions ) {
-    $optiondetails = tap_plugin_defaults();
+    $optiondetails = thealpinepress_plugin_defaults();
     foreach( $newoptions as $id=>$input ){
       $options[$id] = thealpinepress_flickr_options_validate( $input,$oldoptions[$id],$optiondetails[$id] );
     }
@@ -105,12 +105,9 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
 	}
 
 	function form( $options ) {
-    ?>
-  <div class="PTFFbyTAP-flickr">
-    <?php
+
     include( 'admin/widget-menu-form.php'); 
-    ?> 
-  </div> <?php
+
 	}
 }
 
@@ -132,14 +129,30 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
     wp_register_style('PTFFbyTAP_admin_css',PTFFbyTAP_URL.'/css/admin_style.css','',PTFFbyTAP_VER);
     wp_enqueue_style('PTFFbyTAP_admin_css');
     
+    add_action('admin_print_footer_scripts', 'menu_toggles');
+    
     // Only admin can trigger two week cache cleaning
     $cache = new theAlpinePressSimpleCacheV1();
     $cache->setCacheDir( PTFFbyTAP_CACHE );
     $cache->clean();
 	}
-  add_action('admin_init', 'PTFFbyTAP_admin_head_script'); // admin_init so that it is ready when page loads
+  add_action('admin_enqueue_scripts', 'PTFFbyTAP_admin_head_script'); // admin_init so that it is ready when page loads
   
-
+  function menu_toggles(){
+    ?>
+    <script type="text/javascript">
+    if( jQuery().theAlpinePressWidgetMenuPlugin  ){
+      jQuery(document).ready(function(){
+        jQuery('.PTFFbyTAP-flickr .PTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+      });
+      jQuery(document).ajaxComplete(function() {
+        jQuery('.PTFFbyTAP-flickr .PTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+      });
+    }
+    </script>  
+    <?php   
+  }
+  
   // Load Display JS and CSS
   function PTFFbyTAP_enqueue_display_scripts() {
     wp_enqueue_script( 'jquery' );
@@ -150,6 +163,7 @@ class TAP_PhotoTile_Flickr extends WP_Widget {
     wp_deregister_style('PTFFbyTAP_widget_css'); // Since I wrote the scripts, deregistering and updating version are redundant in this case
     wp_register_style('PTFFbyTAP_widget_css',PTFFbyTAP_URL.'/css/ptffbytap_widget_style.css','',PTFFbyTAP_VER);
     wp_enqueue_style('PTFFbyTAP_widget_css');
+    
     
   }
   add_action('wp_enqueue_scripts', 'PTFFbyTAP_enqueue_display_scripts');

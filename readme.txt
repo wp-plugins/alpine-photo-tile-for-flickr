@@ -4,7 +4,7 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 1.0.1.1
+Stable tag: 1.0.2
 
 
 == Description == 
@@ -30,3 +30,6 @@ None yet, but I'd like to hear from you. Leave a message at http://thealpinepres
 
 = 1.0.1 =
 * Added caching functions
+
+= 1.0.2 =
+* Fixed AJAX menu plugin loading problem

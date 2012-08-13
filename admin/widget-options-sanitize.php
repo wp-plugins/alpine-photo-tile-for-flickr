@@ -24,7 +24,7 @@
       $valid_input = ( array_key_exists( $newinput, $valid_options ) ? $newinput : $valid_input );
     }
     // Validate select fields
-    else if ( 'select' == $optiondetails['type'] ) {
+    else if ( 'select' == $optiondetails['type'] || 'select-trigger' == $optiondetails['type']) {
       // Get the list of valid options
       $valid_options = $optiondetails['valid_options'];
       // Only update setting if input value is in the list of valid options

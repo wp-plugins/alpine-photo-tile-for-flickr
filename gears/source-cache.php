@@ -14,6 +14,7 @@ if ( !class_exists( 'theAlpinePressSimpleCacheV1' ) ) {
     
     public function setCacheDir($val) {  $this->cacheDir = $val; }  
     public function setExpiryInterval($val) {  $this->expiryInterval = $val; }  
+    public function getExpiryInterval($val) {  return (int)$this->expiryInterval; }  
     
     public function exists($key) {  
         $filename_cache = $this->cacheDir . '/' . $key . '.cache'; //Cache filename  

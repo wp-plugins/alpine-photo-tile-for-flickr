@@ -23,7 +23,7 @@
         theHidden.hide();
         //theChildren.css({'opacity':'1'});
         //theHidden.css({'opacity':'0.3'});
-        
+
         selector.change(function(){
           theHidden = s('.'+triggerClass+'.'+selector.val());
           theChildren.show();
@@ -32,5 +32,5 @@
       }
     });
   }
- 
 })( window, jQuery );
+

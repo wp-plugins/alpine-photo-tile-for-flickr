@@ -5,13 +5,14 @@
  * @since 1.0.0
  *
  */
+?>
+  
+  <?php $widget_container = $this->get_field_id( 'PTFFbyTAP-flickr' ); ?>
 
- ?>
-
- 
- <?php
-    $defaults = tap_plugin_defaults();
-    $positions = tap_option_positions();
+  <div id="<?php echo $widget_container ?>" class="PTFFbyTAP-flickr">
+  <?php
+    $defaults = thealpinepress_plugin_defaults();
+    $positions = thealpinepress_option_positions();
  
   if( count($positions) ){
     foreach( $positions as $position=>$positionsinfo){
@@ -26,11 +27,11 @@
                 $option = $defaults[$optionname];
                 $fieldname = $this->get_field_name( $option['name'] );
                 $fieldid = $this->get_field_id( $option['name'] );
-                $class = ($option['link']?($this->get_field_id($option['link'])):($this->get_field_id('general')) );
+                $class = ($option['link']?($option['link']):($this->get_field_id('general')) );
                 $hidden = ($option['hidden']?' '.$option['hidden']:'');
-                $trigger = ($option['trigger']?'data-trigger="'.($this->get_field_id($option['trigger'])).'"':'');
-                ?> <tr valign="top"> <td id="<?php echo $fieldid; ?>_td" class="<?php echo $class; ?><?php echo $hidden; ?>"  <?php echo $trigger; ?> ><?php
-                  display_callback($options,$option,$fieldname,$fieldid);
+                $trigger = ($option['trigger']?('data-trigger="'.($option['trigger']).'"'):'');
+                ?> <tr valign="top"> <td class="<?php echo $class; ?><?php echo $hidden; ?>"  <?php echo $trigger; ?> ><?php
+                  thealpinepress_display_callback($options,$option,$fieldname,$fieldid);
                 ?> </td></tr> <?php
               }
             }?>
@@ -40,12 +41,6 @@
     <?php
     }
   }
-  ?>
-  <script type="text/javascript">
-  jQuery(document).ready(function() {
-    if( jQuery().theAlpinePressWidgetMenuPlugin  ){
-      //jQuery('.PTFFbyTAP-flickr .<?php echo ($this->get_field_id( 'parent' )); ?>').theAlpinePressWidgetMenuPlugin();
-    }
-  });
-  </script>
+  ?>  
+  </div> 
 

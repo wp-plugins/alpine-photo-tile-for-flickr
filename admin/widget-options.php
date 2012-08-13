@@ -5,7 +5,7 @@
  * @since PhotoTiles 1.0.0
  *
  */
-  function tap_option_positions(){
+  function thealpinepress_option_positions(){
     $options = array(
       'top' => array(
         'title' => '',
@@ -26,7 +26,7 @@
     );
     return $options;
   }
-  function tap_plugin_defaults(){
+  function thealpinepress_plugin_defaults(){
     $options = array(
       'widget_title' => array(
         'name' => 'widget_title',
@@ -64,7 +64,7 @@
           )      
         ),
         'description' => '',
-        'link' => 'parent', 
+        'link' => 'PTFFbyTAP-parent', 
         'trigger' => 'flickr_source',
         'default' => 'user'
       ),
@@ -193,7 +193,7 @@
           )           
         ),
         'description' => '',
-        'link' => 'parent',
+        'link' => 'PTFFbyTAP-parent',
         'trigger' => 'style_option',
         'since' => '1.1',
         'default' => 'vertical'
@@ -213,7 +213,6 @@
           )              
         ),
         'description' => '',
-        'link' => 'parent',
         'link' => 'style_option',
         'hidden' => 'vertical cascade floor rift bookshelf gallery',
         'since' => '1.1',

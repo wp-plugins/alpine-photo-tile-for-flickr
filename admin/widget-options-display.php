@@ -6,7 +6,8 @@
  *
  */
 
-function display_callback($options,$option,$fieldname,$fieldid){
+
+function thealpinepress_display_callback($options,$option,$fieldname,$fieldid){
       $default = $option['default'];
       $optionname = $option['name'];
       $optiontitle = $option['title'];

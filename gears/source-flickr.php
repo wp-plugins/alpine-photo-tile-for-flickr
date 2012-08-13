@@ -275,7 +275,15 @@ function theAlpinePress_flickr_photo_retrieval($id, $flickr_options, $defaults){
     break;
     } 
     include_once(ABSPATH . WPINC . '/feed.php');
+    
+    function return_noCache( $seconds ){
+      // change the default feed cache recreation period to 30 seconds
+      return 30;
+    }
+
+    add_filter( 'wp_feed_cache_transient_lifetime' , 'return_noCache' );
     $rss = @fetch_feed( $request );
+    remove_filter( 'wp_feed_cache_transient_lifetime' , 'return_noCache' );
 
     if (!is_wp_error( $rss ) && $rss != NULL ){ // Check that the object is created correctly 
       // Bulldoze through the feed to find the items 
@@ -285,7 +293,6 @@ function theAlpinePress_flickr_photo_retrieval($id, $flickr_options, $defaults){
       $PTFFbyTAP_link = @PTFFbyTAP_specialarraysearch($rss,'link');
       $PTFFbyTAP_link = $PTFFbyTAP_link['0']['data'];
       $rss_data = @PTFFbyTAP_specialarraysearch($rss,'item');
-
 
       $s = 0; // simple counter
       if ($rss_data != NULL ){ // Check again
@@ -345,11 +352,11 @@ function theAlpinePress_flickr_photo_retrieval($id, $flickr_options, $defaults){
   ///////////////////////////////////////////////////////////////////////
   if( false == $continue ) {
     if($feed_found ){
-      $message .= '- Flickr feed was successfulled retrieved, but no photos found.';
+      $message .= '- Flickr feed was successfully retrieved, but no photos found.';
     }else{
       $message .= '- Flickr feed not found. Please recheck your ID.';
     }
-  } 
+  }
     
   $results = array('continue'=>$continue,'message'=>$message,'hidden'=>$hidden,'user_link'=>$PTFFbyTAP_user_link,'image_captions'=>$PTFFbyTAP_photocap,'image_urls'=>$PTFFbyTAP_photourl,'image_perms'=>$PTFFbyTAP_linkurl,'image_originals'=>$PTFFbyTAP_originalurl);
   

@@ -1,6 +1,7 @@
 
   .PTFFbyTAP-flickr {
     width:100%;
+    overflow:hidden;
   }
   .PTFFbyTAP-flickr .form-table{
     margin:0;
