@@ -44,7 +44,7 @@
   <script type="text/javascript">
   jQuery(document).ready(function() {
     if( jQuery().theAlpinePressWidgetMenuPlugin  ){
-      jQuery('.PTFFbyTAP-flickr .<?php echo ($this->get_field_id( 'parent' )); ?>').theAlpinePressWidgetMenuPlugin();
+      //jQuery('.PTFFbyTAP-flickr .<?php echo ($this->get_field_id( 'parent' )); ?>').theAlpinePressWidgetMenuPlugin();
     }
   });
   </script>

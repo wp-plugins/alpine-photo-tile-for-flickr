@@ -4,7 +4,7 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 1.0.1
+Stable tag: 1.0.1.1
 
 
 == Description == 

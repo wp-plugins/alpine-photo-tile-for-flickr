@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.0.1
+Version: 1.0.1.1
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 
