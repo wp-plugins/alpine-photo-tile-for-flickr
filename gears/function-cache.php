@@ -56,7 +56,6 @@ if ( !class_exists( 'theAlpinePressSimpleCacheV1' ) ) {
     public function put($key, $content) {  
         $time = time(); //Current Time  
         
-        
         if (! file_exists($this->cacheDir)){  
             @mkdir($this->cacheDir);  
             

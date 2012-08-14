@@ -57,19 +57,22 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
   $APTFFbyTAP_size_id = '.'; // Default is 500
   switch ($flickr_options['flickr_photo_size']) {
     case 75:
-      $APTFFbyTAP_size_id = '_s.';
+      $APTFFbyTAP_size_id = 'url_sq';
     break;
     case 100:
-      $APTFFbyTAP_size_id = '_t.';
+      $APTFFbyTAP_size_id = 'url_t';
     break;
     case 240:
-      $APTFFbyTAP_size_id = '_m.';
+      $APTFFbyTAP_size_id = 'url_s';
+    break;
+    case 320:
+      $APTFFbyTAP_size_id = 'url_n';
     break;
     case 500:
-      $APTFFbyTAP_size_id = '.';
+      $APTFFbyTAP_size_id = 'url_m';
     break;
     case 640:
-      $APTFFbyTAP_size_id = '_z.';
+      $APTFFbyTAP_size_id = 'url_z';
     break;
   }  
   
@@ -81,25 +84,25 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
     
     switch ($flickr_options['flickr_source']) {
     case 'user':
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid .'&lang=en-us&format=php_serial';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'favorites':
-      $request = 'http://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid .'&lang=en-us&format=php_serial';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'group':
       $flickr_groupid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid .'&lang=en-us&format=php_serial';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'set':
       $APTFFbyTAP_flickr_set = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photoset.gne?set=' . $APTFFbyTAP_flickr_set . '&nsid='. $flickr_uid .'&lang=en-us&format=php_serial';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&photoset_id='. $APTFFbyTAP_flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
     break;
     case 'community':
       $APTFFbyTAP_flickr_tags = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='. $APTFFbyTAP_flickr_tags .'&lang=en-us&format=php_serial';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&tags='. $APTFFbyTAP_flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     } 
-
+    
     $ci = @curl_init();
     @curl_setopt($ci, CURLOPT_URL, $request);
     @curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
@@ -109,35 +112,60 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
     $_flickr_php = @unserialize($_flickrurl);
 
     if(empty($_flickr_php)){
-      $hidden .= '<!-- Failed using PHP_Serial @ '.$request.' -->';
+      $hidden .= '<!-- Failed using curl_init() and PHP_Serial @ '.$request.' -->';
       $continue = false;
     }else{
+    
+      $APTFFbyTAP_content =  $_flickr_php['photos'];
+      $APTFFbyTAP_photos = $_flickr_php['photos']['photo'];
+        
+      // Check for photosets  
+      if( 'set' == $flickr_options['flickr_source']) {
+        $APTFFbyTAP_content =  $_flickr_php['photoset'];
+        $APTFFbyTAP_photos = $_flickr_php['photoset']['photo'];
+      }
       
-      $APTFFbyTAP_title = $_flickr_php['title'];
-      $APTFFbyTAP_link = $_flickr_php['url'];
-      $APTFFbyTAP_content =  $_flickr_php['items'];
+      // Check actual number of photos found
+      if( count($APTFFbyTAP_photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($APTFFbyTAP_photos);}
 
       for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-        if($APTFFbyTAP_content[$i]['url']){ // Check if anything is there
-          $APTFFbyTAP_linkurl[$i] = $APTFFbyTAP_content[$i]['url'];
-          $APTFFbyTAP_photocap[$i] = $APTFFbyTAP_content[$i]['title']; // retrieve image title
-           // retrieve image url from feed and set new image size
-          $APTFFbyTAP_photourl[$i] = @str_replace('_m.', $APTFFbyTAP_size_id, $APTFFbyTAP_content[$i]['m_url'] );
-          $APTFFbyTAP_originalurl[$i] = @str_replace('_m.', '.', $APTFFbyTAP_content[$i]['m_url'] );
-        }
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.$APTFFbyTAP_photos[$i]['owner'].'/'.$APTFFbyTAP_photos[$i]['id'].'/';
+        $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_photos[$i][$APTFFbyTAP_size_id];
+        $APTFFbyTAP_originalurl[$i] = $APTFFbyTAP_photos[$i]['url_m'];
+        if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
+        $APTFFbyTAP_photocap[$i] = $APTFFbyTAP_photos[$i]['title'];
       }
       if(!empty($APTFFbyTAP_linkurl) && !empty($APTFFbyTAP_photourl)){
-        if( $flickr_options['flickr_display_link'] ) {
-          $APTFFbyTAP_user_link = '<div class="APTFFbyTAP-display-link" >';
-          $APTFFbyTAP_user_link .='<a href="'.$APTFFbyTAP_link.'" target="_blank" >';
-          $APTFFbyTAP_user_link .= $APTFFbyTAP_title;
-          $APTFFbyTAP_user_link .= '</a></div>';
+        if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
+          switch ($flickr_options['flickr_source']) {
+            case 'user':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
+            break;
+            case 'favorites':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
+            break;
+            case 'group':
+              $APTFFbyTAP_link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
+            break;
+            case 'set':
+            if($APTFFbyTAP_content['owner'] && $APTFFbyTAP_content['id']){
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$APTFFbyTAP_content['owner'].'/sets/'.$APTFFbyTAP_content['id'].'/';
+            }
+            break;
+          } 
+        
+          if($APTFFbyTAP_link){
+            $APTFFbyTAP_user_link = '<div class="APTFFbyTAP-display-link" >';
+            $APTFFbyTAP_user_link .='<a href="'.$APTFFbyTAP_link.'" target="_blank" >';
+            $APTFFbyTAP_user_link .= $flickr_options['flickr_display_link_text'];
+            $APTFFbyTAP_user_link .= '</a></div>';
+          }
         }
         // If content successfully fetched, generate output...
         $continue = true;
-        $hidden  .= '<!-- Success using PHP_Serial -->';
+        $hidden  .= '<!-- Success using curl_init() and PHP_Serial -->';
       }else{
-        $hidden .= '<!-- No photos found using PHP_Serial @ '.$request.' -->';  
+        $hidden .= '<!-- No photos found using curl_init() and PHP_Serial @ '.$request.' -->';  
         $continue = false;
         $feed_found = true;
       }
@@ -151,78 +179,88 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
     $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? '' : $flickr_options['flickr_user_id'], $flickr_options );
     switch ($flickr_options['flickr_source']) {
     case 'user':
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'favorites':
-      $request = 'http://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'group':
       $flickr_groupid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'set':
       $APTFFbyTAP_flickr_set = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photoset.gne?set=' . $APTFFbyTAP_flickr_set . '&nsid='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&photoset_id='. $APTFFbyTAP_flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
     break;
     case 'community':
       $APTFFbyTAP_flickr_tags = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='. $APTFFbyTAP_flickr_tags .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&tags='. $APTFFbyTAP_flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
-    } 
+    }
 
     $_flickrurl  = @urlencode( $request );	// just for compatibility
     $_flickr_xml = @simplexml_load_file( $_flickrurl,"SimpleXMLElement",LIBXML_NOCDATA); // @ is shut-up operator
-    if($_flickr_xml===false){ 
-      $hidden .= '<!-- Failed using XML @ '.$request.' -->';
+//print_r( $_flickr_xml);
+    if( $_flickr_xml===false || !$_flickr_xml || (!$_flickr_xml->photos && !$_flickr_xml->photoset) ){
+      $hidden .= '<!-- Failed using simplexml_load_file() and XML @ '.$request.' -->';
       $continue = false;
     }else{
-      $APTFFbyTAP_title = $_flickr_xml->channel->title;
-      $APTFFbyTAP_link = $_flickr_xml->channel->link;
-      
-      if(!$_flickr_xml && !$_flickr_xml->channel){
-        $hidden .= '<!-- No photos found using XML @ '.$request.' -->';
-        $continue = false;
-      }else{
-        $s = 0; // simple counter
-        foreach( $_flickr_xml->channel->item as $p ) { // This will prevent empty images from being added to APTFFbyTAP_linkurl.
-          if( $s<$flickr_options['flickr_photo_number'] ){
-            // list of link urls
-            $APTFFbyTAP_linkurl[$s] = (string) $p->link; // ->i is equivalent of ['i'] for objects
-            if($APTFFbyTAP_linkurl[$s]){
-              // For Reference: regex references and http://php.net/manual/en/function.preg-match.php
-              // Using the RSS feed will require some manipulation to get the image url from flickr;
-              // preg_replace is bad at skipping lines so we'll start with preg_match
-                // i sets letters in upper or lower case,
-              @preg_match( "/<img(.+)\/>/i", $p->description, $matches ); // First, get image from feed.
-              // Next, strip away everything surrounding the source url.
-                // . means any expression, and + means repeat previous
-              $APTFFbyTAP_photourl_current = @preg_replace(array('/(.+)src="/i','/"(.+)/') , '',$matches[ 0 ]);
-              // Finally, change the size. [] specifies single character and \w is any word character
-              $APTFFbyTAP_photourl[$s] = @preg_replace('/[_]\w[.]/', $APTFFbyTAP_size_id, $APTFFbyTAP_photourl_current );
-              $APTFFbyTAP_originalurl[$s] = @preg_replace('/[_]\w[.]/', '.', $APTFFbyTAP_photourl_current );
-              $APTFFbyTAP_photocap[$s] = (string) $p->title;
-            }
-            $s++;
-          }
-          else{
+    
+      $APTFFbyTAP_content =  $_flickr_xml->photos;
+      $APTFFbyTAP_photos = $APTFFbyTAP_content->photo;
+        
+      // Check for photosets  
+      if( 'set' == $flickr_options['flickr_source']) {
+        $APTFFbyTAP_content =  $_flickr_xml->photoset;
+        $APTFFbyTAP_photos = $APTFFbyTAP_content->photo;
+      }
+      $APTFFbyTAP_attributes = $APTFFbyTAP_content->attributes();
+
+      // Check actual number of photos found
+      if( count($APTFFbyTAP_photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($APTFFbyTAP_photos);}
+
+      for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
+        $current_attr = $APTFFbyTAP_photos[$i]->attributes();
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.(string)$current_attr['owner'].'/'.(string)$current_attr['id'].'/';
+        $APTFFbyTAP_photourl[$i] = (string)$current_attr[$APTFFbyTAP_size_id];
+        $APTFFbyTAP_originalurl[$i] = (string)$current_attr['url_m'];
+        if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
+        $APTFFbyTAP_photocap[$i] = (string)$current_attr['title'];
+      }
+      if(!empty($APTFFbyTAP_linkurl) && !empty($APTFFbyTAP_photourl)){
+        if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
+          switch ($flickr_options['flickr_source']) {
+            case 'user':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
             break;
-          }
-        }
-        if(!empty($APTFFbyTAP_linkurl) && !empty($APTFFbyTAP_photourl)){
-          if( $flickr_options['flickr_display_link'] ) {
+            case 'favorites':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
+            break;
+            case 'group':
+              $APTFFbyTAP_link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
+            break;
+            case 'set':
+            // NOTE the use of attributes...
+            if($APTFFbyTAP_attributes['owner'] && $APTFFbyTAP_attributes['id']){
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$APTFFbyTAP_attributes['owner'].'/sets/'.$APTFFbyTAP_attributes['id'].'/';
+            }
+            break;
+          } 
+        
+          if($APTFFbyTAP_link){
             $APTFFbyTAP_user_link = '<div class="APTFFbyTAP-display-link" >';
             $APTFFbyTAP_user_link .='<a href="'.$APTFFbyTAP_link.'" target="_blank" >';
-            $APTFFbyTAP_user_link .= $APTFFbyTAP_title;
+            $APTFFbyTAP_user_link .= $flickr_options['flickr_display_link_text'];
             $APTFFbyTAP_user_link .= '</a></div>';
           }
-          // If content successfully fetched, generate output...
-          $continue = true;
-          $hidden .= '<!-- Success using XML -->';
-        }else{
-          $hidden .= '<!-- No photos found using XML @ '.$request.' -->';
-          $continue = false;
-          $feed_found = true;
         }
+        // If content successfully fetched, generate output...
+        $continue = true;
+        $hidden .= '<!-- Success using simplexml_load_file() and XML -->';
+      }else{
+        $hidden .= '<!-- No photos found using simplexml_load_file() and XML @ '.$request.' -->';
+        $continue = false;
+        $feed_found = true;
       }
     }
   }
@@ -230,122 +268,94 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
   ////////////////////////////////////////////////////////
   ////      If still nothing found, try using RSS      ///
   ////////////////////////////////////////////////////////
-  if( $continue == false ) {
-    // RSS may actually be safest approach since it does not require PHP server extensions,
-    // but I had to build my own method for parsing SimplePie Object so I will keep it as the last option.
-    
-    if(!function_exists(APTFFbyTAP_specialarraysearch)){
-      function APTFFbyTAP_specialarraysearch($array, $find){
-        foreach ($array as $key=>$value){
-          if( is_string($key) && $key==$find){
-            return $value;
-          }
-          elseif(is_array($value)){
-            $results = APTFFbyTAP_specialarraysearch($value, $find);
-          }
-          elseif(is_object($value)){
-            $sub = $array->$key;
-            $results = APTFFbyTAP_specialarraysearch($sub, $find);
-          }
-          // If found, return
-          if(!empty($results)){return $results;}
-        }
-        return $results;
-      }
-    }
+  if( $continue == false && function_exists('file_get_contents')) {
+    // Try simple file_get_contents function
     
     $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? '' : $flickr_options['flickr_user_id'], $flickr_options );
+    
     switch ($flickr_options['flickr_source']) {
     case 'user':
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'favorites':
-      $request = 'http://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'group':
       $flickr_groupid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     case 'set':
       $APTFFbyTAP_flickr_set = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photoset.gne?set=' . $APTFFbyTAP_flickr_set . '&nsid='. $flickr_uid  .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&photoset_id='. $APTFFbyTAP_flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
     break;
     case 'community':
       $APTFFbyTAP_flickr_tags = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-      $request = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='. $APTFFbyTAP_flickr_tags .'&lang=en-us&format=rss_200';
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&tags='. $APTFFbyTAP_flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
     break;
     } 
-    include_once(ABSPATH . WPINC . '/feed.php');
+
+    $_flickrurl = @file_get_contents($request);
+    $_flickr_php = @unserialize($_flickrurl);
+
+    if(empty($_flickr_php)){
+      $hidden .= '<!-- Failed using file_get_contents() and PHP_Serial @ '.$request.' -->';
+      $continue = false;
+    }else{
     
-    function return_noCache( $seconds ){
-      // change the default feed cache recreation period to 30 seconds
-      return 30;
-    }
+      $APTFFbyTAP_content =  $_flickr_php['photos'];
+      $APTFFbyTAP_photos = $_flickr_php['photos']['photo'];
+        
+      // Check for photosets  
+      if( 'set' == $flickr_options['flickr_source']) {
+        $APTFFbyTAP_content =  $_flickr_php['photoset'];
+        $APTFFbyTAP_photos = $_flickr_php['photoset']['photo'];
+      }
+      
+      // Check actual number of photos found
+      if( count($APTFFbyTAP_photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($APTFFbyTAP_photos);}
 
-    add_filter( 'wp_feed_cache_transient_lifetime' , 'return_noCache' );
-    $rss = @fetch_feed( $request );
-    remove_filter( 'wp_feed_cache_transient_lifetime' , 'return_noCache' );
-
-    if (!is_wp_error( $rss ) && $rss != NULL ){ // Check that the object is created correctly 
-      // Bulldoze through the feed to find the items 
-      $results = array();
-      $APTFFbyTAP_title = @APTFFbyTAP_specialarraysearch($rss,'title');
-      $APTFFbyTAP_title = $APTFFbyTAP_title['0']['data'];
-      $APTFFbyTAP_link = @APTFFbyTAP_specialarraysearch($rss,'link');
-      $APTFFbyTAP_link = $APTFFbyTAP_link['0']['data'];
-      $rss_data = @APTFFbyTAP_specialarraysearch($rss,'item');
-
-      $s = 0; // simple counter
-      if ($rss_data != NULL ){ // Check again
-        foreach ( $rss_data as $item ) {
-          if( $s<$flickr_options['flickr_photo_number'] ){
-            $APTFFbyTAP_linkurl[$s] = $item['child']['']['link']['0']['data'];    
-            $content = $item['child']['']['description']['0']['data'];     
-            if($content){
-              // For Reference: regex references and http://php.net/manual/en/function.preg-match.php
-              // Using the RSS feed will require some manipulation to get the image url from flickr;
-              // preg_replace is bad at skipping lines so we'll start with preg_match
-              // i sets letters in upper or lower case, s sets . to anything
-              @preg_match("/<IMG.+?SRC=[\"']([^\"']+)/si",$content,$matches); // First, get image from feed.
-              if($matches[ 0 ]){
-                // Next, strip away everything surrounding the source url.
-                // . means any expression and + means repeat previous
-                $APTFFbyTAP_photourl_current = @preg_replace(array('/(.+)src="/i','/"(.+)/') , '',$matches[ 0 ]);
-                // Finally, change the size. 
-                  // [] specifies single character and \w is any word character
-                $APTFFbyTAP_photourl[$s] = @preg_replace('/[_]\w[.]/', $APTFFbyTAP_size_id, $APTFFbyTAP_photourl_current );
-                $APTFFbyTAP_originalurl[$s] = @preg_replace('/[_]\w[.]/', '.', $APTFFbyTAP_photourl_current );
-                // Could set the caption as blank instead of default "Photo", but currently not doing so.
-                $APTFFbyTAP_photocap[$s] = $item['child']['']['title']['0']['data'];
-                $s++;
-              }
-            }
-          }
-          else{
-            break;
-          }
-        }
+      for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.$APTFFbyTAP_photos[$i]['owner'].'/'.$APTFFbyTAP_photos[$i]['id'].'/';
+        $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_photos[$i][$APTFFbyTAP_size_id];
+        $APTFFbyTAP_originalurl[$i] = $APTFFbyTAP_photos[$i]['url_m'];
+        if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
+        $APTFFbyTAP_photocap[$i] = $APTFFbyTAP_photos[$i]['title'];
       }
       if(!empty($APTFFbyTAP_linkurl) && !empty($APTFFbyTAP_photourl)){
-        if( $flickr_options['flickr_display_link'] ) {
-          $APTFFbyTAP_user_link = '<div class="APTFFbyTAP-display-link" >';
-          $APTFFbyTAP_user_link .='<a href="'.$APTFFbyTAP_link.'" target="_blank" >';
-          $APTFFbyTAP_user_link .= $APTFFbyTAP_title;
-          $APTFFbyTAP_user_link .= '</a></div>';
+        if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
+          switch ($flickr_options['flickr_source']) {
+            case 'user':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
+            break;
+            case 'favorites':
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
+            break;
+            case 'group':
+              $APTFFbyTAP_link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
+            break;
+            case 'set':
+            if($APTFFbyTAP_content['owner'] && $APTFFbyTAP_content['id']){
+              $APTFFbyTAP_link = 'http://www.flickr.com/photos/'.$APTFFbyTAP_content['owner'].'/sets/'.$APTFFbyTAP_content['id'].'/';
+            }
+            break;
+          } 
+        
+          if($APTFFbyTAP_link){
+            $APTFFbyTAP_user_link = '<div class="APTFFbyTAP-display-link" >';
+            $APTFFbyTAP_user_link .='<a href="'.$APTFFbyTAP_link.'" target="_blank" >';
+            $APTFFbyTAP_user_link .= $flickr_options['flickr_display_link_text'];
+            $APTFFbyTAP_user_link .= '</a></div>';
+          }
         }
         // If content successfully fetched, generate output...
         $continue = true;
-        $hidden .= '<!-- Success using RSS -->';
+        $hidden  .= '<!-- Success using file_get_contents() and PHP_Serial -->';
       }else{
-        $hidden .= '<!-- No photos found using RSS @ '.$request.' -->';  
+        $hidden .= '<!-- No photos found using file_get_contents() and PHP_Serial @ '.$request.' -->';  
         $continue = false;
         $feed_found = true;
       }
-    }
-    else{
-      $hidden .= '<!-- Failed RSS @ '.$request.' -->';
-      $continue = false;
-    }      
+    }   
   }
     
   ///////////////////////////////////////////////////////////////////////

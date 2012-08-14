@@ -7,9 +7,9 @@
  */
 
 (function( w, s ) {
-  s.fn.theAlpinePressWidgetMenuPlugin = function( options ) {
+  s.fn.APTFFbyTAPWidgetMenuPlugin = function( options ) {
     // Create some defaults, extending them with any options that were provided
-    options = s.extend( {}, s.fn.theAlpinePressWidgetMenuPlugin.options, options );
+    options = s.extend( {}, s.fn.APTFFbyTAPWidgetMenuPlugin.options, options );
 
     return this.each(function(i) { 
       var theParent = s(this);
@@ -23,7 +23,7 @@
         theHidden.hide();
         //theChildren.css({'opacity':'1'});
         //theHidden.css({'opacity':'0.3'});
-
+console.log('.'+triggerClass+'.'+selector.val() );
         selector.change(function(){
           theHidden = s('.'+triggerClass+'.'+selector.val());
           theChildren.show();

@@ -7,24 +7,25 @@
  */
 
 (function( w, s ) {
-  s.fn.theAlpinePressTiles = function( options ) {
+  s.fn.APTFFbyTAPTilesPlugin = function( options ) {
   
-    options = s.extend( {}, s.fn.theAlpinePressTiles.options, options );
+    options = s.extend( {}, s.fn.APTFFbyTAPTilesPlugin.options, options );
   
     return this.each(function() {  
       var parent = s(this);
       var imageList = s(".APTFFbyTAP_image_list_class",parent);
       var images = s('.APTFFbyTAP-image',imageList);
-      var perm = s('.APTFFbyTAP-link',imageList);
+      var allPerms = s('.APTFFbyTAP-link',imageList);
       var width = parent.width();
       
-      var currentRow,img,newDiv,newDivContainer,src,url,height,theClasses,theHeight,theWidth;
+      var currentRow,img,newDiv,newDivContainer,src,url,height,theClasses,theHeight,theWidth,perm;
       
       if( 'square' == options.shape && 'windows' == options.style ){
         s.each(images, function(i){
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
+          perm = allPerms[i];
           
           if(i%3 == 0){
             
@@ -58,6 +59,7 @@
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
+          perm = allPerms[i];
           
           if(i%3 == 0){
             theWidth = (width-8);
@@ -99,16 +101,17 @@
 
         });
       }      
-      else if( 'floor' == options.style ){
+      else if( 'floor' == options.style){
         parent.css({'width':'100%'});
         width = parent.width();
-        
+        theWidth = (width/options.perRow-4-4/options.perRow);
+        theHeight = (width/options.perRow);
+          
         s.each(images, function(i){
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
-          theWidth = (width/options.perRow-4-4/options.perRow);
-          theHeight = (width/options.perRow);
+          perm = allPerms[i];
           
           if(i%options.perRow == 0){
             newRow(width/options.perRow); 
@@ -123,6 +126,55 @@
           }
         });
       }
+      else if( 'wall' == options.style ){
+        parent.css({'width':'100%'});
+        width = parent.width();
+        var imageRow=[],currentImage,sumWidth=0,maxHeight=0;
+        theHeight = (width/options.perRow);
+        
+        s.each(images, function(i){
+          img = s(this);
+          src = img.attr('src');
+          url = 'url("'+src+'")';
+          perm = allPerms[i];
+
+          currentImage = {
+            "width":img.get(0).naturalWidth,
+            "height":img.get(0).naturalHeight,
+            "url":url,
+            "perm":perm
+          } 
+          sumWidth += img.get(0).naturalWidth;
+          imageRow[imageRow.length] = currentImage;  
+          
+          if(i%options.perRow == (options.perRow -1) || (images.length-1)==i ){
+            if( (images.length-1)==i ){
+              sumWidth += (options.perRow - i%options.perRow -1)*imageRow[imageRow.length-1].width;
+            }
+            
+            newRow(theHeight);
+
+            var pos = 0;
+            s.each(imageRow,function(j){
+              var normalWidth = this.width/sumWidth*width;
+
+              url = this.url;
+              perm = this.perm;
+              theClasses = "APTFFbyTAP-book";
+              theWidth = (normalWidth-4-4/options.perRow);
+              addDiv(j);
+              
+              newDivContainer.css({
+                'left':pos+'px'
+              });
+              
+              pos += normalWidth;
+            });
+          
+            imageRow=[];sumWidth=0;
+          } 
+        });
+      }
       else if( 'bookshelf' == options.style ){
         parent.css({'width':'100%'});
         width = parent.width();
@@ -132,11 +184,13 @@
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
+          perm = allPerms[i];
           
           currentImage = {
             "width":img.get(0).naturalWidth,
             "height":img.get(0).naturalHeight,
-            "url":url
+            "url":url,
+            "perm":perm
           } 
           sumWidth += img.get(0).naturalWidth;
           imageRow[imageRow.length] = currentImage;  
@@ -149,7 +203,7 @@
             newRow(10);
             currentRow.addClass('APTFFbyTAP-bookshelf');
             var pos = 0;
-            s.each(imageRow,function(){
+            s.each(imageRow,function(j){
               var normalWidth = this.width/sumWidth*width;
               var normalHeight = normalWidth*this.height/this.width;
               if( normalHeight > maxHeight ){
@@ -158,10 +212,11 @@
               }
               
               url = this.url;
+              perm = this.perm;
               theClasses = "APTFFbyTAP-book";
               theWidth = (normalWidth-4-4/options.perRow);
               theHeight = normalHeight;
-              addDiv(i);
+              addDiv(j);
               
               newDivContainer.css({
                 'left':pos+'px'
@@ -171,8 +226,7 @@
             });
           
             imageRow=[];sumWidth=0;maxHeight=0;
-          }          
-          
+          } 
         });
       }      
       else if( 'rift' == options.style ){
@@ -184,11 +238,13 @@
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
+          perm = allPerms[i];
           
           currentImage = {
             "width":img.get(0).naturalWidth,
             "height":img.get(0).naturalHeight,
-            "url":url
+            "url":url,
+            "perm":perm
           } 
           sumWidth += img.get(0).naturalWidth;
           imageRow[imageRow.length] = currentImage;  
@@ -200,7 +256,7 @@
             newRow(10);
             currentRow.addClass('APTFFbyTAP-riftline');
             var pos = 0;
-            s.each(imageRow,function(){
+            s.each(imageRow,function(j){
               var normalWidth = this.width/sumWidth*width;
               var normalHeight = normalWidth*this.height/this.width;
               if( normalHeight > maxHeight ){
@@ -209,10 +265,11 @@
               }
                             
               url = this.url;
+              perm = this.url;
               theClasses = 'APTFFbyTAP-rift APTFFbyTAP-float-'+row;
               theWidth = (normalWidth-4-4/options.perRow);
               theHeight = normalHeight;
-              addDiv(i);
+              addDiv(j);
               
               newDivContainer.css({
                 'left':pos+'px'
@@ -239,9 +296,10 @@
           img = s(this);
           src = img.attr('src');
           url = 'url("'+src+'")';
+          perm = allPerms[i];
           
           if( 0 == i ){
-            galleryHeight = width/options.perRow*3;
+            galleryHeight = width/options.perRow*options.galleryHeight;
             
             newRow(galleryHeight); 
                  
@@ -333,9 +391,9 @@
         
         currentRow.append(newDivContainer);
         newDivContainer.append(newDiv);
-        
-        if(perm[i]){
-          newDiv.wrap('<a href="'+perm[i]+'" class="APTFFbyTAP-link" target="_blank"></a>');
+
+        if(perm){
+          newDiv.wrap('<a href="'+perm+'" class="APTFFbyTAP-link" target="_blank"></a>');
         }
         if(options.imageBorder){
           newDivContainer.addClass('APTFFbyTAP-border-div');
@@ -360,7 +418,7 @@
     });
   }
   
-  s.fn.theAlpinePressTiles.options = {
+  s.fn.APTFFbyTAPTilesPlugin.options = {
     backgroundClass: 'northbynorth_background',
     parentID: 'parent'
   }    
@@ -368,7 +426,7 @@
   
   
 (function( w, s ) {
-  s.fn.theAlpinePressAdjustBorders = function( options ) {
+  s.fn.APTFFbyTAPAdjustBordersPlugin = function( options ) {
     return this.each(function() {  
       var parent = s(this);
       var images = s('img',parent);

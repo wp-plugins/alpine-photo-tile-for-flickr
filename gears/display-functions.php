@@ -74,7 +74,9 @@ function APTFFbyTAP_display_vertical($id, $options, $source_results){
   if( $options['style_shadow'] || $options['style_border'] || $options['style_curve_corners'] ){
     echo '<script>
          jQuery(window).load(function() {
-            jQuery("#'.$id.'-vertical-parent").theAlpinePressAdjustBorders();
+            if(jQuery().APTFFbyTAPAdjustBordersPlugin ){
+              jQuery("#'.$id.'-vertical-parent").APTFFbyTAPAdjustBordersPlugin();
+            }  
           });
         </script>';  
   }
@@ -160,8 +162,10 @@ function APTFFbyTAP_display_cascade($id, $options, $source_results){
   echo $output;
   
   echo '<script>
-         jQuery(window).load(function() {
-            jQuery("#'.$id.'-cascade-parent").theAlpinePressAdjustBorders();
+          jQuery(window).load(function() {
+            if(jQuery().APTFFbyTAPAdjustBordersPlugin ){
+              jQuery("#'.$id.'-cascade-parent").APTFFbyTAPAdjustBordersPlugin();
+            }  
           });
         </script>';
 }
@@ -249,7 +253,8 @@ function APTFFbyTAP_display_hidden($id, $options, $source_results){
   
   echo '<script>
          jQuery(window).load(function() {
-            jQuery("#'.$id.'-hidden-parent").theAlpinePressTiles({
+          if(jQuery().APTFFbyTAPTilesPlugin ){
+            jQuery("#'.$id.'-hidden-parent").APTFFbyTAPTilesPlugin({
               style:"'.($options['style_option']?$options['style_option']:'windows').'",
               shape:"'.($options['style_shape']?$options['style_shape']:'square').'",
               perRow:"'.($options['style_photo_per_row']?$options['style_photo_per_row']:'3').'",
@@ -257,9 +262,11 @@ function APTFFbyTAP_display_hidden($id, $options, $source_results){
               imageBorder:'.($options['style_border']?'1':'0').',
               imageShadow:'.($options['style_shadow']?'1':'0').',
               imageCurve:'.($options['style_curve_corners']?'1':'0').',
+              galleryHeight:'.($options['style_gallery_height']?$options['style_gallery_height']:'3').',
             });
-          });
-        </script>';
+          }
+        });
+      </script>';
 }
 
 ?>

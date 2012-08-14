@@ -3,9 +3,12 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.0.2.1
+Version: 1.0.3
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
+License: GNU General Public License v3.0
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
+
 
 */
 
@@ -31,18 +34,23 @@ if ( ! defined( 'WP_PLUGIN_DIR' ) )
 define( 'APTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
-define( 'APTFFbyTAP_VER', '1.0.2.1' );
+define( 'APTFFbyTAP_VER', '1.0.3' );
 define( 'APTFFbyTAP_DOMAIN', 'APTFFbyTAP_Domain' );
 define( 'APTFFbyTAP_HOOK', 'APTFFbyTAP_hook' );
 define( 'APTFFbyTAP_ID', 'PTFF_by_TAP' );
+define( 'APTFFbyTAP_INFO', 'http://thealpinepress.com/alpine-phototile-for-flickr/' );
 
 register_deactivation_hook( __FILE__, 'TAP_PhotoTile_Flickr_remove' );
 function TAP_PhotoTile_Flickr_remove(){
-  $cache = new theAlpinePressSimpleCache();  
+  $cache = new theAlpinePressSimpleCacheV1();  
+  $cache->setCacheDir( APTFFbyTAP_CACHE );
   $cache->clearAll();
 }
 
-
+// Register Widget
+function APTFFbyTAP_widget_register() {register_widget( 'Alpine_PhotoTile_for_Flickr' );}
+add_action('widgets_init','APTFFbyTAP_widget_register');
+  
 class Alpine_PhotoTile_for_Flickr extends WP_Widget {
 
 	function Alpine_PhotoTile_for_Flickr() {
@@ -77,6 +85,9 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
           APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
         case "floor":
+         APTFFbyTAP_display_hidden($id, $options, $source_results);
+        break;
+        case "wall":
          APTFFbyTAP_display_hidden($id, $options, $source_results);
         break;
         case "cascade":
@@ -141,12 +152,12 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
   function APTFFbyTAP_menu_toggles(){
     ?>
     <script type="text/javascript">
-    if( jQuery().theAlpinePressWidgetMenuPlugin  ){
+    if( jQuery().APTFFbyTAPWidgetMenuPlugin  ){
       jQuery(document).ready(function(){
-        jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+        jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').APTFFbyTAPWidgetMenuPlugin();
         
         jQuery(document).ajaxComplete(function() {
-          jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').theAlpinePressWidgetMenuPlugin();
+          jQuery('.APTFFbyTAP-flickr .APTFFbyTAP-parent').APTFFbyTAPWidgetMenuPlugin();
         });
       });
     }
@@ -168,10 +179,6 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
   }
   add_action('wp_enqueue_scripts', 'APTFFbyTAP_enqueue_display_scripts');
   
-	  
-   // Register Widget
-	function APTFFbyTAP_widget_register() {register_widget( 'Alpine_PhotoTile_for_Flickr' );}
-  add_action('widgets_init','APTFFbyTAP_widget_register');
  
   include_once( 'admin/widget-options.php');
   include_once( 'admin/function-options-display.php'); 

@@ -4,11 +4,12 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 1.0.2.1
-
+Stable tag: 1.0.3
+License: GPLv3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 == Description == 
-The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description and demonstration is available at the Alpine Press (http://thealpinepress.com/alpine-phototile-for-flickr/).
+The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
 
 
 == Installation ==
@@ -33,3 +34,13 @@ None yet, but I'd like to hear from you. Leave a message at http://thealpinepres
 
 = 1.0.2 =
 * Fixed AJAX menu plugin loading problem
+
+= 1.0.3 =
+* Rebuilt photo retrieval method using Flickr API
+* Changed "per row" and "image number" options
+* Added int high and low to sanitization function
+* Repaired photo linking issue with rift and bookshelf styles
+* Added height option to gallery style
+* Renamed functions where needed
+* Custom display link (and removed display link option from Community source option)
+* Added "wall" style

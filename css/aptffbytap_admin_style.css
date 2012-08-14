@@ -54,10 +54,13 @@
     float:left;
     clear:left;
   }  
-  .APTFFbyTAP-flickr .right input[type="text"], .APTFFbyTAP-flickr .left input[type="text"]{
-    width:100%;
+  .APTFFbyTAP-flickr .left input[type="text"]{
+    width:95%;
   }
-  .APTFFbyTAP-flickr .bottom input[type="text"] {
+  .APTFFbyTAP-flickr .right input[type="text"] {
+    width:30%;
+  }  
+  .APTFFbyTAP-flickr .bottom input[type="text"]{
     width:20%;
   }
   .APTFFbyTAP-flickr .bottom{

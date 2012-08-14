@@ -14,11 +14,11 @@
       ),
       'left' => array(
         'title' => 'Flickr Settings',
-        'options' =>array('flickr_source','flickr_user_id','flickr_group_id','flickr_set_id','flickr_tags','flickr_image_link','flickr_display_link','flickr_photo_size' )
+        'options' =>array('flickr_source','flickr_user_id','flickr_group_id','flickr_set_id','flickr_tags','flickr_display_link','flickr_display_link_text','flickr_image_link','flickr_photo_size' )
       ),
       'right' => array(
         'title' => 'Style Settings',
-        'options' =>array('style_option','style_shape','style_photo_per_row','style_column_number','flickr_photo_number','style_shadow','style_border','style_curve_corners')
+        'options' =>array('style_option','style_shape','style_gallery_height','style_photo_per_row','style_column_number','flickr_photo_number','style_shadow','style_border','style_curve_corners')
       ),
       'bottom' => array(
         'title' => 'Format Settings',
@@ -66,7 +66,7 @@
           )      
         ),
         'description' => '',
-        'link' => 'APTFFbyTAP-parent', 
+        'parent' => 'APTFFbyTAP-parent', 
         'trigger' => 'flickr_source',
         'default' => 'user'
       ),
@@ -76,8 +76,8 @@
         'type' => 'text',
         'sanitize' => 'nospaces',
         'description' => "Don't know the ID? Use <a href='http://idgettr.com/' target='_blank'>idgettr.com</a> to find it.",
-        'link' => 'flickr_source', 
-        'hidden' => 'group community',
+        'child' => 'flickr_source', 
+        'hidden' => 'group community set',
         'since' => '1.1',
         'default' => ''
       ),
@@ -87,7 +87,7 @@
         'type' => 'text',
         'sanitize' => 'nospaces',
         'description' => "Don't know the ID? Use <a href='http://idgettr.com/' target='_blank'>idgettr.com</a> to find it.",
-        'link' => 'flickr_source', 
+        'child' => 'flickr_source', 
         'hidden' => 'user set community favorites',
         'since' => '1.1',
         'default' => ''
@@ -98,7 +98,7 @@
         'type' => 'text',
         'sanitize' => 'nospaces',
         'description' => '',
-        'link' => 'flickr_source', 
+        'child' => 'flickr_source', 
         'hidden' => 'group user community favorites',
         'since' => '1.1',
         'default' => ''
@@ -109,11 +109,32 @@
         'type' => 'text',
         'sanitize' => 'nospaces',
         'description' => 'Comma seperated, no spaces',
-        'link' => 'flickr_source',
+        'child' => 'flickr_source',
         'hidden' => 'group user favorites set',
         'since' => '1.1',
         'default' => ''
-      ),            
+      ),        
+      'flickr_display_link' => array(
+        'name' => 'flickr_display_link',
+        'title' => 'Display link to Flickr page.',
+        'type' => 'checkbox',
+        'description' => '',
+        'child' => 'flickr_source',
+        'hidden' => 'community',
+        'since' => '1.1',
+        'default' => ''
+      ),    
+      'flickr_display_link_text' => array(
+        'name' => 'flickr_display_link_text',
+        'title' => 'Link Text : ',
+        'type' => 'text',
+        'sanitize' => 'nohtml',
+        'description' => '',
+        'child' => 'flickr_source', 
+        'hidden' => 'community',
+        'since' => '1.1',
+        'default' => 'Flickr'
+      ),             
       'flickr_image_link' => array(
         'name' => 'flickr_image_link',
         'title' => 'Link images to Flickr source.',
@@ -122,14 +143,6 @@
         'since' => '1.1',
         'default' => ''
       ),
-      'flickr_display_link' => array(
-        'name' => 'flickr_display_link',
-        'title' => 'Display link to Flickr page.',
-        'type' => 'checkbox',
-        'description' => '',
-        'since' => '1.1',
-        'default' => ''
-      ),      
       'flickr_photo_size' => array(
         'name' => 'flickr_photo_size',
         'title' => 'Photo Size : ',
@@ -146,6 +159,10 @@
           '240' => array(
             'name' => 240,
             'title' => '240px'
+          ),
+          '320' => array(
+            'name' => 320,
+            'title' => '320px'
           ),
           '500' => array(
             'name' => 500,
@@ -185,6 +202,10 @@
             'name' => 'floor',
             'title' => 'Floor'
           ),
+          'wall' => array(
+            'name' => 'wall',
+            'title' => 'Wall'
+          ),
           'cascade' => array(
             'name' => 'cascade',
             'title' => 'Cascade'
@@ -195,7 +216,7 @@
           )           
         ),
         'description' => '',
-        'link' => 'APTFFbyTAP-parent',
+        'parent' => 'APTFFbyTAP-parent',
         'trigger' => 'style_option',
         'since' => '1.1',
         'default' => 'vertical'
@@ -215,19 +236,20 @@
           )              
         ),
         'description' => '',
-        'link' => 'style_option',
-        'hidden' => 'vertical cascade floor rift bookshelf gallery',
+        'child' => 'style_option',
+        'hidden' => 'vertical cascade floor wall rift bookshelf gallery',
         'since' => '1.1',
         'default' => 'vertical'
       ),          
       'style_photo_per_row' => array(
         'name' => 'style_photo_per_row',
         'title' => 'Photos per row : ',
-        'type' => 'range',
+        'type' => 'text',
+        'sanitize' => 'int',
         'min' => '1',
-        'max' => '20',
-        'description' => '',
-        'link' => 'style_option',
+        'max' => '500',
+        'description' => 'Max of 500',
+        'child' => 'style_option',
         'hidden' => 'vertical cascade windows',
         'since' => '1.1',
         'default' => '4'
@@ -239,18 +261,55 @@
         'min' => '1',
         'max' => '10',
         'description' => '',
-        'link' => 'style_option',
-        'hidden' => 'vertical floor bookshelf windows rift gallery',
+        'child' => 'style_option',
+        'hidden' => 'vertical floor wall bookshelf windows rift gallery',
         'since' => '1.1',
         'default' => '2'
-      ),          
+      ),     
+      'style_gallery_height' => array(
+        'name' => 'style_gallery_height',
+        'title' => 'Gallery Size : ',
+        'type' => 'select',
+        'valid_options' => array(
+          '2' => array(
+            'name' => 2,
+            'title' => 'XS'
+          ),
+          '3' => array(
+            'name' => 3,
+            'title' => 'Small'
+          ),
+          '4' => array(
+            'name' => 4,
+            'title' => 'Medium'
+          ),
+          '5' => array(
+            'name' => 5,
+            'title' => 'Large'
+          ),
+          '6' => array(
+            'name' => 6,
+            'title' => 'XL'
+          ),
+          '7' => array(
+            'name' => 7,
+            'title' => 'XXL'
+          )             
+        ),
+        'description' => '',
+        'child' => 'style_option',
+        'hidden' => 'vertical cascade floor wall rift bookshelf windows',
+        'since' => '1.1',
+        'default' => '3'
+      ),     
       'flickr_photo_number' => array(
         'name' => 'flickr_photo_number',
         'title' => 'Number of photos : ',
-        'type' => 'range',
+        'type' => 'text',
+        'sanitize' => 'int',
         'min' => '1',
-        'max' => '20',
-        'description' => '',
+        'max' => '500',
+        'description' => 'Max of 500, though under 20 is recommended',
         'since' => '1.1',
         'default' => '4'
       ),
@@ -303,7 +362,7 @@
         'name' => 'widget_max_width',
         'title' => 'Max widget width (%) : ',
         'type' => 'text',
-        'sanitize' => 'int',
+        'sanitize' => 'numeric',
         'min' => '1',
         'max' => '100',
         'description' => "To reduce the widget width, input a percentage (between 1 and 100). If photos are smaller than widget area, reduce percentage until desired width is achieved.",

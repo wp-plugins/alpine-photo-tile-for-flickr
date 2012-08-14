@@ -41,10 +41,16 @@ if ( !function_exists( 'theAlpinePressMenuOptionsValidateV1' ) ) {
           if ( 'numeric' == $optiondetails['sanitize'] && is_numeric( wp_filter_nohtml_kses( $newinput ) ) ) {
             // Pass input data through the wp_filter_nohtml_kses filter
             $valid_input = wp_filter_nohtml_kses( $newinput );
+            if( NULL !== $optiondetails['min'] && $valid_input<$optiondetails['min']){
+              $valid_input = $optiondetails['min'];
+            }
+            if( NULL !== $optiondetails['max'] && $valid_input>$optiondetails['max']){
+              $valid_input = $optiondetails['max'];
+            }
           }
           if ( 'int' == $optiondetails['sanitize'] && is_numeric( wp_filter_nohtml_kses( $newinput ) ) ) {
             // Pass input data through the wp_filter_nohtml_kses filter
-            $valid_input = wp_filter_nohtml_kses( $newinput );
+            $valid_input = round( wp_filter_nohtml_kses( $newinput ) );
             if( NULL !== $optiondetails['min'] && $valid_input<$optiondetails['min']){
               $valid_input = $optiondetails['min'];
             }

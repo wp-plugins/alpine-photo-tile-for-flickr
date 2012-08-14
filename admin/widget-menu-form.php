@@ -27,10 +27,17 @@
                 $option = $defaults[$optionname];
                 $fieldname = $this->get_field_name( $option['name'] );
                 $fieldid = $this->get_field_id( $option['name'] );
-                $class = ($option['link']?($option['link']):($this->get_field_id('general')) );
+                if($option['parent']){
+                  $class = $option['parent'];
+                }elseif($option['child']){
+                  $class = $this->get_field_id($option['child']);
+                }else{
+                  $class = $this->get_field_id('unlinked');
+                }
+                $trigger = ($option['trigger']?('data-trigger="'.($this->get_field_id($option['trigger'])).'"'):'');
                 $hidden = ($option['hidden']?' '.$option['hidden']:'');
-                $trigger = ($option['trigger']?('data-trigger="'.($option['trigger']).'"'):'');
-                ?> <tr valign="top"> <td class="<?php echo $class; ?><?php echo $hidden; ?>"  <?php echo $trigger; ?> ><?php
+                
+                ?> <tr valign="top"> <td class="<?php echo $class; ?><?php echo $hidden; ?>" <?php echo $trigger; ?>><?php
                   theAlpinePressMenuDisplayCallbackV1($options,$option,$fieldname,$fieldid);
                 ?> </td></tr> <?php
               }
@@ -41,6 +48,6 @@
     <?php
     }
   }
-  ?>  
+  ?>
   </div> 
-
+  <div><span><?php _e('Need Help? Visit ') ?><a href="<?php echo APTFFbyTAP_INFO; ?>" target="_blank">the Alpine Press</a> <?php _e('for more about this plugin.') ?></span></div>
