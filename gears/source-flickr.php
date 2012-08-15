@@ -4,6 +4,7 @@
  * The PHP for retrieving content from Flickr.
  *
  * @since 1.0.0
+ * @updated 1.0.3
  */
  
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,15 +34,17 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
 
   $key = 'flickr-'.$flickr_options['flickr_source'].'-'.$APTFFbyTAP_flickr_uid.'-'.$APTFFbyTAP_flickr_groupid.'-'.$APTFFbyTAP_flickr_set.'-'.$APTFFbyTAP_flickr_tags.'-'.$flickr_options['flickr_photo_number'].'-'.$flickr_options['flickr_photo_size'];
 
-  $cache = new theAlpinePressSimpleCacheV1();  
-  $cache->setCacheDir( APTFFbyTAP_CACHE );
-  
-  if( $cache->exists($key) ) {
-    $results = $cache->get($key);
-    $results = @unserialize($results);
-    if( count($results) ){
-      $results['hidden'] .= '<!-- Retrieved from cache -->';
-      return $results;
+  if ( class_exists( 'theAlpinePressSimpleCacheV1' ) && APTFFbyTAP_CACHE ) {
+    $cache = new theAlpinePressSimpleCacheV1();  
+    $cache->setCacheDir( APTFFbyTAP_CACHE );
+    
+    if( $cache->exists($key) ) {
+      $results = $cache->get($key);
+      $results = @unserialize($results);
+      if( count($results) ){
+        $results['hidden'] .= '<!-- Retrieved from cache -->';
+        return $results;
+      }
     }
   }
   

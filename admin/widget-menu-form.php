@@ -38,7 +38,9 @@
                 $hidden = ($option['hidden']?' '.$option['hidden']:'');
                 
                 ?> <tr valign="top"> <td class="<?php echo $class; ?><?php echo $hidden; ?>" <?php echo $trigger; ?>><?php
+                if ( function_exists( 'theAlpinePressMenuDisplayCallbackV1' ) ) {
                   theAlpinePressMenuDisplayCallbackV1($options,$option,$fieldname,$fieldid);
+                }  
                 ?> </td></tr> <?php
               }
             }?>

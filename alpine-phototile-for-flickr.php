@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.0.3
+Version: 1.0.3.1
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 License: GNU General Public License v3.0
@@ -35,16 +35,18 @@ define( 'APTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_VER', '1.0.3' );
-define( 'APTFFbyTAP_DOMAIN', 'APTFFbyTAP_Domain' );
+define( 'APTFFbyTAP_DOMAIN', 'APTFFbyTAP_domain' );
 define( 'APTFFbyTAP_HOOK', 'APTFFbyTAP_hook' );
 define( 'APTFFbyTAP_ID', 'PTFF_by_TAP' );
 define( 'APTFFbyTAP_INFO', 'http://thealpinepress.com/alpine-phototile-for-flickr/' );
 
 register_deactivation_hook( __FILE__, 'TAP_PhotoTile_Flickr_remove' );
 function TAP_PhotoTile_Flickr_remove(){
-  $cache = new theAlpinePressSimpleCacheV1();  
-  $cache->setCacheDir( APTFFbyTAP_CACHE );
-  $cache->clearAll();
+  if ( class_exists( 'theAlpinePressSimpleCacheV1' ) ) {
+    $cache = new theAlpinePressSimpleCacheV1();  
+    $cache->setCacheDir( APTFFbyTAP_CACHE );
+    $cache->clearAll();
+  }
 }
 
 // Register Widget
@@ -110,7 +112,9 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
 	function update( $newoptions, $oldoptions ) {
     $optiondetails = APTFFbyTAP_option_defaults();
     foreach( $newoptions as $id=>$input ){
-      $options[$id] = theAlpinePressMenuOptionsValidateV1( $input,$oldoptions[$id],$optiondetails[$id] );
+      if ( function_exists( 'theAlpinePressMenuOptionsValidateV1' ) ) {
+        $options[$id] = theAlpinePressMenuOptionsValidateV1( $input,$oldoptions[$id],$optiondetails[$id] );
+      }
     }
     return $options;
 	}

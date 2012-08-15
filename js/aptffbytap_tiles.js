@@ -22,8 +22,8 @@
       
       if( 'square' == options.shape && 'windows' == options.style ){
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
@@ -56,14 +56,14 @@
       }
       else if( 'rectangle' == options.shape && 'windows' == options.style ){
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
           if(i%3 == 0){
             theWidth = (width-8);
-            height = theWidth*img.get(0).naturalHeight/img.get(0).naturalWidth;
+            height = theWidth*img.naturalHeight/img.naturalWidth;
             height = (height?height:width);
             
             newRow(height);
@@ -75,7 +75,7 @@
             
           }else if(i%3 == 1){
             theWidth = (width/2-4-4/2);
-            height = theWidth*img.get(0).naturalHeight/img.get(0).naturalWidth;
+            height = theWidth*img.naturalHeight/img.naturalWidth;
             height = (height?height:width);
             newRow( height );
             
@@ -86,7 +86,7 @@
             
           }else if(i%3 == 2){
             theWidth = (width/2-4-4/2);
-            var nextHeight = theWidth*img.get(0).naturalHeight/img.get(0).naturalWidth;
+            var nextHeight = theWidth*img.naturalHeight/img.naturalWidth;
             nextHeight = (nextHeight?nextHeight:theWidth);
             if(nextHeight && nextHeight<height){
               height = nextHeight;
@@ -108,8 +108,8 @@
         theHeight = (width/options.perRow);
           
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
@@ -133,18 +133,18 @@
         theHeight = (width/options.perRow);
         
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
 
           currentImage = {
-            "width":img.get(0).naturalWidth,
-            "height":img.get(0).naturalHeight,
+            "width":img.naturalWidth,
+            "height":img.naturalHeight,
             "url":url,
             "perm":perm
           } 
-          sumWidth += img.get(0).naturalWidth;
+          sumWidth += img.naturalWidth;
           imageRow[imageRow.length] = currentImage;  
           
           if(i%options.perRow == (options.perRow -1) || (images.length-1)==i ){
@@ -160,7 +160,7 @@
 
               url = this.url;
               perm = this.perm;
-              theClasses = "APTFFbyTAP-book";
+              theClasses = "APTFFbyTAP-tile";
               theWidth = (normalWidth-4-4/options.perRow);
               addDiv(j);
               
@@ -181,18 +181,18 @@
         var imageRow=[],currentImage,sumWidth=0,maxHeight=0;
         
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
           currentImage = {
-            "width":img.get(0).naturalWidth,
-            "height":img.get(0).naturalHeight,
+            "width":img.naturalWidth,
+            "height":img.naturalHeight,
             "url":url,
             "perm":perm
           } 
-          sumWidth += img.get(0).naturalWidth;
+          sumWidth += img.naturalWidth;
           imageRow[imageRow.length] = currentImage;  
           
           if(i%options.perRow == (options.perRow -1) || (images.length-1)==i ){
@@ -235,18 +235,18 @@
         var imageRow=[],currentImage,sumWidth=0,maxHeight=0,row=0;
         
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
           currentImage = {
-            "width":img.get(0).naturalWidth,
-            "height":img.get(0).naturalHeight,
+            "width":img.naturalWidth,
+            "height":img.naturalHeight,
             "url":url,
             "perm":perm
           } 
-          sumWidth += img.get(0).naturalWidth;
+          sumWidth += img.naturalWidth;
           imageRow[imageRow.length] = currentImage;  
           
           if(i%options.perRow == (options.perRow -1) || (images.length-1)==i ){
@@ -293,8 +293,8 @@
         theHeight = (width/options.perRow);
              
         s.each(images, function(i){
-          img = s(this);
-          src = img.attr('src');
+          img = this;
+          src = img.src;
           url = 'url("'+src+'")';
           perm = allPerms[i];
           
@@ -393,7 +393,7 @@
         newDivContainer.append(newDiv);
 
         if(perm){
-          newDiv.wrap('<a href="'+perm+'" class="APTFFbyTAP-link" target="_blank"></a>');
+          newDiv.wrap('<a href="'+perm.href+'" class="APTFFbyTAP-link" target="_blank"></a>');
         }
         if(options.imageBorder){
           newDivContainer.addClass('APTFFbyTAP-border-div');
