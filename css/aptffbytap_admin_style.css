@@ -1,7 +1,38 @@
-
+.icon-alpine{
+  background-image:url('images/Pine-Trees.png');
+  box-shadow: 0 0 2px #999999;
+  border-radius: 3px 3px 3px 3px;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
   .APTFFbyTAP-flickr {
     width:100%;
     overflow:hidden;
+  }
+  .APTFFbyTAP-flickr.generator, .APTFFbyTAP-flickr.plugin-settings{
+    max-width:700px;
+    margin:20px 0;
+  }
+  .APTFFbyTAP-flickr .help-link{
+    width:100%;
+    clear:both;
+    padding:5px 0;
+    margin: 20px 0 0 0;
+  }
+  .APTFFbyTAP-flickr.plugin-settings .title{
+    width:25%;
+    max-width: 180px;
+    min-width: 100px;
+    display:inline-block;
+    margin: 0 10px 0 0;
+    font-size:1.1em;
+  }
+  .APTFFbyTAP-flickr.plugin-settings h4{
+    font-size:1.17em;
+  }
+  .APTFFbyTAP-flickr.plugin-settings  input[type="text"]{
+    width:100px;
   }
   .APTFFbyTAP-flickr .form-table{
     margin:0;

@@ -322,6 +322,11 @@
             if(options.imageCurve){
               galleryContainer.addClass('APTFFbyTAP-curve-div');
             }
+            if(options.imageHighlight && !options.imageBorder){
+              galleryContainer.addClass('APTFFbyTAP-highlight-div');
+              galleryContainer.width( galleryContainer.width()-4 );
+              galleryContainer.height( galleryContainer.height()-4 );
+            }
 
           }
                     
@@ -400,6 +405,22 @@
           newDivContainer.width( newDivContainer.width()-10 );
           newDivContainer.height( newDivContainer.height()-10 );
         }
+        if(options.imageHighlight){
+          if(!options.imageBorder){
+            newDivContainer.addClass('APTFFbyTAP-highlight-div');
+            newDivContainer.width( newDivContainer.width()-4 );
+            newDivContainer.height( newDivContainer.height()-4 );
+          }
+          newDivContainer.hover(function(){
+            s(this).css({
+              "background": options.highlight,
+            });
+          },function(){
+            s(this).css({
+              "background-color": "#fff",
+            });
+          });
+        }
         if(options.imageShadow){
           newDivContainer.addClass('APTFFbyTAP-shadow-div');
         }
@@ -441,7 +462,9 @@
           currentImg.removeClass('APTFFbyTAP-img-border');
           currentImg.css({
             'max-width':(width)+'px',
-            'padding':'5px',
+            'padding':'4px',
+            "margin-left": "1px",
+            "margin-right": "1px",
           });
         }else if( currentImg.hasClass('APTFFbyTAP-img-noborder') ){
           currentImg.removeClass('APTFFbyTAP-img-noborder');
@@ -452,13 +475,12 @@
         }
         
         if( currentImg.hasClass('APTFFbyTAP-img-shadow') ){
-          width -= 8;
+          width -= 2;
           currentImg.removeClass('APTFFbyTAP-img-shadow');
           currentImg.css({
             "box-shadow": "0 1px 3px rgba(34, 25, 25, 0.4)",
-            "margin-left": "4px",
-            "margin-right": "4px",
-            "margin-bottom": "9px",
+            "margin-left": "1px",
+            "margin-right": "1px",
             'max-width':(width)+'px',
           });
         }else if( currentImg.hasClass('APTFFbyTAP-img-noshadow') ){
@@ -466,11 +488,33 @@
           currentImg.css({
             'max-width':(width)+'px',
             "box-shadow":"none",
-            "margin-left": 0,
-            "margin-right": 0
           });
         }
         
+        if( currentImg.hasClass('APTFFbyTAP-img-highlight') ){
+          currentImg.removeClass('APTFFbyTAP-img-highlight');
+          
+          if( '4px' != currentImg.css('padding-right') ){
+            width -= 6;
+            currentImg.css({
+              'max-width':(width)+'px',
+              'padding':'2px',
+              "margin-left": "1px",
+              "margin-right": "1px",
+            });
+          }
+
+          currentImg.hover(function(){
+            console.log(options.highlight);
+            s(this).css({
+              "background-color": options.highlight,
+            });
+          },function(){
+            s(this).css({
+              "background-color": "#fff",
+            });
+          });
+        }
       });
     });
   }

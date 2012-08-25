@@ -34,10 +34,11 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
 
   $key = 'flickr-'.$flickr_options['flickr_source'].'-'.$APTFFbyTAP_flickr_uid.'-'.$APTFFbyTAP_flickr_groupid.'-'.$APTFFbyTAP_flickr_set.'-'.$APTFFbyTAP_flickr_tags.'-'.$flickr_options['flickr_photo_number'].'-'.$flickr_options['flickr_photo_size'];
 
-  if ( class_exists( 'theAlpinePressSimpleCacheV1' ) && APTFFbyTAP_CACHE ) {
-    $cache = new theAlpinePressSimpleCacheV1();  
+  $disablecache = APTFFbyTAP_get_option( 'cache_disable' );
+  if ( class_exists( 'theAlpinePressSimpleCacheV2' ) && APTFFbyTAP_CACHE && !$disablecache ) {
+    $cache = new theAlpinePressSimpleCacheV2();  
     $cache->setCacheDir( APTFFbyTAP_CACHE );
-    
+
     if( $cache->exists($key) ) {
       $results = $cache->get($key);
       $results = @unserialize($results);
@@ -374,10 +375,14 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
     
   $results = array('continue'=>$continue,'message'=>$message,'hidden'=>$hidden,'user_link'=>$APTFFbyTAP_user_link,'image_captions'=>$APTFFbyTAP_photocap,'image_urls'=>$APTFFbyTAP_photourl,'image_perms'=>$APTFFbyTAP_linkurl,'image_originals'=>$APTFFbyTAP_originalurl);
   
-  if( true == $continue ){     
+  if( true == $continue && !$disablecache && $cache ){     
     $cache_results = $results;
     if(!is_serialized( $cache_results  )) { $cache_results  = maybe_serialize( $cache_results ); }
     $cache->put($key, $cache_results);
+    $cachetime = APTFFbyTAP_get_option( 'cache_time' );
+    if( $cachetime ){
+      $cache->setExpiryInterval( $cachetime );
+    }
   }
   
   return $results;

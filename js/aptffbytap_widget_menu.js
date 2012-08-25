@@ -5,6 +5,19 @@
  * Updated: August 2012
  * 
  */
+jQuery(document).ready(function() {
+  jQuery('.APTFFbyTAP_color_picker').each(function(i){
+    var prevId = jQuery(this).attr('id').replace("_picker","");
+    jQuery(this).farbtastic('#'+prevId);
+  });
+  jQuery('.APTFFbyTAP_color_picker').hide();
+
+  jQuery(".APTFFbyTAP_color").click(function(){
+    var colorfield = jQuery(this).attr('id');
+    jQuery('#'+colorfield+'_picker').slideToggle();
+    if(!jQuery(this).val()){jQuery(this).val("#")};
+  });
+});
 
 if( !jQuery().APTFFbyTAPWidgetMenuPlugin ){
   (function( w, s ) {

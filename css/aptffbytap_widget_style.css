@@ -4,31 +4,27 @@
   position:relative;
   width:100%;
   display:block;
+  overflow:hidden;
 }
 .APTFFbyTAP_container_class img{
   margin:0;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
-
-img.APTFFbyTAP-img-shadow{
-  box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4) ! important;
-  margin-left: 1% ! important;
-  margin-right: 1% ! important;
-  max-width: 96% ! important;
+.APTFFbyTAP_container_class.loading{
+  min-height:200px;
+  width:100%;
+  background-image:url("images/loader.gif");
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:40px 40px;
+  background-color:#fff;
 }
-img.APTFFbyTAP-img-noshadow{
-  box-shadow:none ! important;
-  margin-left: 0 ! important;
-  margin-right: 0 ! important;
-  max-width: 98% ! important;
-}
-
-img.APTFFbyTAP-img-border{
-  background: none repeat scroll 0 0 #FFFFFF ! important;
-  padding:1% ! important;
-}
-img.APTFFbyTAP-img-noborder{
-  padding:0 ! important; 
+.APTFFbyTAP_inpost_container {
+  padding-bottom:10px;
+  display:block;
+  clear:both;
+  width:100%;
+  overflow:hidden;
 }
 
 img.APTFFbyTAP-img-corners{
@@ -138,6 +134,12 @@ img.APTFFbyTAP-img-nocorners{
   background: none repeat scroll 0 0 #FFFFFF;
   padding:5px;
 }
+.APTFFbyTAP-highlight-div{
+  background: none repeat scroll 0 0 #FFFFFF;
+  padding:2px;
+}
+
+
 .APTFFbyTAP-shadow-div{
   box-shadow: 1px 1px 3px rgba(34, 25, 25, 0.4);
 }
