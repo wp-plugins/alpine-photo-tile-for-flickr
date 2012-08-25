@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.1.1
+Version: 1.1.1.1
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 License: GNU General Public License v3.0
@@ -34,7 +34,7 @@ if ( ! defined( 'WP_PLUGIN_DIR' ) )
 define( 'APTFFbyTAP_URL', WP_PLUGIN_URL.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_DIR', WP_PLUGIN_DIR.'/'. basename(dirname(__FILE__)) . '' );
 define( 'APTFFbyTAP_CACHE', WP_CONTENT_DIR . '/cache/' . basename(dirname(__FILE__)) . '' );
-define( 'APTFFbyTAP_VER', '1.1.1' );
+define( 'APTFFbyTAP_VER', '1.1.1.1' );
 define( 'APTFFbyTAP_DOMAIN', 'APTFFbyTAP_domain' );
 define( 'APTFFbyTAP_HOOK', 'APTFFbyTAP_hook' );
 define( 'APTFFbyTAP_SETTINGS', basename(dirname(__FILE__)).'-settings' );

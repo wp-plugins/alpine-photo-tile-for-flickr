@@ -6,7 +6,7 @@
  *
  */
  
-  function generate_shortcode( $options, $optiondetails ){
+  function APTFFbyTAP_generate_shortcode( $options, $optiondetails ){
     $short = '['.APTFFbyTAP_SHORT;
     $trigger = '';
     

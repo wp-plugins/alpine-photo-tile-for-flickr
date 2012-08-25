@@ -48,7 +48,7 @@ function APTFFbyTAP_admin_options_page() {
     update_option( APTFFbyTAP_SETTINGS, $options);
 
     if( 'generator' == $currenttab ) {
-      $short = generate_shortcode( $options, $optiondetails );
+      $short = APTFFbyTAP_generate_shortcode( $options, $optiondetails );
     }
   }
   
@@ -62,13 +62,13 @@ function APTFFbyTAP_admin_options_page() {
 		} ?>
     <?php if( 'general' == $currenttab ){ ?>
       <?php
-      display_general();
+      APTFFbyTAP_display_general();
       ?>
     <?php }else{ ?>
 		<form action="" method="post">
     <input type="hidden" name="hidden" value="Y">
       <?php 
-      display_options_form($options,$currenttab,$short);
+      APTFFbyTAP_display_options_form($options,$currenttab,$short);
       ?>
 		</form>
     <?php } ?>
@@ -165,7 +165,7 @@ function APTFFbyTAP_get_settings_page_tabs() {
 }
 
 
-function display_options_form($options,$currenttab,$short){
+function APTFFbyTAP_display_options_form($options,$currenttab,$short){
   $widget_container = ( 'APTFFbyTAP-flickr' ); 
   $defaults = APTFFbyTAP_option_defaults();
   if( 'generator' == $currenttab ) {
@@ -174,9 +174,9 @@ function display_options_form($options,$currenttab,$short){
     <br><input name="<?php echo APTFFbyTAP_SETTINGS.'_'.$currenttab ?>[submit-<?php echo $currenttab; ?>]" type="submit" class="button-primary" value="Generate Shortcode" /> 
     <?php
     if($short){
-      echo '<div id="'.APTFFbyTAP_SETTINGS.'-shortcode" style="margin:10px 0 30px 0;" ><div style="padding:5px;margin:10px 0;display:inline-block;position:relative;background-color:#FFFFE0;border:1px solid #E6DB55;"> Now, copy (Crtl+C) and paste (Crtl+P) the following shortcode into a page or post. </div>';
+      echo '<div id="'.APTFFbyTAP_SETTINGS.'-shortcode" style="margin:10px 0 0 0;" ><div style="padding:5px;margin:10px 0;display:inline-block;position:relative;background-color:#FFFFE0;border:1px solid #E6DB55;"> Now, copy (Crtl+C) and paste (Crtl+P) the following shortcode into a page or post. </div>';
       
-      echo '<textarea class="auto_select" style="height:auto;width:100%;max-width:700px;background:#E0E0E0;padding:10px;">'.$short.'</textarea><br clear="all"/></div>';
+      echo '<div><textarea class="auto_select" style="height:auto;width:100%;max-width:700px;background:#E0E0E0;padding:10px;">'.$short.'</textarea></div><br clear="all"/></div>';
     }
   }elseif( 'plugin-settings' == $currenttab ){
     $positions = APTFFbyTAP_admin_option_positions();
@@ -243,7 +243,7 @@ function display_options_form($options,$currenttab,$short){
 }
 
 
-function display_general(){ 
+function APTFFbyTAP_display_general(){ 
   ?>
   <div class="APTFFbyTAP-flickr" style="max-width:700px;padding:10px;">
     <p>
