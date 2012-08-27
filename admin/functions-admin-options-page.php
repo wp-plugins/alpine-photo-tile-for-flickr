@@ -247,7 +247,7 @@ function APTFFbyTAP_display_general(){
   ?>
   <div class="APTFFbyTAP-flickr" style="max-width:700px;padding:10px;">
     <p>
-    <?php _e("Thank you for downloading the Alpine PhotoTile for Flickr, a WordPress plugin by the Alpine Press. On the 'Generator' tab you will find an easy to use shortcode generator that will allow you to insert the PhotoTile plugin in posts and pages. The 'Plugin Settings' tab provides additional back-end options (currently limited to Cache Options)."); ?>
+    <?php _e("Thank you for downloading the Alpine PhotoTile for Flickr, a WordPress plugin by the Alpine Press. On the 'Generator' tab you will find an easy to use shortcode generator that will allow you to insert the PhotoTile plugin in posts and pages. The 'Plugin Settings' tab provides additional back-end options (currently limited to Cache Options). Finally, I am a one man programming team and so if you notice any errors or places for improvement, please let me know."); ?>
     <div><p><?php _e('If you liked this plugin, try out some of the other plugins by ') ?><a href="http://thealpinepress.com/category/plugins/" target="_blank">the Alpine Press</a><?php _e(' and rate us at ') ?><a href="http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/" target="_blank">WordPress.org</a>.</p></div>
     <div class="help-link"><p><?php _e('Need Help? Visit ') ?><a href="<?php echo APTFFbyTAP_INFO; ?>" target="_blank">the Alpine Press</a> <?php _e('for more about this plugin.') ?></p></div>
     </p>

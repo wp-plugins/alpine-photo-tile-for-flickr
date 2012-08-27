@@ -128,7 +128,7 @@
         'sanitize' => 'nospaces',
         'description' => "Don't know the ID? Use <a href='http://idgettr.com/' target='_blank'>idgettr.com</a> to find it.",
         'child' => 'flickr_source', 
-        'hidden' => 'group community set',
+        'hidden' => 'group community',
         'since' => '1.1',
         'default' => ''
       ),

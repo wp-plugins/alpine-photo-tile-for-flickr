@@ -133,7 +133,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
       if( count($APTFFbyTAP_photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($APTFFbyTAP_photos);}
 
       for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.$APTFFbyTAP_photos[$i]['owner'].'/'.$APTFFbyTAP_photos[$i]['id'].'/';
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.($APTFFbyTAP_photos[$i]['owner']?$APTFFbyTAP_photos[$i]['owner']:$flickr_uid).'/'.$APTFFbyTAP_photos[$i]['id'].'/';
         $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_photos[$i][$APTFFbyTAP_size_id];
         $APTFFbyTAP_originalurl[$i] = $APTFFbyTAP_photos[$i]['url_m'];
         if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
@@ -225,7 +225,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
 
       for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
         $current_attr = $APTFFbyTAP_photos[$i]->attributes();
-        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.(string)$current_attr['owner'].'/'.(string)$current_attr['id'].'/';
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.(string)($current_attr['owner']?$current_attr['owner']:$flickr_uid).'/'.(string)$current_attr['id'].'/';
         $APTFFbyTAP_photourl[$i] = (string)$current_attr[$APTFFbyTAP_size_id];
         $APTFFbyTAP_originalurl[$i] = (string)$current_attr['url_m'];
         if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
@@ -319,7 +319,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
       if( count($APTFFbyTAP_photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($APTFFbyTAP_photos);}
 
       for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.$APTFFbyTAP_photos[$i]['owner'].'/'.$APTFFbyTAP_photos[$i]['id'].'/';
+        $APTFFbyTAP_linkurl[$i] = 'http://www.flickr.com/photos/'.($APTFFbyTAP_photos[$i]['owner']?$APTFFbyTAP_photos[$i]['owner']:$flickr_uid).'/'.$APTFFbyTAP_photos[$i]['id'].'/';
         $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_photos[$i][$APTFFbyTAP_size_id];
         $APTFFbyTAP_originalurl[$i] = $APTFFbyTAP_photos[$i]['url_m'];
         if( !$APTFFbyTAP_photourl[$i] ){ $APTFFbyTAP_photourl[$i] = $APTFFbyTAP_originalurl[$i]; } // Incase size didn't exist
