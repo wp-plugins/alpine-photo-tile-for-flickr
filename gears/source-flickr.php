@@ -84,7 +84,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
  if ( curl_init() ) {
     // @ is shut-up operator
     // For reference: http://www.flickr.com/services/feeds/
-    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? '' : $flickr_options['flickr_user_id'], $flickr_options );
+    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
     
     switch ($flickr_options['flickr_source']) {
     case 'user':
@@ -180,7 +180,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
   ///////////////////////////////////////////////////
 
   if ( $continue == false && function_exists('simplexml_load_file') ) {
-    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? '' : $flickr_options['flickr_user_id'], $flickr_options );
+    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
     switch ($flickr_options['flickr_source']) {
     case 'user':
       $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
@@ -275,7 +275,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
   if( $continue == false && function_exists('file_get_contents')) {
     // Try simple file_get_contents function
     
-    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? '' : $flickr_options['flickr_user_id'], $flickr_options );
+    $flickr_uid = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
     
     switch ($flickr_options['flickr_source']) {
     case 'user':
