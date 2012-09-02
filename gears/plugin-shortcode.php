@@ -28,6 +28,9 @@
   }
 
   function APTFFbyTAP_shortcode_function( $atts ) {
+    wp_enqueue_style('APTFFbyTAP_widget_css');
+    wp_enqueue_script('APTFFbyTAP_tiles');
+    
     $optiondetails = APTFFbyTAP_option_defaults();
     $options = array();
     
@@ -83,5 +86,5 @@
     return $return;
   }
   add_shortcode( APTFFbyTAP_SHORT, 'APTFFbyTAP_shortcode_function' );
-  
+   
 ?>

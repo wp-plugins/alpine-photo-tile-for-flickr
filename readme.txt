@@ -4,7 +4,7 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery
 Requires at least: 2.8
 Tested up to: 3.4.1
-Stable tag: 1.1.1.2
+Stable tag: 1.1.1.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -56,3 +56,4 @@ None yet, but I'd like to hear from you. Leave a message at http://thealpinepres
 * Made option callbacks plugin specific (not global names)
 * Edited style layouts
 * Fixed url generation for set links
+* Enqueue JS and CSS on pages containing widget or shortcode only

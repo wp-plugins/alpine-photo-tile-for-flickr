@@ -82,12 +82,11 @@
     wp_enqueue_script( 'jquery' );
     
     wp_deregister_script('APTFFbyTAP_tiles');
-    wp_enqueue_script('APTFFbyTAP_tiles',APTFFbyTAP_URL.'/js/aptffbytap_tiles.js','',APTFFbyTAP_VER);
+    wp_register_script('APTFFbyTAP_tiles',APTFFbyTAP_URL.'/js/aptffbytap_tiles.js','',APTFFbyTAP_VER);
     
     wp_deregister_style('APTFFbyTAP_widget_css'); // Since I wrote the scripts, deregistering and updating version are redundant in this case
     wp_register_style('APTFFbyTAP_widget_css',APTFFbyTAP_URL.'/css/aptffbytap_widget_style.css','',APTFFbyTAP_VER);
-    wp_enqueue_style('APTFFbyTAP_widget_css');
-    
+        
   }
   add_action('wp_enqueue_scripts', 'APTFFbyTAP_enqueue_display_scripts');
   

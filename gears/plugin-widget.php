@@ -17,7 +17,9 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
   
 	function widget( $args, $options ) {
 		extract($args);
-        
+    wp_enqueue_style('APTFFbyTAP_widget_css');
+    wp_enqueue_script('APTFFbyTAP_tiles');
+    
     // Set Important Widget Options    
     $id = $args["widget_id"];
     $defaults = APTFFbyTAP_option_defaults();

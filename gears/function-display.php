@@ -270,7 +270,7 @@ function APTFFbyTAP_display_hidden($id, $options, $source_results){
   
   if(!$disable){
     $output .= '
-            jQuery(document).ready(function() {
+           jQuery(document).ready(function() {
             jQuery("#'.$id.'-APTFFbyTAP_container").addClass("loading"); 
            });';
   }

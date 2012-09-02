@@ -198,7 +198,7 @@
         'type' => 'checkbox',
         'description' => '',
         'since' => '1.1',
-        'default' => ''
+        'default' => true
       ),
       'flickr_photo_size' => array(
         'name' => 'flickr_photo_size',
@@ -508,7 +508,7 @@
       $optiontitle = $option['title'];
       $optiondescription = $option['description'];
       $fieldtype = $option['type'];
-      $value = ( Null != $options[$optionname] ? $options[$optionname] : $default );
+      $value = ( Null !== $options[$optionname] ? $options[$optionname] : $default );
       
        // Output checkbox form field markup
       if ( 'checkbox' == $fieldtype ) {
@@ -581,13 +581,12 @@
         <?php
       }   
       else if ( 'color' == $fieldtype ) {
-        ?>
-        
+        $value = ($value?$value:$default);
+        ?>    
         <label for="<?php echo $fieldid ?>">
         <input type="text" id="<?php echo $fieldid ?>" name="<?php echo $fieldname; ?>" class="APTFFbyTAP_color"  value="<?php echo wp_filter_nohtml_kses( $value ); ?>" /><span class="description"><?php echo $optiondescription; ?></span></label>
        
         <div id="<?php echo $fieldid; ?>_picker" class="APTFFbyTAP_color_picker" ></div>
-
         <?php
       }
   }
@@ -600,7 +599,7 @@
       $optiontitle = $option['title'];
       $optiondescription = $option['description'];
       $fieldtype = $option['type'];
-      $value = ( Null != $options[$optionname] ? $options[$optionname] : $default );
+      $value = ( Null !== $options[$optionname] ? $options[$optionname] : $default );
       
        // Output checkbox form field markup
       if ( 'checkbox' == $fieldtype ) {
@@ -673,6 +672,7 @@
         <?php
       }   
       else if ( 'color' == $fieldtype ) {
+        $value = ($value?$value:$default);
         ?>
         
         <div class="title"><label for="<?php echo $fieldid; ?>"><?php echo $optiontitle ?></label></div>
