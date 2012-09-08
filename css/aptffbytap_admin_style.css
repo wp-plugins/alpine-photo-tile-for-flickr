@@ -1,11 +1,11 @@
-.icon-alpine{
-  background-image:url('images/Pine-Trees.png');
-  box-shadow: 0 0 2px #999999;
-  border-radius: 3px 3px 3px 3px;
-  background-position:center;
-  background-size:cover;
-  background-repeat:no-repeat;
-}
+  .icon-alpine{
+    background-image:url('images/Pine-Trees.png');
+    box-shadow: 0 0 2px #999999;
+    border-radius: 3px 3px 3px 3px;
+    background-position:center;
+    background-size:cover;
+    background-repeat:no-repeat;
+  }
   .APTFFbyTAP-flickr {
     width:100%;
     overflow:hidden;

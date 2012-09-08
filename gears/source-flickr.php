@@ -32,7 +32,7 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
   $APTFFbyTAP_flickr_tags = apply_filters( APTFFbyTAP_HOOK, empty($flickr_options['flickr_tags']) ? 'tags' : $flickr_options['flickr_tags'], $flickr_options );
   $APTFFbyTAP_flickr_tags = @ereg_replace('[[:cntrl:]]', '', $APTFFbyTAP_flickr_tags ); // remove ASCII's control characters
 
-  $key = 'flickr-'.$flickr_options['flickr_source'].'-'.$APTFFbyTAP_flickr_uid.'-'.$APTFFbyTAP_flickr_groupid.'-'.$APTFFbyTAP_flickr_set.'-'.$APTFFbyTAP_flickr_tags.'-'.$flickr_options['flickr_photo_number'].'-'.$flickr_options['flickr_photo_size'];
+  $key = 'flickr-'.$flickr_options['flickr_source'].'-'.$APTFFbyTAP_flickr_uid.'-'.$APTFFbyTAP_flickr_groupid.'-'.$APTFFbyTAP_flickr_set.'-'.$APTFFbyTAP_flickr_tags.'-'.$flickr_options['flickr_photo_number'].'-'.$flickr_options['flickr_photo_size'].'-'.$flickr_options['flickr_display_link'].'-'.$flickr_options['flickr_display_link_text'];
 
   $disablecache = APTFFbyTAP_get_option( 'cache_disable' );
   if ( class_exists( 'theAlpinePressSimpleCacheV2' ) && APTFFbyTAP_CACHE && !$disablecache ) {
@@ -380,8 +380,8 @@ function APTFFbyTAP_photo_retrieval($id, $flickr_options, $defaults){
     if(!is_serialized( $cache_results  )) { $cache_results  = maybe_serialize( $cache_results ); }
     $cache->put($key, $cache_results);
     $cachetime = APTFFbyTAP_get_option( 'cache_time' );
-    if( $cachetime ){
-      $cache->setExpiryInterval( $cachetime );
+    if( $cachetime && is_numeric($cachetime) ){
+      $cache->setExpiryInterval( $cachetime*60*60 );
     }
   }
   

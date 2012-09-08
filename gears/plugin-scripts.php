@@ -12,24 +12,20 @@
   
   // Load Admin JS and CSS
 	function APTFFbyTAP_admin_widget_script($hook){ 
-    wp_deregister_style('upwbyeth_tabs_ui');     
-    wp_register_style('upwbyeth_tabs_ui',APTFFbyTAP_URL.'/css/upwbyeth_tabs_ui.css','',APTFFbyTAP_VER);
-    // upwbyeth_tabs_ui.css is registered by after options page is created
 
     wp_deregister_script('APTFFbyTAP_widget_menu');
     wp_register_script('APTFFbyTAP_widget_menu',APTFFbyTAP_URL.'/js/aptffbytap_widget_menu.js','',APTFFbyTAP_VER);
 
     wp_deregister_style('APTFFbyTAP_admin_css');   
     wp_register_style('APTFFbyTAP_admin_css',APTFFbyTAP_URL.'/css/aptffbytap_admin_style.css','',APTFFbyTAP_VER);
-    
-    wp_enqueue_style( 'farbtastic' );
-    wp_enqueue_script( 'farbtastic' );
-    
+        
     if( 'widgets.php' != $hook )
       return;
       
     wp_enqueue_script( 'jquery');
-  
+    wp_enqueue_style( 'farbtastic' );
+    wp_enqueue_script( 'farbtastic' );
+    
     wp_enqueue_script('APTFFbyTAP_widget_menu');
         
     wp_enqueue_style('APTFFbyTAP_admin_css');
