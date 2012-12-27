@@ -1,15 +1,15 @@
 === Alpine PhotoTile for Flickr ===
 Contributors: theAlpinePress
 Donate link: thealpinepress.com
-Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery, wall
+Tags: photos, flickr, photostream, javascript, jQuery, stylish, pictures, images, widget, sidebar, display, gallery, wall, lightbox, fancybox
 Requires at least: 2.8
-Tested up to: 3.4.2
-Stable tag: 1.1.1.4
+Tested up to: 3.5
+Stable tag: 1.2.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 == Description == 
-The Alpine PhotoTile for Flickr is the first plugin in a series intended to create a means of retrieving photos from various popular sites and displaying them in a stylish and uniform way. The plugin is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
+The Alpine PhotoTile for Flickr, the first plugin in the Alpine PhotoTile series, is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. The photos can be linked to the your Flickr page, a specific URL, or to a Fancybox slideshow. Also, the Shortcode Generator makes it easy to insert the widget into posts without learning any of the code. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
 
 
 == Installation ==
@@ -57,3 +57,11 @@ None yet, but I'd like to hear from you. Leave a message at http://thealpinepres
 * Edited style layouts
 * Fixed url generation for set links
 * Enqueue JS and CSS on pages containing widget or shortcode only
+
+= 1.2.0 =
+* Rebuilt plugin structure into OBJECT
+* Combined all Alpine Photo Tiles scripts and styles into identical files
+* Improved IE 7 compatibility
+* Added custom image link options
+* Added Fancybox jQuery option
+* Fixed galleryHeight bug

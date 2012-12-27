@@ -6,73 +6,36 @@
  *
  */
  
-  function APTFFbyTAP_generate_shortcode( $options, $optiondetails ){
-    $short = '['.APTFFbyTAP_SHORT;
-    $trigger = '';
-    
-    foreach( $options as $key=>$value ){
-      if($value && $optiondetails[$key]['short']){
-        if( $optiondetails[$key]['child'] && $optiondetails[$key]['hidden'] ){
-          $hidden = @explode(' ',$optiondetails[$key]['hidden']);
-          if( !in_array( $options[ $optiondetails[$key]['child'] ] ,$hidden) ){
-            $short .= ' '.$optiondetails[$key]['short'].'="'.$value.'"';
-          }
-        }else{
-          $short .= ' '.$optiondetails[$key]['short'].'="'.$value.'"';
-        }
-      }
-    }
-    $short .= ']';
-    
-    return $short;
-  }
-
   function APTFFbyTAP_shortcode_function( $atts ) {
-    wp_enqueue_style('APTFFbyTAP_widget_css');
-    wp_enqueue_script('APTFFbyTAP_tiles');
+    $bot = new PhotoTileForFlickrBot();
     
-    $optiondetails = APTFFbyTAP_option_defaults();
+    $optiondetails = $bot->option_defaults();
     $options = array();
-    
     foreach( $optiondetails as $opt=>$details ){
       $options[$opt] = $details['default'];
       if( $atts[ $details['short'] ] ){
         $options[$opt] = $atts[ $details['short'] ];
       }
     }
-    
+    if( $options['flickr_image_link_option'] == "fancybox" ){
+      wp_enqueue_script( 'fancybox' );
+      wp_enqueue_style( 'fancybox-stylesheet');
+    } 
+    wp_enqueue_style($bot->wcss);
+    wp_enqueue_script($bot->wjs);
+
     $id = rand(100, 1000);
+    $source_results = $bot->photo_retrieval($id, $options);
     
-    $source_results = APTFFbyTAP_photo_retrieval($id, $options, $optiondetails);
-    
-    $return .= '<div id="'.APTFFbyTAP_ID.'-by-shortcode-'.$id.'" class="APTFFbyTAP_inpost_container">';
+    $return .= '<div id="'.$bot->id.'-by-shortcode-'.$id.'" class="AlpinePhotoTiles_inpost_container">';
     $return .= $source_results['hidden'];
     if( $source_results['continue'] ){  
-      switch ($options['style_option']) {
-        case "vertical":
-          $return .= APTFFbyTAP_display_vertical($id, $options, $source_results);
-        break;
-        case "windows":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break; 
-        case "bookshelf":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break;
-        case "rift":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break;
-        case "floor":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break;
-        case "wall":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break;
-        case "cascade":
-          $return .= APTFFbyTAP_display_cascade($id, $options, $source_results);
-        break;
-        case "gallery":
-          $return .= APTFFbyTAP_display_hidden($id, $options, $source_results);
-        break;
+      if( "vertical" == $options['style_option'] ){
+        $return .= $bot->display_vertical($id, $options, $source_results);
+      }elseif( "cascade" == $options['style_option'] ){
+        $return .= $bot->display_cascade($id, $options, $source_results);
+      }else{
+        $return .= $bot->display_hidden($id, $options, $source_results);
       }
     }
     // If user does not have necessary extensions 
@@ -85,6 +48,6 @@
     
     return $return;
   }
-  add_shortcode( APTFFbyTAP_SHORT, 'APTFFbyTAP_shortcode_function' );
+  add_shortcode( 'alpine-phototile-for-flickr', 'APTFFbyTAP_shortcode_function' );
    
 ?>

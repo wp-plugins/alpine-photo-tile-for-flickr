@@ -1,29 +1,31 @@
 /*
- * Alpine PhotoTile for Flickr: Widget Menu Display and Nesting
+ * Alpine PhotoTile for Pinterest: Widget Menu Display and Nesting
  * By: Eric Burger, http://thealpinepress.com
  * Version: 1.0.0
  * Updated: August 2012
  * 
  */
 jQuery(document).ready(function() {
-  jQuery('.APTFFbyTAP_color_picker').each(function(i){
-    var prevId = jQuery(this).attr('id').replace("_picker","");
-    jQuery(this).farbtastic('#'+prevId);
-  });
-  jQuery('.APTFFbyTAP_color_picker').hide();
+ // if( jQuery().farbtastic ){
+    jQuery('.AlpinePhotoTiles_color_picker').each(function(i){
+      var prevId = jQuery(this).attr('id').replace("_picker","");
+      jQuery(this).farbtastic('#'+prevId);
+    });
+    jQuery('.AlpinePhotoTiles_color_picker').hide();
 
-  jQuery(".APTFFbyTAP_color").click(function(){
-    var colorfield = jQuery(this).attr('id');
-    jQuery('#'+colorfield+'_picker').slideToggle();
-    if(!jQuery(this).val()){jQuery(this).val("#")};
-  });
+    jQuery(".AlpinePhotoTiles_color").click(function(){
+      var colorfield = jQuery(this).attr('id');
+      jQuery('#'+colorfield+'_picker').slideToggle();
+      if(!jQuery(this).val()){jQuery(this).val("#")};
+    });
+//}
 });
 
-if( !jQuery().APTFFbyTAPWidgetMenuPlugin ){
+if( !jQuery().AlpineWidgetMenuPlugin ){
   (function( w, s ) {
-    s.fn.APTFFbyTAPWidgetMenuPlugin = function( options ) {
+    s.fn.AlpineWidgetMenuPlugin = function( options ) {
       // Create some defaults, extending them with any options that were provided
-      options = s.extend( {}, s.fn.APTFFbyTAPWidgetMenuPlugin.options, options );
+      options = s.extend( {}, s.fn.AlpineWidgetMenuPlugin.options, options );
 
       return this.each(function(i) { 
         var theParent = s(this);
