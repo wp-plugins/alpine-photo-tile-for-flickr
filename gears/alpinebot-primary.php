@@ -7,15 +7,16 @@ class PhotoTileForFlickrBase {
   public $url;
   public $dir;
   public $cacheDir;
-  public $ver = '1.2.0';
-  public $vers = '1-2-0';
+  public $ver = '1.2.1';
+  public $vers = '1-2-1';
   public $domain = 'APTFFbyTAP_domain';
   public $settings = 'alpine-photo-tile-for-flickr-settings'; // All lowercase
   public $name = 'Alpine Photo Tile for Flickr';
   public $info = 'http://thealpinepress.com/alpine-phototile-for-flickr/';
   public $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
-  public $page = 'Alpine Tiles: Flickr';
+  public $page = 'AlpineTile: Flickr';
   public $hook = 'APTFFbyTAP_hook';
+  public $plugins = array('pinterest','tumblr');
 
   public $root = 'AlpinePhotoTiles';
   public $wjs = 'AlpinePhotoTiles_script';

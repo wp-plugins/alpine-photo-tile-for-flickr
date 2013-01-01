@@ -1,8 +1,8 @@
 /*
  * Alpine PhotoTile for Pinterest: jQuery Tile Display Functions
  * By: Eric Burger, http://thealpinepress.com
- * Version: 1.0.0
- * Updated: August  2012
+ * Version: 1.0.1
+ * Updated: December  2012
  * 
  */
 
@@ -11,6 +11,7 @@
   
     options = s.extend( {}, s.fn.AlpinePhotoTilesPlugin.options, options );
   
+    // IE 7 fallback
     if(s.browser.msie && !d.querySelector){
       if('windows' != options.style){
         options.style = 'rift';

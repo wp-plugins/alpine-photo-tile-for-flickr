@@ -440,45 +440,43 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
     
     echo '<div class="wrap AlpinePhotoTiles_settings_wrap">';
     $this->admin_options_page_tabs( $currenttab );
-    
-    if( 'general' == $currenttab ){
-      $this->display_general();
-    }elseif( 'preview' == $currenttab ){
-      $this->display_preview();
-    }else{
-      $options = $this->get_all_options();     
-      $settings_section = $this->id . '_' . $currenttab . '_tab';
-      $submitted = ( ( isset($_POST[ "hidden" ]) && ($_POST[ "hidden" ]=="Y") ) ? true : false );
 
-      if( $submitted ){
-        $options = $this->SimpleUpdate( $currenttab, $_POST, $options );
-        if( 'generator' == $currenttab ) {
-          $short = $this->generate_shortcode( $options, $optiondetails );
-        }
-      }
+      echo '<div class="AlpinePhotoTiles-container '.$this->domain.'">';
+      
+      if( 'general' == $currenttab ){
+        $this->display_general();
+      }elseif( 'add' == $currenttab ){
+        $this->display_add();
+      }elseif( 'preview' == $currenttab ){
+        $this->display_preview();
+      }else{
+        $options = $this->get_all_options();     
+        $settings_section = $this->id . '_' . $currenttab . '_tab';
+        $submitted = ( ( isset($_POST[ "hidden" ]) && ($_POST[ "hidden" ]=="Y") ) ? true : false );
 
-      ?>
-      <div class="AlpinePhotoTiles-form">
-        <?php
-        if( $_POST[$this->settings.'_'.$currenttab]['submit-'.$currenttab] == 'Delete Current Cache' ){
-          $this->clearAllCache();
-          echo '<div style="padding:5px 10px;margin-top:15px;display:inline-block;position:relative;background-color:#FFFFE0;border:1px solid #E6DB55;">Cache Cleared</div>';
+        if( $submitted ){
+          $options = $this->SimpleUpdate( $currenttab, $_POST, $options );
+          if( 'generator' == $currenttab ) {
+            $short = $this->generate_shortcode( $options, $optiondetails );
+          }
         }
-        elseif( $_POST[$this->settings.'_'.$currenttab]['submit-'.$currenttab] == 'Save Settings' ){
-          $this->clearAllCache();
-          echo '<div style="padding:5px 10px;margin-top:15px;display:inline-block;position:relative;background-color:#FFFFE0;border:1px solid #E6DB55;">Settings Saved</div>';
-        }
-        ?>
-        <form action="" method="post">
-        <input type="hidden" name="hidden" value="Y">
-          <?php 
+        echo '<div class="AlpinePhotoTiles-'.$currenttab.'">';
+          if( $_POST[$this->settings.'_'.$currenttab]['submit-'.$currenttab] == 'Delete Current Cache' ){
+            $this->clearAllCache();
+            echo '<div class="announcement">'.__("Cache Cleared").'</div>';
+          }
+          elseif( $_POST[$this->settings.'_'.$currenttab]['submit-'.$currenttab] == 'Save Settings' ){
+            $this->clearAllCache();
+            echo '<div class="announcement">'.__("Settings Saved").'</div>';
+          }
+          echo '<form action="" method="post">';
+            echo '<input type="hidden" name="hidden" value="Y">';
             $this->display_options_form($options,$currenttab,$short);
-          ?>
-        </form>
-      </div>
-      <?php } ?>
-    </div>
-    <?php
+          echo '</form>';
+        echo '</div>';
+      }
+      echo '</div>'; // Close Container
+    echo '</div>'; // Close wrap
   }
 /**
  * Get current settings page tab
@@ -541,11 +539,11 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
       endif;
     endforeach;
 
-    echo '<div style="width:100%;display:block;padding:0;line-height:2.6em;"><div class="icon32 icon-alpine"><br></div><h2>'.$this->name.'</h2></div>';
-    echo '<h2 class="nav-tab-wrapper">';
+    echo '<div class="AlpinePhotoTiles-title"><div class="icon32 icon-alpine"><br></div><h2>'.$this->name.'</h2></div>';
+    echo '<div class="AlpinePhotoTiles-menu"><h2 class="nav-tab-wrapper">';
     foreach ( $links as $link )
         echo $link;
-    echo '</h2>';
+    echo '</h2></div>';
   }
 /**
  * Function for printing general settings page
@@ -555,11 +553,21 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
  */
   function display_general(){ 
     ?>
-    <div class="AlpinePhotoTiles-container general">
-      <p>
-      <?php _e("Thank you for downloading the "); echo $this->name; _e(", a WordPress plugin by the Alpine Press. On the 'Shortcode Generator' tab you will find an easy to use interface that will help you create shortcodes. These shortcodes make it simple to insert the PhotoTile plugin into posts and pages. The 'Plugin Settings' tab provides additional back-end options. Finally, I am a one man programming team and so if you notice any errors or places for improvement, please let me know."); ?>
-      <div><p><?php _e('If you liked this plugin, try out some of the other plugins by ') ?><a href="http://thealpinepress.com/category/plugins/" target="_blank">the Alpine Press</a><?php _e(' and rate us at ') ?><a href="<?php echo $this->wplink;?>" target="_blank">WordPress.org</a>.</p></div>
-      <div class="help-link"><p><?php _e('Need Help? Visit ') ?><a href="<?php echo $this->info; ?>" target="_blank">the Alpine Press</a> <?php _e('for more about this plugin.') ?></p></div>
+    <div class="AlpinePhotoTiles-general">
+      <h3><?php _e("Thank you for downloading the "); echo $this->name; _e(", a WordPress plugin by the Alpine Press.");?></h3>
+      <p><?php _e("On the 'Shortcode Generator' tab you will find an easy to use interface that will help you create shortcodes. These shortcodes make it simple to insert the PhotoTile plugin into posts and pages.");?></p>
+      <p><?php _e("The 'Plugin Settings' tab provides additional back-end options.");?></p>
+      <p><?php _e("Finally, I am a one man programming team and so if you notice any errors or places for improvement, please let me know."); ?></p>
+      <p><?php _e('If you liked this plugin, try out some of the other plugins by ') ?><a href="http://thealpinepress.com/category/plugins/" target="_blank">the Alpine Press</a><?php _e(' and please rate us at ') ?><a href="<?php echo $this->wplink;?>" target="_blank">WordPress.org</a>.</p>
+      <br>
+      <h3><?php _e('Try the other free plugins in the Alpine PhotoTile Series:');?></h3>
+      <?php if( is_array($this->plugins) ){
+        foreach($this->plugins as $each){
+          ?><a href="http://wordpress.org/extend/plugins/alpine-photo-tile-for-<?php echo $each;?>/" target="_blank"><img class="image-icon" src="<?php echo $this->url;?>/css/images/for-<?php echo $each;?>.png" style="width:100px;"></a><?php
+        }
+      }?>
+
+      <div class="help-link"><p><?php _e('Need Help? Visit ') ?><a href="<?php echo $this->info; ?>" target="_blank">the Alpine Press</a><?php _e(' for more about this plugin.') ?></p></div>
       </p>
     </div>
     <?php
@@ -579,27 +587,22 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
       $value = wp_kses_post( str_replace('\"','"', $_POST['shortcode-preview']) );
     }
     ?>
-    
-    <div class="AlpinePhotoTiles-container AlpinePhotoTiles-preview" style="position:relative;overflow:hidden;max-width:600px;">
-      <div class="AlpinePhotoTiles-form" style="padding-bottom:15px;">
+      <div class="AlpinePhotoTiles-preview" style="border-bottom: 1px solid #DDDDDD;margin-bottom:20px;">
         <form action="" method="post">
-        <input type="hidden" name="hidden" value="Y">
-          <h4><label for="<?php echo $fieldid; ?>" style="font-size: 1.17em;">Paste shortcode and click Preview</label></h4>
+          <input type="hidden" name="hidden" value="Y">
+          <div>
+          <h4><?php _e('Paste shortcode and click Preview');?></h4>
           <textarea id="<?php echo $fieldid ?>" name="<?php echo $fieldid; ?>" class="AlpinePhotoTiles_textarea" ><?php echo $value; ?></textarea><br>
           <span class="description"><?php echo esc_textarea( $optiondescription ); ?></span>
-          
           <input name="<?php echo $this->settings;?>_preview [submit-preview]" type="submit" class="button-primary" value="Preview" />
+          </div>
         </form>
+        <br style="clear:both">
       </div>
-      
-      <div style="width:100%;margin:0px auto;position:relative;display:block;">
-    </div>
-    
-    <?php
+    <?php 
     
     echo do_shortcode($value);
     
-    ?></div><?php
   }
 /**
  * Function for printing options page
@@ -612,12 +615,11 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
     $defaults = $this->option_defaults();
     $positions = $this->get_option_positions_by_tab( $currenttab );
     
-    echo '<div id="the-alpine-press-options-form" class="AlpinePhotoTiles-container '.$this->domain.' '. $currenttab .'">';
     if( 'generator' == $currenttab ) { 
-      echo '<br><input name="'. $this->settings.'_'.$currenttab .'[submit-'. $currenttab .']" type="submit" class="button-primary topbutton" value="Generate Shortcode" /><br> ';
+      echo '<input name="'. $this->settings.'_'.$currenttab .'[submit-'. $currenttab .']" type="submit" class="button-primary topbutton" value="Generate Shortcode" /><br> ';
       if($short){
-        echo '<div id="'.$this->settings.'-shortcode" style="margin:10px 0 0 0;" ><div style="padding:5px;margin:10px 0;display:inline-block;position:relative;background-color:#FFFFE0;border:1px solid #E6DB55;"> Now, copy (Crtl+C) and paste (Crtl+P) the following shortcode into a page or post. </div>';
-        echo '<div><textarea class="auto_select" style="height:auto;width:100%;max-width:680px;background:#E0E0E0;padding:10px;">'.$short.'</textarea></div><br clear="all"/></div>';
+        echo '<div id="'.$this->settings.'-shortcode" style="position:relative;clear:both;margin-bottom:20px;" ><div class="announcement" style="margin:0 0 10px 0;"> Now, copy (Crtl+C) and paste (Crtl+P) the following shortcode into a page or post. </div>';
+        echo '<div><textarea class="auto_select">'.$short.'</textarea></div></div>';
       }
     }
     if( count($positions) ){
@@ -658,7 +660,7 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
         echo '</div>';
       }
     }
-    echo '<div class="help-link"><span>'. __('Need Help? Visit ') .'<a href="' . $this->info . '" target="_blank">the Alpine Press</a>'. __("for more about this plugin.") .'</span></div>';
+    echo '<div class="help-link"><span>'. __('Need Help? Visit ') .'<a href="' . $this->info . '" target="_blank">the Alpine Press</a>'. __(" for more about this plugin.") .'</span></div>';
     
     if( 'generator' == $currenttab ) {
       echo '<input name="'.$this->settings.'_'.$currenttab .'[submit-'. $currenttab.']" type="submit" class="button-primary" value="Generate Shortcode" />';
@@ -666,7 +668,7 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
       echo '<input name="'.$this->settings.'_'.$currenttab .'[submit-'. $currenttab.']" type="submit" class="button-primary" value="Save Settings" />';
       echo '<input name="'.$this->settings.'_'.$currenttab .'[submit-'. $currenttab.']" type="submit" class="button-primary" style="margin-top:15px;" value="Delete Current Cache" />';
     }
-    echo '</div>'; 
+
   }
   
   
@@ -808,6 +810,7 @@ class PhotoTileForFlickrBasic extends PhotoTileForFlickrBase{
     }
   } 
 }
+
 
 
 ?>

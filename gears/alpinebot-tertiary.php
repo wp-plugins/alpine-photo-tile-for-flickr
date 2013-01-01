@@ -8,7 +8,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
    * The PHP for retrieving content from Flickr.
    *
    * @since 1.0.0
-   * @updated 1.0.3
+   * @updated 1.2.1
    */
    
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       break;
     }  
     
-    // Retrieve content using curl_init and PHP_serial
-   if ( curl_init() ) {
+    // Retrieve content using wp_remote_get and PHP_serial
+   if ( function_exists('unserialize') ) {
       // @ is shut-up operator
       // For reference: http://www.flickr.com/services/feeds/
       $flickr_uid = apply_filters( $this->hook, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
@@ -109,17 +109,22 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
         $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
       break;
       } 
-      
-      $ci = @curl_init();
-      @curl_setopt($ci, CURLOPT_URL, $request);
-      @curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-      $_flickrurl = @curl_exec($ci);
-      @curl_close($ci);
-      
-      $_flickr_php = @unserialize($_flickrurl);
+
+      $_flickr_php = array();
+      $response = wp_remote_get($request,
+        array(
+          'method' => 'GET',
+          'timeout' => 20,
+        )
+      );
+      if( is_wp_error( $response ) || !isset($response['body']) ) {
+        $hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
+      }else{
+        $_flickr_php = @unserialize($response['body']);
+      }
 
       if(empty($_flickr_php)){
-        $hidden .= '<!-- Failed using curl_init() and PHP_Serial @ '.$request.' -->';
+        $hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
         $continue = false;
       }else{
       
@@ -171,9 +176,9 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
           }
           // If content successfully fetched, generate output...
           $continue = true;
-          $hidden  .= '<!-- Success using curl_init() and PHP_Serial -->';
+          $hidden  .= '<!-- Success using wp_remote_get() and PHP_Serial -->';
         }else{
-          $hidden .= '<!-- No photos found using curl_init() and PHP_Serial @ '.$request.' -->';  
+          $hidden .= '<!-- No photos found using wp_remote_get() and PHP_Serial @ '.$request.' -->';  
           $continue = false;
           $feed_found = true;
         }
@@ -412,10 +417,6 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if($options['flickr_photo_number'] != count($linkurl)){$options['flickr_photo_number']=count($linkurl);}
         
-    if($reduced_width && $reduced_width<$photo_size ){
-      $style_width = $reduced_width."px";   }
-    else{   $style_width = $photo_size."px";    }
-    
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -438,31 +439,25 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $highlight = ($options['style_highlight']?'AlpinePhotoTiles-img-highlight':'AlpinePhotoTiles-img-nohighlight');
     
     for($i = 0;$i<$options['flickr_photo_number'];$i++){
-      switch ($options['flickr_image_link_option']) {
-        case 'original':
-          $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-        case 'flickr':
-          $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-        case 'link':
-          if($options['custom_link_url']){
-            $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
-          }    
-        break;
-        case 'fancybox':
-          $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" rel="fancybox-'.$id.'" title='."'". $photocap[$i] ."'".'>'; 
-        break;
-        case 'none':
-        break;
-        case '1': // Just for backwards compatibility
-          $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-      }   
+      $has_link = false;
+      $link = $options['flickr_image_link_option'];
+      if( 'original' == $link && !empty($photourl[$i]) ){
+        $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+        $has_link = true;
+      }elseif( ('flickr' == $link || '1' == $link)&& !empty($linkurl[$i]) ){
+        $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+        $has_link = true;
+      }elseif( 'link' == $link && !empty($options['custom_link_url']) ){
+        $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+        $has_link = true;
+      }elseif( 'fancybox' == $link && !empty($originalurl[$i]) ){
+        $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+        $has_link = true;
+      }      
       $output .= '<img id="'.$id.'-tile-'.$i.'" class="AlpinePhotoTiles-image '.$shadow.' '.$border.' '.$curves.' '.$highlight.'" src="' . $photourl[$i] . '" ';
       $output .= 'title='."'". $photocap[$i] ."'".' alt='."'". $photocap[$i] ."' "; // Careful about caps with ""
       $output .= 'border="0" hspace="0" vspace="0" style="margin:1px 0 5px 0;padding:0;max-width:100%;"/>'; // Override the max-width set by theme
-      if( $link == "original" || $link == "flickr" || $link == "link" || $link == "fancybox" ){ $output .= '</a>'; }
+      if( $has_link ){ $output .= '</a>'; }
     }
     
     if( !$options['widget_disable_credit_link'] ){
@@ -484,13 +479,9 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $highlight = $this->get_option("general_highlight_color");
     $highlight = ($highlight?$highlight:'#64a2d8');
 
-    if( $options['style_shadow'] || $options['style_border'] || $options['style_highlight'] ){
+    if( $options['style_shadow'] || $options['style_border'] || $options['style_highlight']  ){
       $output .= '<script>
-           jQuery(window).load(function() {';
-      if( $options['flickr_image_link_option'] == "fancybox" ){
-          $output .= "jQuery( ".'"'."a[rel^='fancybox-".$id."']".'"'." ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: '#000' } );";
-      }
-      $output .= '
+           jQuery(window).load(function() {
               if(jQuery().AlpineAdjustBordersPlugin ){
                 jQuery("#'.$id.'-vertical-parent").AlpineAdjustBordersPlugin({
                   highlight:"'.$highlight.'",
@@ -499,6 +490,13 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
             });
           </script>';  
     }   
+    if( $options['flickr_image_link_option'] == "fancybox"  ){
+      $output .= '<script>
+                  jQuery(window).load(function() {
+                    jQuery( "a[rel^=\'fancybox-'.$id.'\']" ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: "#000" } );
+                  })
+                </script>';  
+    } 
     return $output;
   }  
 /**
@@ -518,10 +516,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if($options['flickr_photo_number'] != count($linkurl)){$options['flickr_photo_number']= count($linkurl);}
         
-    if($reduced_width && $reduced_width<$photo_size ){
-      $style_width = $reduced_width."px";   }
-    else{   $style_width = $photo_size."px";    }
-    
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -547,32 +542,25 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       $output .= '<div class="AlpinePhotoTiles_cascade_column" style="width:'.(100/$options['style_column_number']).'%;float:left;margin:0;">';
       $output .= '<div class="AlpinePhotoTiles_cascade_column_inner" style="display:block;margin:0 3px;overflow:hidden;">';
       for($i = $col;$i<$options['flickr_photo_number'];$i+=$options['style_column_number']){
-        switch ($options['flickr_image_link_option']) {
-          case 'original':
-            $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-          break;
-          case 'flickr':
-            $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-          break;
-          case 'link':
-            if($options['custom_link_url']){
-              $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
-            }    
-          break;
-          case 'fancybox':
-            $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" rel="fancybox-'.$id.'" title='."'". $photocap[$i] ."'".'>'; 
-          break;
-          case 'none':
-          break;
-          case '1': // Just for backwards compatibility
-            $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-          break;
-        }   
-      
+        $has_link = false;
+        $link = $options['flickr_image_link_option'];
+        if( 'original' == $link && !empty($photourl[$i]) ){
+          $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+          $has_link = true;
+        }elseif( ('flickr' == $link || '1' == $link)&& !empty($linkurl[$i]) ){
+          $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+          $has_link = true;
+        }elseif( 'link' == $link && !empty($options['custom_link_url']) ){
+          $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+          $has_link = true;
+        }elseif( 'fancybox' == $link && !empty($originalurl[$i]) ){
+          $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+          $has_link = true;
+        }    
         $output .= '<img id="'.$id.'-tile-'.$i.'" class="AlpinePhotoTiles-image '.$shadow.' '.$border.' '.$curves.' '.$highlight.'" src="' . $photourl[$i] . '" ';
         $output .= 'title='."'". $photocap[$i] ."'".' alt='."'". $photocap[$i] ."' "; // Careful about caps with ""
         $output .= 'border="0" hspace="0" vspace="0" style="margin:1px 0 5px 0;padding:0;max-width:100%;"/>'; // Override the max-width set by theme
-        if( $link == "original" || $link == "flickr" || $link == "link" || $link == "fancybox" ){ $output .= '</a>'; }
+        if( $has_link ){ $output .= '</a>'; }
       }
       $output .= '</div></div>';
     }
@@ -605,22 +593,26 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $highlight = $this->get_option("general_highlight_color");
     $highlight = ($highlight?$highlight:'#64a2d8');
     
-    if( $options['style_shadow'] || $options['style_border'] || $options['style_highlight'] ){
+    if( $options['style_shadow'] || $options['style_border'] || $options['style_highlight']  ){
       $output .= '<script>
-           jQuery(window).load(function() {';
-      if( $options['flickr_image_link_option'] == "fancybox" ){
-          $output .= "jQuery( ".'"'."a[rel^='fancybox-".$id."']".'"'." ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: '#000' } );";
-      }
-      $output .= '
-                if(jQuery().AlpineAdjustBordersPlugin ){
-                  jQuery("#'.$id.'-cascade-parent").AlpineAdjustBordersPlugin({
-                    highlight:"'.$highlight.'",
-                  });
-                }  
-              });
-            </script>';
-    }
-    return $output;  
+           jQuery(window).load(function() {
+              if(jQuery().AlpineAdjustBordersPlugin ){
+                jQuery("#'.$id.'-cascade-parent").AlpineAdjustBordersPlugin({
+                  highlight:"'.$highlight.'",
+                });
+              }  
+            });
+          </script>';  
+    }   
+    if( $options['flickr_image_link_option'] == "fancybox"  ){
+      $output .= '<script>
+                  jQuery(window).load(function() {
+                    jQuery( "a[rel^=\'fancybox-'.$id.'\']" ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: "#000" } );
+                  })
+                </script>';  
+    } 
+    return $output;
+    
   }
 
 /**
@@ -639,11 +631,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
   //////////////////////////////////////////       Check Content      /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if($options['flickr_photo_number'] != count($linkurl)){$options['flickr_photo_number']=count($linkurl);}
-    
-    if($reduced_width && $reduced_width<$photo_size ){
-      $style_width = $reduced_width."px";   }
-    else{   $style_width = $photo_size."px";    }
-    
+        
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////   Begin the Content   /////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -667,27 +655,21 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $curves = ($options['style_curve_corners']?'AlpinePhotoTiles-img-corners':'AlpinePhotoTiles-img-nocorners');
     
     for($i = 0;$i<$options['flickr_photo_number'];$i++){
-      switch ($options['flickr_image_link_option']) {
-        case 'original':
-          $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-        case 'flickr':
-          $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-        case 'link':
-          if($options['custom_link_url']){
-            $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
-          }    
-        break;
-        case 'fancybox':
-          $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
-        break;
-        case 'none':
-        break;
-        case '1': // Just for backwards compatibility
-          $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
-        break;
-      }   
+      $has_link = false;
+      $link = $options['flickr_image_link_option'];
+      if( 'original' == $link && !empty($photourl[$i]) ){
+        $output .= '<a href="' . $photourl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+        $has_link = true;
+      }elseif( ('flickr' == $link || '1' == $link)&& !empty($linkurl[$i]) ){
+        $output .= '<a href="' . $linkurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>';
+        $has_link = true;
+      }elseif( 'link' == $link && !empty($options['custom_link_url']) ){
+        $output .= '<a href="' . $options['custom_link_url'] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+        $has_link = true;
+      }elseif( 'fancybox' == $link && !empty($originalurl[$i]) ){
+        $output .= '<a href="' . $originalurl[$i] . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap[$i] ."'".'>'; 
+        $has_link = true;
+      }     
       $output .= '<img id="'.$id.'-tile-'.$i.'" class="AlpinePhotoTiles-image '.$shadow.' '.$border.' '.$curves.'" src="' . $photourl[$i] . '" ';
       $output .= 'title='."'". $photocap[$i] ."'".' alt='."'". $photocap[$i] ."' "; // Careful about caps with ""
       $output .= 'border="0" hspace="0" vspace="0" />'; // Override the max-width set by theme
@@ -696,8 +678,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       if( "gallery" == $options['style_option'] && $originalurl[$i] ){
         $output .= '<img class="AlpinePhotoTiles-original-image" src="' . $originalurl[$i]. '" />';
       }
-      
-      if( $link == "original" || $link == "flickr" || $link == "link" || $link == "fancybox" ){ $output .= '</a>'; }
+      if( $has_link ){ $output .= '</a>'; }
     }
     $output .= '</div>';
     
