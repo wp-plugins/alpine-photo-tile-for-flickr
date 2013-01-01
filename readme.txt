@@ -45,20 +45,24 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 == Frequently Asked Questions ==
 
 **I'm getting the message "Flickr feed was successfully retrieved, but no photos found". What does that mean?**
-*This message simply means that while no distinguishable errors occurred, the plugin found your feed to be empty. This might occur if you set the plugin source to Favorites, but you have not actually "favorited" any of your photos.
+
+This message simply means that while no distinguishable errors occurred, the plugin found your feed to be empty. This might occur if you set the plugin source to Favorites, but you have not actually "favorited" any of your photos.
 
 **I'm getting the message "Flickr feed not found. Please recheck your ID". What does that mean?**
-*This message can mean two things. First, it can indicate that the user ID, group ID, or set ID were input incorrectly, causing the feed to fail. In this case, you should try to correct and re-save your IDs.
-*Second, this message can also mean that the server your WordPress site is being hosted on has prevented the feed from being retrieved. While it is rare, we have encountered web-hosts that disable the feed fetching functions used in the PhotoTile plugin. If this is the case, there is nothing we can do to override or work around the settings on your host server.
+
+This message can mean two things. First, it can indicate that the user ID, group ID, or set ID were input incorrectly, causing the feed to fail. In this case, you should try to correct and re-save your IDs.
+Second, this message can also mean that the server your WordPress site is being hosted on has prevented the feed from being retrieved. While it is rare, we have encountered web-hosts that disable the feed fetching functions used in the PhotoTile plugin. If this is the case, there is nothing we can do to override or work around the settings on your host server.
 
 **Is there a shortcode function?**
-*Yes, rather than explaining how to setup the shortcode, I've created a method of generating the shortcode. Check out the Shortcode Generator on the plugin's settings page ( Settings->AlpineTile: Flickr->Shortcode Generator).
+
+Yes, rather than explaining how to setup the shortcode, I've created a method of generating the shortcode. Check out the Shortcode Generator on the plugin's settings page ( Settings->AlpineTile: Flickr->Shortcode Generator).
 
 **Why doesn't the widget show my most recent photos?**
-*The plugin caches or stores the Flickr photo feed for three hours or the time set on the Settings->AlpineTile: Flickr->Plugin Settings page (see Caching above).  If the new photos have still not appeared after this time, it is possible that Flickr is responsible for the delay. While Flickr is fairly prompt about updating photo feeds, periods of high traffic (especially on weekdays between 10am and 4pm) can cause a delay in feed updates.
+
+The plugin caches or stores the Flickr photo feed for three hours or the time set on the Settings->AlpineTile: Flickr->Plugin Settings page (see Caching above).  If the new photos have still not appeared after this time, it is possible that Flickr is responsible for the delay. While Flickr is fairly prompt about updating photo feeds, periods of high traffic (especially on weekdays between 10am and 4pm) can cause a delay in feed updates.
 
 If you have any more questions, please leave a message at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
-
+I am a one-man development team and I distribute these plugins for free, so please be patient with me.
 
 == Changelog ==
 
@@ -104,5 +108,5 @@ If you have any more questions, please leave a message at [the Alpine Press](htt
 * Implemented fetch with wp_remote_get()
 
 = 1.2.1 =
-* Rebuilt admin <div> structure
+* Rebuilt admin div structure
 * Fixed admin css issues
