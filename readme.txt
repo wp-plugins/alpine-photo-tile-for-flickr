@@ -18,6 +18,7 @@ widget takes advantage of WordPress's built in JQuery scripts to create a sleek 
 and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
 
 **Features:**
+
 * Display Flickr images in a sidebar, post, or page
 * Multiple styles to allow for customization
 * Fancybox/lighbox feature for interactive slideshow
@@ -26,6 +27,7 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 * Feed caching/storage for improved page loading
 
 **Quick Start Guide:**
+
 * 1. After installing the plugin on your WordPress site, make sure it is activated by logging into your admin area and going to Plugins in the left menu.
 * 2. To add the plugin to a sidebar, go to Appearance->Widgets in the left menu.
 * 3. Find the rectangle labeled Alpine PhotoTile for Flickr. Click and drag the rectangle to one of the sidebar containers on the right.
