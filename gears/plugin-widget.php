@@ -23,25 +23,27 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
     wp_enqueue_style($bot->wcss);
     wp_enqueue_script($bot->wjs);
 
-    // Set Important Widget Options    
-    $id = $args["widget_id"];
-    $source_results = $bot->photo_retrieval($id, $options);
+    // Set Important Widget Options
+    $bot->options = $options;
+    $bot->wid = $args["widget_id"];
+    $bot->photo_retrieval();
     
     echo $before_widget . $before_title . $options['widget_title'] . $after_title;
-    echo $source_results['hidden'];
-    if( $source_results['continue'] ){  
+    echo $bot->results['hidden'];
+    if( $bot->results['continue'] ){  
       if( "vertical" == $options['style_option'] ){
-        echo $bot->display_vertical($id, $options, $source_results);
+        $bot->display_vertical();
       }elseif( "cascade" == $options['style_option'] ){
-        echo $bot->display_cascade($id, $options, $source_results);
+        $bot->display_cascade();
       }else{
-        echo $bot->display_hidden($id, $options, $source_results);
+        $bot->display_hidden();
       }
+      echo $bot->out;
     }
     // If user does not have necessary extensions 
     // or error occured before content complete, report such...
     else{
-      echo 'Sorry:<br>'.$source_results['message'];
+      echo 'Sorry:<br>'.$bot->results['message'];
     }
     echo $after_widget;
   }

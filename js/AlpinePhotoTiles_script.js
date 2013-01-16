@@ -1,8 +1,8 @@
 /*
  * Alpine PhotoTile for Pinterest: jQuery Tile Display Functions
  * By: Eric Burger, http://thealpinepress.com
- * Version: 1.0.1
- * Updated: December  2012
+ * Version: 1.0.2
+ * Updated: January  2012
  * 
  */
 
@@ -192,7 +192,7 @@
         parent.css({'width':'100%'});
         width = parent.width();
         var imageRow=[],currentImage,sumWidth=0,maxHeight=0;
-//console.log(width);
+
         s.each(images, function(i){
           img = this;
           src = img.src;
@@ -326,7 +326,14 @@
           perm = allPerms[i];
           
           if( 0 == i ){
-            galleryHeight = width/options.perRow*options.galleryHeight;
+            if( options.galleryHeight ){ // Keep for compatibility
+            console.log( options.galleryHeight );
+              galleryHeight = width/options.perRow*options.galleryHeight;
+            }else if( options.galRatioHeight && options.galRatioWidth ){
+              galleryHeight = width*options.galRatioHeight/options.galRatioWidth;
+            }else{
+              galleryHeight = width*600/800;
+            }
             
             newRow( galleryHeight, i ); 
                  

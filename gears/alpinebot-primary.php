@@ -7,16 +7,16 @@ class PhotoTileForFlickrBase {
   public $url;
   public $dir;
   public $cacheDir;
-  public $ver = '1.2.1';
-  public $vers = '1-2-1';
+  public $ver = '1.2.2';
+  public $vers = '1-2-2';
   public $domain = 'APTFFbyTAP_domain';
   public $settings = 'alpine-photo-tile-for-flickr-settings'; // All lowercase
   public $name = 'Alpine Photo Tile for Flickr';
   public $info = 'http://thealpinepress.com/alpine-phototile-for-flickr/';
   public $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
-  public $page = 'AlpineTile: Flickr';
+  public $page = 'AlpineTile: <i>Flickr</i>';
   public $hook = 'APTFFbyTAP_hook';
-  public $plugins = array('pinterest','tumblr');
+  public $plugins = array('pinterest','tumblr','instagram');
 
   public $root = 'AlpinePhotoTiles';
   public $wjs = 'AlpinePhotoTiles_script';
@@ -189,34 +189,6 @@ class PhotoTileForFlickrBase {
         'position' => 'left',
         'default' => ''
       ),        
-      'flickr_display_link' => array(
-        'name' => 'flickr_display_link',
-        'short' => 'dl',
-        'title' => 'Display link to Flickr page.',
-        'type' => 'checkbox',
-        'description' => '',
-        'child' => 'flickr_source',
-        'hidden' => 'community',
-        'widget' => true,
-        'tab' => 'generator',
-        'position' => 'left',
-        'default' => ''
-      ),    
-      'flickr_display_link_text' => array(
-        'name' => 'flickr_display_link_text',
-        'short' => 'dltext',
-        'title' => 'Link Text : ',
-        'type' => 'text',
-        'sanitize' => 'nohtml',
-        'description' => '',
-        'child' => 'flickr_source', 
-        'hidden' => 'community',
-        'widget' => true,
-        'tab' => 'generator',
-        'position' => 'left',
-        'default' => 'Flickr'
-      ),    
-
       
       'flickr_image_link_option' => array(
         'name' => 'flickr_image_link_option',
@@ -267,44 +239,35 @@ class PhotoTileForFlickrBase {
         'position' => 'left',
         'default' => ''
       ),
-
-      'flickr_photo_size' => array(
-        'name' => 'flickr_photo_size',
-        'short' => 'size',
-        'title' => 'Photo Size : ',
-        'type' => 'select',
-        'valid_options' => array(
-          '75' => array(
-            'name' => 75,
-            'title' => '75px'
-          ),
-          '100' => array(
-            'name' => 100,
-            'title' => '100px'
-          ),
-          '240' => array(
-            'name' => 240,
-            'title' => '240px'
-          ),
-          '320' => array(
-            'name' => 320,
-            'title' => '320px'
-          ),
-          '500' => array(
-            'name' => 500,
-            'title' => '500px'
-          ),
-          '640' => array(
-            'name' => 640,
-            'title' => '640px'
-          )      
-        ),
+      
+      'flickr_display_link' => array(
+        'name' => 'flickr_display_link',
+        'short' => 'dl',
+        'title' => 'Display link to Flickr page.',
+        'type' => 'checkbox',
         'description' => '',
+        'child' => 'flickr_source',
+        'hidden' => 'community',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'left',
-        'default' => '240'
-      ),
+        'default' => ''
+      ),    
+      'flickr_display_link_text' => array(
+        'name' => 'flickr_display_link_text',
+        'short' => 'dltext',
+        'title' => 'Text for display link: ',
+        'type' => 'text',
+        'sanitize' => 'nohtml',
+        'description' => '',
+        'child' => 'flickr_source', 
+        'hidden' => 'community',
+        'widget' => true,
+        'tab' => 'generator',
+        'position' => 'left',
+        'default' => 'Flickr'
+      ),      
+
       'style_option' => array(
         'name' => 'style_option',
         'short' => 'style',
@@ -383,7 +346,7 @@ class PhotoTileForFlickrBase {
         'sanitize' => 'int',
         'min' => '1',
         'max' => '500',
-        'description' => 'Max of 500',
+        'description' => '',
         'child' => 'style_option',
         'hidden' => 'vertical cascade windows',
         'widget' => true,
@@ -406,45 +369,36 @@ class PhotoTileForFlickrBase {
         'position' => 'right',
         'default' => '2'
       ),     
-      'style_gallery_height' => array(
-        'name' => 'style_gallery_height',
-        'short' => 'gheight',
-        'title' => 'Gallery Size : ',
-        'type' => 'select',
-        'valid_options' => array(
-          '2' => array(
-            'name' => 2,
-            'title' => 'XS'
-          ),
-          '3' => array(
-            'name' => 3,
-            'title' => 'Small'
-          ),
-          '4' => array(
-            'name' => 4,
-            'title' => 'Medium'
-          ),
-          '5' => array(
-            'name' => 5,
-            'title' => 'Large'
-          ),
-          '6' => array(
-            'name' => 6,
-            'title' => 'XL'
-          ),
-          '7' => array(
-            'name' => 7,
-            'title' => 'XXL'
-          )             
-        ),
-        'description' => '',
+      'style_gallery_ratio_width' => array(
+        'name' => 'style_gallery_ratio_width',
+        'short' => 'grwidth',
+        'title' => 'Aspect Ratio Width : ',
+        'type' => 'text',
+        'sanitize' => 'numeric',
+        'min' => '1',
+        'description' => "",
         'child' => 'style_option',
-        'hidden' => 'vertical cascade floor wall rift bookshelf windows',
+        'hidden' => 'vertical floor wall bookshelf windows rift cascade',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'right',
-        'default' => '3'
-      ),     
+        'default' => '800'
+      ),      
+      'style_gallery_ratio_height' => array(
+        'name' => 'style_gallery_ratio_height',
+        'short' => 'grheight',
+        'title' => 'Aspect Ratio Height : ',
+        'type' => 'text',
+        'sanitize' => 'numeric',
+        'min' => '1',
+        'description' => "Set the Aspect Ratio of the gallery display. <br>(Default: 800 by 600)",
+        'widget' => true,
+        'child' => 'style_option',
+        'hidden' => 'vertical floor wall bookshelf windows rift cascade',
+        'tab' => 'generator',
+        'position' => 'right',
+        'default' => '600'
+      ),
       'flickr_photo_number' => array(
         'name' => 'flickr_photo_number',
         'short' => 'num',
@@ -458,6 +412,47 @@ class PhotoTileForFlickrBase {
         'tab' => 'generator',
         'position' => 'right',
         'default' => '4'
+      ),
+      'flickr_photo_size' => array(
+        'name' => 'flickr_photo_size',
+        'short' => 'size',
+        'title' => 'Photo Size : ',
+        'type' => 'select',
+        'valid_options' => array(
+          '75' => array(
+            'name' => 75,
+            'title' => '75px'
+          ),
+          '100' => array(
+            'name' => 100,
+            'title' => '100px'
+          ),
+          '240' => array(
+            'name' => 240,
+            'title' => '240px'
+          ),
+          '320' => array(
+            'name' => 320,
+            'title' => '320px'
+          ),
+          '500' => array(
+            'name' => 500,
+            'title' => '500px'
+          ),
+          '640' => array(
+            'name' => 640,
+            'title' => '640px'
+          ),
+          '800' => array(
+            'name' => 800,
+            'title' => '800px'
+          )     
+        ),
+        'description' => '',
+        'widget' => true,
+        'tab' => 'generator',
+        'position' => 'right',
+        'default' => '240'
       ),
       'style_shadow' => array(
         'name' => 'style_shadow',

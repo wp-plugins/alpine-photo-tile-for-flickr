@@ -4,7 +4,7 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, stylish, pictures, images, widget, sidebar, gallery, lightbox, fancybox
 Requires at least: 2.8
 Tested up to: 3.5
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,7 +53,7 @@ This message simply means that while no distinguishable errors occurred, the plu
 This message can mean two things. First, it can indicate that the user ID, group ID, or set ID were input incorrectly, causing the feed to fail. In this case, you should try to correct and re-save your IDs.
 Second, this message can also mean that the server your WordPress site is being hosted on has prevented the feed from being retrieved. While it is rare, we have encountered web-hosts that disable the feed fetching functions used in the PhotoTile plugin. If this is the case, there is nothing we can do to override or work around the settings on your host server.
 
-**Is there a shortcode function?**
+**Can I insert the plugin in posts or pages? Is there a shortcode function?**
 
 Yes, rather than explaining how to setup the shortcode, I've created a method of generating the shortcode. Check out the Shortcode Generator on the plugin's settings page ( Settings->AlpineTile: Flickr->Shortcode Generator).
 
@@ -110,3 +110,12 @@ I am a one-man development team and I distribute these plugins for free, so plea
 = 1.2.1 =
 * Rebuilt admin div structure
 * Fixed admin css issues
+
+= 1.2.2 =
+* Add 800px Flickr photo size
+* Added aspect ratio options for gallery style
+* Add key generator function
+* Add get_image_url() functions
+* Object oriented id, options, results, and output storage
+* Object oriented display generation
+ 
