@@ -7,16 +7,16 @@ class PhotoTileForFlickrBase {
   public $url;
   public $dir;
   public $cacheDir;
-  public $ver = '1.2.2';
-  public $vers = '1-2-2';
+  public $ver = '1.2.3';
+  public $vers = '1-2-3';
   public $domain = 'APTFFbyTAP_domain';
   public $settings = 'alpine-photo-tile-for-flickr-settings'; // All lowercase
-  public $name = 'Alpine Photo Tile for Flickr';
+  public $name = 'Alpine PhotoTile for Flickr';
   public $info = 'http://thealpinepress.com/alpine-phototile-for-flickr/';
   public $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
-  public $page = 'AlpineTile: <i>Flickr</i>';
+  public $page = 'AlpineTile: Flickr';
   public $hook = 'APTFFbyTAP_hook';
-  public $plugins = array('pinterest','tumblr','instagram');
+  public $plugins = array('pinterest','tumblr','instagram','picasa-and-google-plus');
 
   public $root = 'AlpinePhotoTiles';
   public $wjs = 'AlpinePhotoTiles_script';
@@ -37,6 +37,12 @@ class PhotoTileForFlickrBase {
     $this->cacheDir = WP_CONTENT_DIR . '/cache/' . $this->settings;
   }
   
+/**
+ * Option positions for widget page
+ *  
+ * @ Since 1.2.0
+ * 
+ */
   function widget_positions(){
       $options = array(
       'top' => '',
@@ -46,22 +52,33 @@ class PhotoTileForFlickrBase {
     );
     return $options;
   }
+  
+/**
+ * Option positions for settings pages
+ *  
+ * @ Since 1.2.0
+ * @ Updated 1.2.3
+ */
   function option_positions(){
     $positions = array(
       'generator' => array(
-        'left' => 'Flickr Settings',
-        'right' => 'Style Settings',
-        'bottom' => 'Format Settings'
+        'left' => array( 'title' => 'Flickr Settings' ),
+        'right' => array( 'title' => 'Style Settings' ),
+        'bottom' => array( 'title' => 'Format Settings' )
       ),
       'plugin-settings' => array(
-        'top' => 'Cache Options',
-        'center' =>'Global Style Options'
+        'top' => array( 'title' => 'Global Style Options', 'description' => "Below are style settings that will be applied to every instance of the plugin. " ),
+        'center' => array( 'title' => 'Hidden Options', 'description' => "Below are additional options that you can choose to enable by checking the box." ),
+        'bottom' => array( 'title' => 'Cache Options' ),
       )
     );
     return $positions;
   }
 /**
  * Plugin Admin Settings Page Tabs
+ *  
+ * @ Since 1.2.0
+ *
  */
   function settings_page_tabs() {
     $tabs = array( 
@@ -85,6 +102,12 @@ class PhotoTileForFlickrBase {
     return $tabs;
   }
   
+/**
+ * Option Parameters and Defaults
+ *  
+ * @ Since 1.0.0
+ * @ Updated 1.2.3
+ */
   function option_defaults(){
     $options = array(
       'widget_title' => array(
@@ -214,7 +237,7 @@ class PhotoTileForFlickrBase {
           ),
           'fancybox' => array(
             'name' => 'fancybox',
-            'title' => 'Use Fancybox'
+            'title' => 'Use Lightbox'
           )               
         ),
         'description' => '',
@@ -224,7 +247,25 @@ class PhotoTileForFlickrBase {
         'parent' => 'AlpinePhotoTiles-parent', 
         'trigger' => 'flickr_image_link_option',
         'default' => 'flickr'
-      ),      
+      ),   
+      'custom_lightbox_rel' => array(
+        'name' => 'custom_lightbox_rel',
+        'short' => 'crel',
+        'title' => 'Custom Lightbox "rel" (Optional): ',
+        'type' => 'text',
+        'sanitize' => 'nospaces',
+        'encode' => array("["=>"{ltsq}","]"=>"{rtsq}"),
+        'description' => '',
+        'child' => 'flickr_image_link_option', 
+        'hidden' => 'none original flickr link',
+        'widget' => true,
+        'hidden-option' => true,
+        'check' => 'hidden_lightbox_custom_rel',
+        'tab' => 'generator',
+        'position' => 'left',
+        'since' => '1.2.3',
+        'default' => ''
+      ),        
       'custom_link_url' => array(
         'name' => 'custom_link_url',
         'title' => 'Custom Link URL : ',
@@ -249,8 +290,11 @@ class PhotoTileForFlickrBase {
         'child' => 'flickr_source',
         'hidden' => 'community',
         'widget' => true,
+        'hidden-option' => true,
+        'check' => 'hidden_display_link',
         'tab' => 'generator',
         'position' => 'left',
+        'since' => '1.2.3',
         'default' => ''
       ),    
       'flickr_display_link_text' => array(
@@ -263,8 +307,11 @@ class PhotoTileForFlickrBase {
         'child' => 'flickr_source', 
         'hidden' => 'community',
         'widget' => true,
+        'hidden-option' => true,
+        'check' => 'hidden_display_link',
         'tab' => 'generator',
         'position' => 'left',
+        'since' => '1.2.3',
         'default' => 'Flickr'
       ),      
 
@@ -382,6 +429,7 @@ class PhotoTileForFlickrBase {
         'widget' => true,
         'tab' => 'generator',
         'position' => 'right',
+        'since' => '1.2.3',
         'default' => '800'
       ),      
       'style_gallery_ratio_height' => array(
@@ -397,6 +445,7 @@ class PhotoTileForFlickrBase {
         'hidden' => 'vertical floor wall bookshelf windows rift cascade',
         'tab' => 'generator',
         'position' => 'right',
+        'since' => '1.2.3',
         'default' => '600'
       ),
       'flickr_photo_number' => array(
@@ -517,9 +566,12 @@ class PhotoTileForFlickrBase {
             'title' => 'Right'
           )            
         ),
+        'hidden-option' => true,
+        'check' => 'hidden_widget_alignment',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'bottom',
+        'since' => '1.2.3',
         'default' => 'center'
       ),    
       'widget_max_width' => array(
@@ -547,6 +599,117 @@ class PhotoTileForFlickrBase {
         'position' => 'bottom',
         'default' => ''
       ), 
+      'general_loader' => array(
+        'name' => 'general_loader',
+        'title' => 'Disable Loading Icon: ',
+        'type' => 'checkbox',
+        'description' => 'Remove the icon that appears while images are loading.',
+        'since' => '1.2.1',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => ''
+      ), 
+      'general_highlight_color' => array(
+        'name' => 'general_highlight_color',
+        'title' => 'Highlight Color:',
+        'type' => 'color',
+        'description' => 'Click to choose link color.',
+        'section' => 'settings',
+        'tab' => 'general',
+        'since' => '1.2.1',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => '#64a2d8'
+      ), 
+      'general_lightbox' => array(
+        'name' => 'general_lightbox',
+        'title' => 'Choose jQuery Lightbox Plugin : ',
+        'type' => 'select',
+        'valid_options' => array(
+          'alpine-fancybox' => array(
+            'name' => 'alpine-fancybox',
+            'title' => 'Fancybox (Safemode)'
+          ),
+          'fancybox' => array(
+            'name' => 'fancybox',
+            'title' => 'Fancybox'
+          ),
+          'colorbox' => array(
+            'name' => 'colorbox',
+            'title' => 'ColorBox'
+          ),
+          'prettyphoto' => array(
+            'name' => 'prettyphoto',
+            'title' => 'prettyPhoto'
+          )      
+        ),
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'since' => '1.2.3',
+        'default' => 'alpine-fancybox'
+      ),
+      'general_lightbox_no_load' => array(
+        'name' => 'general_lightbox_no_load',
+        'title' => 'Prevent Lightbox Loading: ',
+        'type' => 'checkbox',
+        'description' => 'Already using the above lighbox alternative? Prevent this plugin from loading it again.',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'since' => '1.2.3',
+        'default' => ''
+      ), 
+      'general_lightbox_params' => array(
+        'name' => 'general_lightbox_params',
+        'title' => 'Custom Lightbox Parameters:',
+        'type' => 'textarea',
+        'description' => 'Add custom parameters to the lighbox call.',
+        'section' => 'settings',
+        'tab' => 'general',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => ''
+      ), 
+      'general_load_header' => array(
+        'name' => 'general_load_header',
+        'title' => 'Always Load Styles and Scripts in Header: ',
+        'type' => 'checkbox',
+        'description' => 'For themes without wp_footer(). Requires that styles and scripts be loaded on every page.',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => ''
+      ), 
+      'hidden_display_link' => array(
+        'name' => 'hidden_display_link',
+        'title' => 'Link Below Widget: ',
+        'type' => 'checkbox',
+        'description' => 'Add an option to place a link with custom text below widget display.',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'center',
+        'default' => true
+      ), 
+      'hidden_widget_alignment' => array(
+        'name' => 'hidden_widget_alignment',
+        'title' => 'Photo Alignment: ',
+        'type' => 'checkbox',
+        'description' => 'Add an option to align photos to the left, right, or center.',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'center',
+        'default' => true
+      ), 
+      'hidden_lightbox_custom_rel' => array(
+        'name' => 'hidden_lightbox_custom_rel',
+        'title' => 'Custom "rel" for Lightbox: ',
+        'type' => 'checkbox',
+        'description' => 'Add an option to set custom "rel" to widget options.',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'center',
+        'default' => ''
+      ), 
       'cache_disable' => array(
         'name' => 'cache_disable',
         'title' => 'Disable feed caching: ',
@@ -554,7 +717,7 @@ class PhotoTileForFlickrBase {
         'description' => '',
         'since' => '1.1',
         'tab' => 'plugin-settings',
-        'position' => 'top',
+        'position' => 'bottom',
         'default' => ''
       ), 
       'cache_time' => array(
@@ -566,30 +729,8 @@ class PhotoTileForFlickrBase {
         'description' => "Set the number of hours that a feed will be stored.",
         'since' => '1.1',
         'tab' => 'plugin-settings',
-        'position' => 'top',
+        'position' => 'bottom',
         'default' => '3'
-      ), 
-      'general_loader' => array(
-        'name' => 'general_loader',
-        'title' => 'Disable Loading Icon: ',
-        'type' => 'checkbox',
-        'description' => 'Remove the icon that appears while images are loading.',
-        'since' => '1.1',
-        'tab' => 'plugin-settings',
-        'position' => 'center',
-        'default' => ''
-      ), 
-      'general_highlight_color' => array(
-        'name' => 'general_highlight_color',
-        'title' => 'Highlight Color:',
-        'type' => 'color',
-        'description' => 'Click to choose link color.',
-        'section' => 'settings',
-        'tab' => 'general',
-        'since' => '1.2',
-        'tab' => 'plugin-settings',
-        'position' => 'center',
-        'default' => '#64a2d8'
       ), 
     );
     return $options;

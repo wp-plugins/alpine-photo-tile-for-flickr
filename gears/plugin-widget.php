@@ -1,6 +1,12 @@
 <?php
 
-
+/**
+ * Alpine PhotoTile for Flickr: WP_Widget
+ *
+ * @ Since 1.1.1
+ * @ Updated 1.2.3
+ */
+ 
 class Alpine_PhotoTile_for_Flickr extends WP_Widget { 
   public $alpinebot;
   
@@ -11,22 +17,21 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
 		$control_ops = array('width' => 550, 'height' => 350);
 		$this->WP_Widget($bot->domain, __($bot->name), $widget_ops, $control_ops);
 	}
-  
+/**
+ * Widget
+ *
+ * @ Updated 1.2.3
+ */
 	function widget( $args, $options ) {
     $bot = $this->alpinebot;
-    
 		extract($args);
-    if( $options['flickr_image_link_option'] == "fancybox" ){
-      wp_enqueue_script( 'fancybox' );
-      wp_enqueue_style( 'fancybox-stylesheet' );
-    }
-    wp_enqueue_style($bot->wcss);
-    wp_enqueue_script($bot->wjs);
-
+    
     // Set Important Widget Options
     $bot->options = $options;
     $bot->wid = $args["widget_id"];
     $bot->photo_retrieval();
+    
+    $bot->enqueue_style_and_script();
     
     echo $before_widget . $before_title . $options['widget_title'] . $after_title;
     echo $bot->results['hidden'];
@@ -47,7 +52,11 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
     }
     echo $after_widget;
   }
-    
+/**
+ * Update
+ *
+ * @ Updated 1.2.0
+ */
 	function update( $newoptions, $oldoptions ) {
     $bot = $this->alpinebot;
     $optiondetails = $bot->option_defaults();
@@ -58,7 +67,11 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
 
     return $options;
 	}
-
+/**
+ * Form
+ *
+ * @ Updated 1.2.3
+ */
 	function form( $options ) {
     $bot = $this->alpinebot;
 
@@ -82,6 +95,12 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
                   $option = $defaults[$optionname];
                   $fieldname = $this->get_field_name( $option['name'] );
                   $fieldid = $this->get_field_id( $option['name'] );
+                  
+                  if( $option['hidden-option'] && $option['check'] ){
+                    $show = $bot->get_option( $option['check'] );
+                    if( !$show ){ continue; }
+                  }
+                  
                   if($option['parent']){
                     $class = $option['parent'];
                   }elseif($option['child']){

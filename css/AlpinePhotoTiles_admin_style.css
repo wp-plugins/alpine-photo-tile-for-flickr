@@ -135,7 +135,7 @@
     margin-right:5px;
   } 
   .AlpinePhotoTiles-container  textarea{
-    width:100%;
+    width:95%;
   }
   .AlpinePhotoTiles-container input[type="text"]{
     width:50%;
@@ -197,6 +197,7 @@
     height:auto;
     padding:15px 0 10px 0;
     margin-top:10px;
+    margin-bottom:30px;
     border-top:1px solid #DDD;
     position:relative;
   }    

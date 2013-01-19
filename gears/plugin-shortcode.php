@@ -2,8 +2,8 @@
 /**
  * Alpine PhotoTile for Flickr: Shortcode
  *
- * @since 1.1.1
- *
+ * @ Since 1.1.1
+ * @ Updated 1.2.3
  */
  
   function APTFFbyTAP_shortcode_function( $atts ) {
@@ -17,17 +17,13 @@
         $options[$opt] = $atts[ $details['short'] ];
       }
     }
-    if( $options['flickr_image_link_option'] == "fancybox" ){
-      wp_enqueue_script( 'fancybox' );
-      wp_enqueue_style( 'fancybox-stylesheet');
-    } 
-    wp_enqueue_style($bot->wcss);
-    wp_enqueue_script($bot->wjs);
 
     $id = rand(100, 1000);
-    $bot->wid = $id;
+    $bot->wid = 'id'.$id;
     $bot->options = $options;
     $bot->photo_retrieval($id, $options);
+    
+    $bot->enqueue_style_and_script();
     
     $return .= '<div id="'.$bot->id.'-by-shortcode-'.$id.'" class="AlpinePhotoTiles_inpost_container">';
     $return .= $bot->results['hidden'];

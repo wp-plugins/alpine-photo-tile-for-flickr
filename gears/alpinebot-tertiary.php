@@ -16,6 +16,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
    public $border;
    public $curves;
    public $highlight;
+   public $rel;
    
   // For Reference:
   // http://www.flickr.com/services/api/response.json.html
@@ -85,7 +86,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       $return = @ereg_replace('[[:cntrl:]]', '', $return ); // remove ASCII's control characters
       $bad = array_merge(
         array_map('chr', range(0,31)),
-        array("<", ">", ":", '"', "/", "\\", "|", "?", "*", " ", ",")); 
+        array("<",">",":",'"',"/","\\","|","?","*"," ",",","\'",".")); 
       $return = str_replace($bad, "", $return); // Remove Windows filename prohibited characters
       return $return;
     }
@@ -114,7 +115,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
         'num' => $flickr_options['flickr_photo_number'],
         'link' => $flickr_options['flickr_display_link'],
         'text' => $flickr_options['flickr_display_link_text'],
-        'size' => $flickr_options['flickr_photo_size'],
+        'size' => $flickr_options['flickr_photo_size']
         )
       );
     $key = $this->key_maker( $key_input );
@@ -507,7 +508,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       $this->out .= '<a href="' . $url . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap ."'".'>'; 
       return true;
     }elseif( 'fancybox' == $link && !empty($originalurl) ){
-      $this->out .= '<a href="' . $originalurl . '" class="AlpinePhotoTiles-link" rel="fancybox-'.$this->wid.'" title='."'". $photocap ."'".'>'; 
+      $this->out .= '<a href="' . $originalurl . '" class="AlpinePhotoTiles-link AlpinePhotoTiles-lightbox" title='."'". $photocap ."'".'>'; 
       return true;
     }  
     return false;    
@@ -535,16 +536,21 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     if( 'center' == $opts['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
       $return .= 'margin:0px auto;text-align:center;';
     }
-    else{
+    elseif( 'right' == $opts['widget_alignment'] || 'left' == $opts['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
       $return .= 'float:' . $opts['widget_alignment'] . ';text-align:' . $opts['widget_alignment'] . ';';
+    }
+    else{
+      $return .= 'margin:0px auto;text-align:center;';
     }
     return $return;
  }
  
 /**
- *  Get Parent CSS
+ *  Add Image Function
  *  
  *  @ Since 1.2.2
+ *
+ ** Possible change: place original image as 'alt' and load image as needed
  */
   function add_image($i,$css=""){
     $this->out .= '<img id="'.$this->wid.'-tile-'.$i.'" class="AlpinePhotoTiles-image '.$this->shadow.' '.$this->border.' '.$this->curves.' '.$this->highlight.'" src="' . $this->results['image_urls'][$i] . '" ';
@@ -583,6 +589,73 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
       }
     }
   }
+  
+/**
+ *  Setup Lightbox Call
+ *  
+ *  @ Since 1.2.3
+ */
+  function add_lightbox_call(){
+    if( "fancybox" == $this->options['flickr_image_link_option'] ){
+      $this->out .= '<script>jQuery(window).load(function() {'.$this->get_lightbox_call().'})</script>';
+    }   
+  }
+  
+/**
+ *  Get Lightbox Call
+ *  
+ *  @ Since 1.2.3
+ */
+  function get_lightbox_call(){
+    $this->set_lightbox_rel();
+  
+    $lightbox = $this->get_option('general_lightbox');
+    $lightbox_style = $this->get_option('general_lightbox_params');
+    $lightbox_style = str_replace( array("{","}"), "", $lightbox_style);
+    $lightbox_style = str_replace( "'", "\'", $lightbox_style);
+    
+    $setRel = 'jQuery( "#'.$this->wid.'-AlpinePhotoTiles_container a.AlpinePhotoTiles-lightbox" ).attr( "rel", "'.$this->rel.'" );';
+    
+    if( 'fancybox' == $lightbox ){
+      $lightbox_style = ($lightbox_style?$lightbox_style:'titleShow: false, overlayOpacity: .8, overlayColor: "#000"');
+      return $setRel.'if(jQuery().fancybox){jQuery( "a[rel^=\''.$this->rel.'\']" ).fancybox( { '.$lightbox_style.' } );}';  
+    }elseif( 'prettyphoto' == $lightbox ){
+      //theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook
+      $lightbox_style = ($lightbox_style?$lightbox_style:'theme:"facebook",social_tools:false');
+      return $setRel.'if(jQuery().prettyPhoto){jQuery( "a[rel^=\''.$this->rel.'\']" ).prettyPhoto({ '.$lightbox_style.' });}';  
+    }elseif( 'colorbox' == $lightbox ){
+      $lightbox_style = ($lightbox_style?$lightbox_style:'height:"80%"');
+      return $setRel.'if(jQuery().colorbox){jQuery( "a[rel^=\''.$this->rel.'\']" ).colorbox( {'.$lightbox_style.'} );}';  
+    }elseif( 'alpine-fancybox' == $lightbox ){
+      $lightbox_style = ($lightbox_style?$lightbox_style:'titleShow: false, overlayOpacity: .8, overlayColor: "#000"');
+      return $setRel.'if(jQuery().fancyboxForAlpine){jQuery( "a[rel^=\''.$this->rel.'\']" ).fancyboxForAlpine( { '.$lightbox_style.' } );}';  
+    }
+    return "";
+  }
+  
+/**
+ *  Set Lightbox "rel"
+ *  
+ *  @ Since 1.2.3
+ */
+ function set_lightbox_rel(){
+    $lightbox = $this->get_option('general_lightbox');
+    $custom = $this->get_option('hidden_lightbox_custom_rel');
+    if( $custom && !empty($this->options['custom_lightbox_rel']) ){
+      $this->rel = $this->options['custom_lightbox_rel'];
+      $this->rel = str_replace('{rtsq}',']',$this->rel); // Decode right and left square brackets
+      $this->rel = str_replace('{ltsq}','[',$this->rel);
+    }elseif( 'fancybox' == $lightbox ){
+      $this->rel = 'alpine-fancybox-'.$this->wid;
+    }elseif( 'prettyphoto' == $lightbox ){
+      $this->rel = 'alpine-prettyphoto['.$this->wid.']';
+    }elseif( 'colorbox' == $lightbox ){
+      $this->rel = 'alpine-colorbox['.$this->wid.']';
+    }else{
+      $this->rel = 'alpine-fancybox-safemode-'.$this->wid;
+    }
+ }
+  
 /**
  *  Function for printing vertical style
  *  
@@ -623,6 +696,8 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $highlight = $this->get_option("general_highlight_color");
     $highlight = ($highlight?$highlight:'#64a2d8');
 
+    $this->add_lightbox_call();
+    
     if( $opts['style_shadow'] || $opts['style_border'] || $opts['style_highlight']  ){
       $this->out .= '<script>
            jQuery(window).load(function() {
@@ -633,13 +708,6 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
               }  
             });
           </script>';  
-    }   
-    if( $opts['flickr_image_link_option'] == "fancybox"  ){
-      $this->out .= '<script>
-                  jQuery(window).load(function() {
-                    jQuery( "a[rel^=\'fancybox-'.$this->wid.'\']" ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: "#000" } );
-                  })
-                </script>';  
     }
   }  
 /**
@@ -691,6 +759,8 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
     $highlight = $this->get_option("general_highlight_color");
     $highlight = ($highlight?$highlight:'#64a2d8');
     
+    $this->add_lightbox_call();
+    
     if( $opts['style_shadow'] || $opts['style_border'] || $opts['style_highlight']  ){
       $this->out .= '<script>
            jQuery(window).load(function() {
@@ -701,14 +771,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
               }  
             });
           </script>';  
-    } 
-    if( $opts['flickr_image_link_option'] == "fancybox"  ){
-      $this->out .= '<script>
-                  jQuery(window).load(function() {
-                    jQuery( "a[rel^=\'fancybox-'.$this->wid.'\']" ).fancybox( { titleShow: false, overlayOpacity: .8, overlayColor: "#000" } );
-                  })
-                </script>';  
-    }    
+    }
   }
 
 /**
@@ -779,13 +842,14 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
                 imageShadow:'.($opts['style_shadow']?'1':'0').',
                 imageCurve:'.($opts['style_curve_corners']?'1':'0').',
                 imageHighlight:'.($opts['style_highlight']?'1':'0').',
-                fancybox:'.($opts['flickr_image_link_option'] == "fancybox"?'1':'0').',
+                lightbox:'.($opts['flickr_image_link_option'] == "fancybox"?'1':'0').',
                 galleryHeight:'.($opts['style_gallery_height']?$opts['style_gallery_height']:'0').', // Keep for Compatibility
                 galRatioWidth:'.($opts['style_gallery_ratio_width']?$opts['style_gallery_ratio_width']:'800').',
                 galRatioHeight:'.($opts['style_gallery_ratio_height']?$opts['style_gallery_ratio_height']:'600').',
                 highlight:"'.$highlight.'",
                 pinIt:'.($opts['pinterest_pin_it_button']?'1':'0').',
-                siteURL:"'.get_option( 'siteurl' ).'"
+                siteURL:"'.get_option( 'siteurl' ).'",
+                callback: '.($opts['flickr_image_link_option'] == "fancybox"?'function(){'.$this->get_lightbox_call().'}':'""').'
               });
             }
           });

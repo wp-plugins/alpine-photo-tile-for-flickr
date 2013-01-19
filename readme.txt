@@ -1,10 +1,10 @@
 === Alpine PhotoTile for Flickr ===
 Contributors: theAlpinePress
 Donate link: thealpinepress.com
-Tags: photos, flickr, photostream, stylish, pictures, images, widget, sidebar, gallery, lightbox, fancybox
+Tags: photos, flickr, photostream, stylish, pictures, images, widget, sidebar, gallery, lightbox, fancybox, colorbox, prettybox
 Requires at least: 2.8
 Tested up to: 3.5
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,7 +21,7 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 
 * Display Flickr images in a sidebar, post, or page
 * Multiple styles to allow for customization
-* Fancybox/lighbox feature for interactive slideshow
+* Lighbox feature for interactive slideshow (Fancybox, prettyBox, or ColorBox)
 * Simple instructions
 * Widget & shortcode options
 * Feed caching/storage for improved page loading
@@ -112,10 +112,15 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Fixed admin css issues
 
 = 1.2.2 =
-* Add 800px Flickr photo size
+* Added 800px Flickr photo size
 * Added aspect ratio options for gallery style
-* Add key generator function
-* Add get_image_url() functions
+* Added key generator function
+* Added get_image_url() functions
 * Object oriented id, options, results, and output storage
 * Object oriented display generation
+
+= 1.2.3 =
+* Added FancyboxForAlpine (Fancybox Safemode)
+* Added choice between Fancybox, prettyBox, and ColorBox
+* Added hidden options, including custom rel for lightbox
  
