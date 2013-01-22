@@ -730,7 +730,7 @@ class PhotoTileForFlickrBase {
         'since' => '1.1',
         'tab' => 'plugin-settings',
         'position' => 'bottom',
-        'default' => '3'
+        'default' => '4'
       ), 
     );
     return $options;
