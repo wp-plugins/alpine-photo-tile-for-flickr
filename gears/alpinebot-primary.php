@@ -12,8 +12,8 @@ class PhotoTileForFlickrPrimary {
   public $url;
   public $dir;
   public $cacheDir;
-  public $ver = '1.2.3';
-  public $vers = '1-2-3';
+  public $ver = '1.2.4';
+  public $vers = '1-2-4';
   public $domain = 'APTFFbyTAP_domain';
   public $settings = 'alpine-photo-tile-for-flickr-settings'; // All lowercase
   public $name = 'Alpine PhotoTile for Flickr';
