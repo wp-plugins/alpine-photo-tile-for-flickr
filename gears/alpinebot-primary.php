@@ -16,7 +16,7 @@ class PhotoTileForFlickrBase {
   public $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
   public $page = 'AlpineTile: Flickr';
   public $hook = 'APTFFbyTAP_hook';
-  public $plugins = array('pinterest','tumblr','instagram');
+  public $plugins = array('pinterest','tumblr','instagram','picasa-and-google-plus');
 
   public $root = 'AlpinePhotoTiles';
   public $wjs = 'AlpinePhotoTiles_script';
@@ -69,7 +69,7 @@ class PhotoTileForFlickrBase {
       'plugin-settings' => array(
         'top' => array( 'title' => 'Global Style Options', 'description' => "Below are style settings that will be applied to every instance of the plugin. " ),
         'center' => array( 'title' => 'Hidden Options', 'description' => "Below are additional options that you can choose to enable by checking the box." ),
-        'bottom' => array( 'title' => 'Cache Options' ),
+        'bottom' => array( 'title' => 'Cache Options' )
       )
     );
     return $positions;
@@ -278,9 +278,9 @@ class PhotoTileForFlickrBase {
         'widget' => true,
         'tab' => 'generator',
         'position' => 'left',
+        'since' => '1.2.3',
         'default' => ''
       ),
-      
       'flickr_display_link' => array(
         'name' => 'flickr_display_link',
         'short' => 'dl',
@@ -730,7 +730,7 @@ class PhotoTileForFlickrBase {
         'since' => '1.1',
         'tab' => 'plugin-settings',
         'position' => 'bottom',
-        'default' => '3'
+        'default' => '4'
       ), 
     );
     return $options;
