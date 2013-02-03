@@ -1,23 +1,18 @@
 <?php
-
-
-class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
- 
 /**
- *  Create constants for storing info 
- *  
- *  @ Since 1.2.2
+ * AlpineBot Tertiary
+ * 
+ * Feed fetching and additional back-end functions (mostly related to admin pages)
+ * Contains ONLY unique functions
+ * 
  */
-   public $out = "";
-   public $options;
-   public $wid; // Widget id
-   public $results;
-   public $shadow;
-   public $border;
-   public $curves;
-   public $highlight;
-   public $rel;
-   
+ 
+########################## TODO: replace get_option calls with $this->options ################
+
+
+class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{  
+
+
   // For Reference:
   // http://www.flickr.com/services/api/response.json.html
   // sq = thumbnail 75x75
@@ -32,76 +27,21 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
   // *Before May 25th 2010 large photos only exist for very large original images.
   // **Original photos behave a little differently. They have their own secret (called originalsecret in responses) and a variable file extension (called originalformat in responses). These values are returned via the API only when the caller has permission to view the original size (based on a user preference and various other criteria). The values are returned by the flickr.photos.getInfo method and by any method that returns a list of photos and allows an extras parameter (with a value of original_format), such as flickr.photos.search. The flickr.photos.getSizes method, as always, will return the full original URL where permissions allow.
 
-/**
- *  Function getting image url given size setting
- *  
- *  @ Since 1.2.2
- */
-  function get_image_url($info,$size){
-    if( isset($info[$size]) ){
-      return $info[$size];
-    }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
-      return $info['url_o'];
-    }elseif( 'url_c' == $size && isset($info['url_z']) ){
-      return $info['url_z'];
-    }elseif( isset($info['url_m']) ){
-      return $info['url_m'];
-    }elseif( isset($info['url_n']) ){
-      return $info['url_n'];
-    }
-    return false;
-  }
-  
-/**
- *  Function getting original image url given size setting
- *  
- *  @ Since 1.2.2
- */
-  function get_image_orig($info,$size){
-    if( 'url_c' == $size && isset($info['url_c']) ){
-      return $info['url_c'];
-    }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
-      return $info['url_o'];
-    }elseif( ('url_c' == $size || 'url_z' == $size) && isset($info['url_z']) ){
-      return $info['url_z'];
-    }elseif( isset($info['url_z']) ){
-      return $info['url_z'];
-    }elseif( isset($info['url_m']) ){
-      return $info['url_m'];
-    }
-    return false;
-  }
-  
-/**
- *  Function for creating cache key
- *  
- *  @ Since 1.2.2
- */
-   function key_maker( $array ){
-    if( isset($array['name']) && is_array( $array['info'] ) ){
-      $return = $array['name'];
-      foreach( $array['info'] as $key=>$val ){
-        $return = $return."-".($val?$val:$key);
-      }
-      $return = @ereg_replace('[[:cntrl:]]', '', $return ); // remove ASCII's control characters
-      $bad = array_merge(
-        array_map('chr', range(0,31)),
-        array("<",">",":",'"',"/","\\","|","?","*"," ",",","\'",".")); 
-      $return = str_replace($bad, "", $return); // Remove Windows filename prohibited characters
-      return $return;
-    }
-  }
-  
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////        Unique Feed Fetch Functions        /////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////    
+
 /**
  * Alpine PhotoTile for Flickr: Photo Retrieval Function.
  * The PHP for retrieving content from Flickr.
  *
  * @ Since 1.0.0
- * @ Updated 1.2.2
+ * @ Updated 1.2.4
  */  
   function photo_retrieval(){
     $flickr_options = $this->options;
     $defaults = $this->option_defaults();
+
     
     $key_input = array(
       'name' => 'flickr',
@@ -113,750 +53,634 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBasic{
         'set' => $flickr_options['flickr_set_id'],
         'tags' => $flickr_options['flickr_tags'],
         'num' => $flickr_options['flickr_photo_number'],
+        'off' => $flickr_options['photo_feed_offset'],
         'link' => $flickr_options['flickr_display_link'],
         'text' => $flickr_options['flickr_display_link_text'],
         'size' => $flickr_options['flickr_photo_size']
         )
       );
-    $key = $this->key_maker( $key_input );
+    $key = $this->key_maker( $key_input );  // Make Key
+    if( $this->retrieve_from_cache( $key ) ){  return; } // Check Cache
+    $this->set_size_id(); // Set image size (translate size to Flickr id)
     
-    $disablecache = $this->get_option( 'cache_disable' );
-    if ( !$disablecache ) {
-      if( $this->cacheExists($key) ) {
-        $results = $this->getCache($key);
-        $results = @unserialize($results);
-        if( count($results) ){
-          $results['hidden'] .= '<!-- Retrieved from cache -->';
-          $this->results = $results;
-          return;
-        }
+    //$this->options['api_key'] = '68b8278a33237f1f369cbbf3c9a9f45c';
+    if( $this->options['api_key'] ){
+      $this->hidden .= '<!-- Using PT Flickr v'.$this->ver.' with API V2 -->';
+    }else{
+      $this->hidden .= '<!-- Using PT Flickr v'.$this->ver.' with API V1 -->';
+    }
+    
+    if( function_exists('unserialize') ) {
+      $this->try_php_serial();
+    }
+    
+    if ( !($this->success) && function_exists('simplexml_load_file') ) {
+      if( $this->options['api_key'] ){
+        $this->try_rest();
+      }else{
+        // Use my API key
+        $this->hidden .= '<!-- Using stored API key -->';
+        $this->options['api_key'] = '68b8278a33237f1f369cbbf3c9a9f45c';
+        $this->try_rest();
+      }
+    }
+
+    if( $this->success ){
+      $this->make_display_link();
+    }else{
+      if( $this->feed_found ){
+        $this->message .= '- Flickr feed was successfully retrieved, but no photos found.';
+      }else{
+        $this->message .= '- Please recheck your ID(s).';
       }
     }
     
-    $message = '';
-    $hidden = '';
-    $continue = false;
-    $feed_found = false;
-    $linkurl = array();
-    $photocap = array();
-    $photourl = array();
-            
-    // Determine image size id
-    $size_id = '.'; // Default is 500
-    switch ($flickr_options['flickr_photo_size']) {
+    $this->results = array('continue'=>$this->success,'message'=>$this->message,'hidden'=>$this->hidden,'photos'=>$this->photos);
+
+    $this->store_in_cache( $key );  // Store in cache
+
+  }
+/**
+ *  Function for forming Flickr request
+ *  
+ *  @ Since 1.2.4
+ */ 
+  function get_flickr_request($format){
+    $options = $this->options;
+    $offset = ($options['photo_feed_offset']?$options['photo_feed_offset']:0);
+    $num = $offset + $options['flickr_photo_number'];
+    if( $options['photo_feed_shuffle'] && function_exists('shuffle') ){ // Shuffle the results
+      $num = min( 200, $num*6 );
+    }
+    $flickr_uid = apply_filters( $this->hook, empty($options['flickr_user_id']) ? 'uid' : $options['flickr_user_id'], $options );
+    $request = false;
+
+    if( !empty( $options['api_key'] ) ){
+      $key = $options['api_key'];
+      switch ($options['flickr_source']) {
+        case 'user':
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+        break;
+        case 'favorites':
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+        break;
+        case 'group':
+          $flickr_groupid = apply_filters( $this->hook, empty($options['flickr_group_id']) ? '' : $options['flickr_group_id'], $options );
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+        break;
+        case 'set':
+          $flickr_set = apply_filters( $this->hook, empty($options['flickr_set_id']) ? '' : $options['flickr_set_id'], $options );
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
+        break;
+        case 'community':
+          $flickr_tags = apply_filters( $this->hook, empty($options['flickr_tags']) ? '' : $options['flickr_tags'], $options );
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+        break;
+      } 
+    }else{
+      switch ($options['flickr_source']) {
+        case 'user':
+          $request = 'http://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid .'&lang=en-us&format='.$format.'';
+        break;
+        case 'favorites':
+          $request = 'http://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
+        break;
+        case 'group':
+          $flickr_groupid = apply_filters( $this->hook, empty($options['flickr_group_id']) ? '' : $options['flickr_group_id'], $options );
+          $request = 'http://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid .'&lang=en-us&format='.$format.'';
+        break;
+        case 'set':
+          $flickr_set = apply_filters( $this->hook, empty($options['flickr_set_id']) ? '' : $options['flickr_set_id'], $options );
+          $request = 'http://api.flickr.com/services/feeds/photoset.gne?set=' . $flickr_set . '&nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
+        break;
+        case 'community':
+          $flickr_tags = apply_filters( $this->hook, empty($options['flickr_tags']) ? '' : $options['flickr_tags'], $options );
+          $request = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='. $flickr_tags .'&lang=en-us&format='.$format.'';
+        break;
+      } 
+    }
+    return $request;
+ }
+/**
+ *  Determine image size id
+ *  
+ *  @ Since 1.2.4
+ */
+  function set_size_id(){
+    $this->options['size_id'] = '.'; // Default is 500
+
+    switch ($this->options['flickr_photo_size']) {
       case 75:
-        $size_id = 'url_sq';
+        $this->options['size_id'] = 'url_sq';
       break;
       case 100:
-        $size_id = 'url_t';
+        $this->options['size_id'] = 'url_t';
       break;
       case 240:
-        $size_id = 'url_s';
+        $this->options['size_id'] = 'url_s';
       break;
       case 320:
-        $size_id = 'url_n';
+        $this->options['size_id'] = 'url_n';
       break;
       case 500:
-        $size_id = 'url_m';
+        $this->options['size_id'] = 'url_m';
       break;
       case 640:
-        $size_id = 'url_z';
+        $this->options['size_id'] = 'url_z';
       break;
       case 800:
-        $size_id = 'url_c';
+        $this->options['size_id'] = 'url_c';
       break;
-    }  
+    }
+  }
+
+/**
+ *  Function getting image url given size setting
+ *  
+ *  @ Since 1.2.2
+ *  @ Updated 1.2.4
+ */
+  function get_image_url($info){
+    $size = $this->options['size_id'];
+    if( !empty( $this->options['api_key'] ) ){
+      if( isset($info[$size]) ){
+        return $info[$size];
+      }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
+        return $info['url_o'];
+      }elseif( 'url_c' == $size && isset($info['url_z']) ){
+        return $info['url_z'];
+      }elseif( isset($info['url_m']) ){
+        return $info['url_m'];
+      }elseif( isset($info['url_n']) ){
+        return $info['url_n'];
+      }
+    }else{
+      if( ('url_s' == $size || 'url_t' == $size) && isset($info['m_url']) ){ // Checking url_o is same as src==set
+        return $info['m_url'];
+      }elseif( ('url_sq' == $size) && isset($info['thumb_url']) ){ // Checking url_o is same as src==set
+        return $info['thumb_url'];
+      }elseif( ('url_n' == $size || 'url_m' == $size) && isset($info['l_url']) ){ // Checking url_o is same as src==set
+        return $info['l_url'];
+      }elseif( ('url_z' == $size || 'url_c' == $size )&& isset($info['photo_url']) ){
+        return $info['photo_url'];
+      }
+    }
+    return false;
+  }
+  
+/**
+ *  Function getting original image url given size setting
+ *  
+ *  @ Since 1.2.2
+ *  @ Updated 1.2.4
+ */
+  function get_image_orig($info){
+    $size = $this->options['size_id'];
+    if( !empty( $this->options['api_key'] ) ){
+      if( 'url_c' == $size && isset($info['url_c']) ){
+        return $info['url_c'];
+      }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
+        return $info['url_o'];
+      }elseif( isset($info['url_z']) ){
+        return $info['url_z'];
+      }elseif( isset($info['url_m']) ){
+        return $info['url_m'];
+      }
+    }else{
+      if( isset($info['photo_url']) ){
+        return $info['photo_url'];
+      }elseif( isset($info['l_url']) ){ 
+        return $info['l_url'];
+      }elseif( isset($info['m_url']) ){ 
+        return $info['m_url']; 
+      }
+    }
+    return false;
+  }
     
+/**
+ *  Function for making Flickr request with php_serial return format ( API v1 and v2 )
+ *  
+ *  @ Since 1.2.4
+ */
+  function try_php_serial(){
     // Retrieve content using wp_remote_get and PHP_serial
-   if ( function_exists('unserialize') ) {
-      // @ is shut-up operator
-      // For reference: http://www.flickr.com/services/feeds/
-      $flickr_uid = apply_filters( $this->hook, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
-      
-      switch ($flickr_options['flickr_source']) {
-      case 'user':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
-      break;
-      case 'favorites':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
-      break;
-      case 'group':
-        $flickr_groupid = apply_filters( $this->hook, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
-      break;
-      case 'set':
-        $flickr_set = apply_filters( $this->hook, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
-      break;
-      case 'community':
-        $flickr_tags = apply_filters( $this->hook, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
-      break;
-      } 
+    $request = $this->get_flickr_request('php_serial');
 
-      $_flickr_php = array();
-      $response = wp_remote_get($request,
-        array(
-          'method' => 'GET',
-          'timeout' => 20,
-        )
-      );
-      if( is_wp_error( $response ) || !isset($response['body']) ) {
-        $hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
-      }else{
-        $_flickr_php = @unserialize($response['body']);
-      }
-
-      if(empty($_flickr_php)){
-        $hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
-        $continue = false;
-      }else{
-      
-        $content =  $_flickr_php['photos'];
-        $photos = $_flickr_php['photos']['photo'];
-          
-        // Check for photosets  
-        if( 'set' == $flickr_options['flickr_source']) {
-          $content =  $_flickr_php['photoset'];
-          $photos = $_flickr_php['photoset']['photo'];
-        }
-        
-        // Check actual number of photos found
-        if( count($photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($photos);}
-
-        for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-          $linkurl[$i] = 'http://www.flickr.com/photos/'.($photos[$i]['owner']?$photos[$i]['owner']:$flickr_uid).'/'.$photos[$i]['id'].'/';
-          
-          $photourl[$i] = $this->get_image_url($photos[$i],$size_id);
-          $originalurl[$i] = $this->get_image_orig($photos[$i],$size_id);
-
-          $photocap[$i] = $photos[$i]['title'];
-          $photocap[$i] = str_replace('"','',$photocap[$i]);
-        }
-        if(!empty($linkurl) && !empty($photourl)){
-          if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
-            switch ($flickr_options['flickr_source']) {
-              case 'user':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
-              break;
-              case 'favorites':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
-              break;
-              case 'group':
-                $link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
-              break;
-              case 'set':
-              if($content['owner'] && $content['id']){
-                $link = 'http://www.flickr.com/photos/'.$content['owner'].'/sets/'.$content['id'].'/';
-              }
-              break;
-            } 
-          
-            if($link){
-              $user_link = '<div class="AlpinePhotoTiles-display-link" >';
-              $user_link .='<a href="'.$link.'" target="_blank" >';
-              $user_link .= $flickr_options['flickr_display_link_text'];
-              $user_link .= '</a></div>';
-            }
-          }
-          // If content successfully fetched, generate output...
-          $continue = true;
-          $hidden  .= '<!-- Success using wp_remote_get() and PHP_Serial -->';
-        }else{
-          $hidden .= '<!-- No photos found using wp_remote_get() and PHP_Serial @ '.$request.' -->';  
-          $continue = false;
-          $feed_found = true;
-        }
-      }
-    }
-    ///////////////////////////////////////////////////
-    /// If nothing found, try using xml and rss_200 ///
-    ///////////////////////////////////////////////////
-
-    if ( $continue == false && function_exists('simplexml_load_file') ) {
-      $flickr_uid = apply_filters( $this->hook, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
-      switch ($flickr_options['flickr_source']) {
-      case 'user':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'favorites':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'group':
-        $flickr_groupid = apply_filters( $this->hook, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'set':
-        $flickr_set = apply_filters( $this->hook, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
-      break;
-      case 'community':
-        $flickr_tags = apply_filters( $this->hook, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=rest&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      }
-
-      $_flickrurl  = @urlencode( $request );	// just for compatibility
-      $_flickr_xml = @simplexml_load_file( $_flickrurl,"SimpleXMLElement",LIBXML_NOCDATA); // @ is shut-up operator
-
-      if( $_flickr_xml===false || !$_flickr_xml || (!$_flickr_xml->photos && !$_flickr_xml->photoset) ){
-        $hidden .= '<!-- Failed using simplexml_load_file() and XML @ '.$request.' -->';
-        $continue = false;
-      }else{
-      
-        $content =  $_flickr_xml->photos;
-        $photos = $content->photo;
-          
-        // Check for photosets  
-        if( 'set' == $flickr_options['flickr_source']) {
-          $content =  $_flickr_xml->photoset;
-          $photos = $content->photo;
-        }
-        $attributes = $content->attributes();
-
-        // Check actual number of photos found
-        if( count($photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($photos);}
-
-        for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-          $current_attr = $photos[$i]->attributes();
-          $linkurl[$i] = 'http://www.flickr.com/photos/'.(string)($current_attr['owner']?$current_attr['owner']:$flickr_uid).'/'.(string)$current_attr['id'].'/';
- 
-          $photourl[$i] = $this->get_image_url($current_attr,$size_id);
-          $originalurl[$i] = $this->get_image_orig($current_attr,$size_id);
-          
-          $photocap[$i] = (string)$current_attr['title'];
-          $photocap[$i] = str_replace('"','',$photocap[$i]);
-        }
-        if(!empty($linkurl) && !empty($photourl)){
-          if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
-            switch ($flickr_options['flickr_source']) {
-              case 'user':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
-              break;
-              case 'favorites':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
-              break;
-              case 'group':
-                $link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
-              break;
-              case 'set':
-              // NOTE the use of attributes...
-              if($attributes['owner'] && $attributes['id']){
-                $link = 'http://www.flickr.com/photos/'.$attributes['owner'].'/sets/'.$attributes['id'].'/';
-              }
-              break;
-            } 
-          
-            if($link){
-              $user_link = '<div class="AlpinePhotoTiles-display-link" >';
-              $user_link .='<a href="'.$link.'" target="_blank" >';
-              $user_link .= $flickr_options['flickr_display_link_text'];
-              $user_link .= '</a></div>';
-            }
-          }
-          // If content successfully fetched, generate output...
-          $continue = true;
-          $hidden .= '<!-- Success using simplexml_load_file() and XML -->';
-        }else{
-          $hidden .= '<!-- No photos found using simplexml_load_file() and XML @ '.$request.' -->';
-          $continue = false;
-          $feed_found = true;
-        }
-      }
-    }
+    $_flickr_php = array();
+    $response = wp_remote_get($request,
+      array(
+        'method' => 'GET',
+        'timeout' => 20,
+      )
+    );
     
-    ////////////////////////////////////////////////////////
-    ////      If still nothing found, try using RSS      ///
-    ////////////////////////////////////////////////////////
-    if( $continue == false && function_exists('file_get_contents')) {
-      // Try simple file_get_contents function
-      
-      $flickr_uid = apply_filters( $this->hook, empty($flickr_options['flickr_user_id']) ? 'uid' : $flickr_options['flickr_user_id'], $flickr_options );
-      
-      switch ($flickr_options['flickr_source']) {
-      case 'user':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'favorites':
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'group':
-        $flickr_groupid = apply_filters( $this->hook, empty($flickr_options['flickr_group_id']) ? '' : $flickr_options['flickr_group_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      case 'set':
-        $flickr_set = apply_filters( $this->hook, empty($flickr_options['flickr_set_id']) ? '' : $flickr_options['flickr_set_id'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
-      break;
-      case 'community':
-        $flickr_tags = apply_filters( $this->hook, empty($flickr_options['flickr_tags']) ? '' : $flickr_options['flickr_tags'], $flickr_options );
-        $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=68b8278a33237f1f369cbbf3c9a9f45c&per_page='.$flickr_options['flickr_photo_number'].'&format=php_serial&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z';
-      break;
-      } 
+    if( is_wp_error( $response ) || !isset($response['body']) ) {
+      $this->hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
+    }else{
+      $_flickr_php = @unserialize($response['body']);
+    }
 
-      $_flickrurl = @file_get_contents($request);
-      $_flickr_php = @unserialize($_flickrurl);
-
-      if(empty($_flickr_php)){
-        $hidden .= '<!-- Failed using file_get_contents() and PHP_Serial @ '.$request.' -->';
-        $continue = false;
+    if( empty($_flickr_php) || (!$_flickr_php['photos'] && !$_flickr_php['photoset'] && !$_flickr_php['items']) ){
+      $this->hidden .= '<!-- Failed using wp_remote_get() and PHP_Serial @ '.$request.' -->';
+      if( $_flickr_php['message'] ){
+        $this->message .= '- Attempt 1: '.$_flickr_php['message'].'<br>';
       }else{
-      
-        $content =  $_flickr_php['photos'];
-        $photos = $_flickr_php['photos']['photo'];
-          
-        // Check for photosets  
-        if( 'set' == $flickr_options['flickr_source']) {
-          $content =  $_flickr_php['photoset'];
-          $photos = $_flickr_php['photoset']['photo'];
-        }
-        
-        // Check actual number of photos found
-        if( count($photos) < $flickr_options['flickr_photo_number'] ){ $flickr_options['flickr_photo_number']=count($photos);}
-
-        for ($i=0;$i<$flickr_options['flickr_photo_number'];$i++) {
-          $linkurl[$i] = 'http://www.flickr.com/photos/'.($photos[$i]['owner']?$photos[$i]['owner']:$flickr_uid).'/'.$photos[$i]['id'].'/';
-          
-          $photourl[$i] = $this->get_image_url($photos[$i],$size_id);
-          $originalurl[$i] = $this->get_image_orig($photos[$i],$size_id);
-          
-          $photocap[$i] = $photos[$i]['title'];
-          $photocap[$i] = str_replace('"','',$photocap[$i]);
-        }
-        if(!empty($linkurl) && !empty($photourl)){
-          if( 'community' != $flickr_options['flickr_source'] && $flickr_options['flickr_display_link'] && $flickr_options['flickr_display_link_text']) {
-            switch ($flickr_options['flickr_source']) {
-              case 'user':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/';
-              break;
-              case 'favorites':
-                $link = 'http://www.flickr.com/photos/'.$flickr_uid.'/favorites/';
-              break;
-              case 'group':
-                $link = 'http://www.flickr.com/groups/'.$flickr_groupid.'/';
-              break;
-              case 'set':
-              if($content['owner'] && $content['id']){
-                $link = 'http://www.flickr.com/photos/'.$content['owner'].'/sets/'.$content['id'].'/';
-              }
-              break;
-            } 
-          
-            if($link){
-              $user_link = '<div class="AlpinePhotoTiles-display-link" >';
-              $user_link .='<a href="'.$link.'" target="_blank" >';
-              $user_link .= $flickr_options['flickr_display_link_text'];
-              $user_link .= '</a></div>';
-            }
-          }
-          // If content successfully fetched, generate output...
-          $continue = true;
-          $hidden  .= '<!-- Success using file_get_contents() and PHP_Serial -->';
-        }else{
-          $hidden .= '<!-- No photos found using file_get_contents() and PHP_Serial @ '.$request.' -->';  
-          $continue = false;
-          $feed_found = true;
-        }
-      }   
-    }
-      
-    ///////////////////////////////////////////////////////////////////////
-    //// If STILL!!! nothing found, report that Flickr ID must be wrong ///
-    ///////////////////////////////////////////////////////////////////////
-    if( false == $continue ) {
-      if($feed_found ){
-        $message .= '- Flickr feed was successfully retrieved, but no photos found.';
+        $this->message .= '- Attempt 1: Flickr feed not found<br>';
+      }
+      $this->success = false;
+    }else{
+      if( !empty( $this->options['api_key'] ) ){
+        $this->parse_php_serial_v2($_flickr_php);
       }else{
-        $message .= '- Flickr feed not found. Please recheck your ID.';
+        $this->parse_php_serial_v1($_flickr_php);
       }
-    }
-      
-    $results = array('continue'=>$continue,'message'=>$message,'hidden'=>$hidden,'user_link'=>$user_link,'image_captions'=>$photocap,'image_urls'=>$photourl,'image_perms'=>$linkurl,'image_originals'=>$originalurl);
-    
-    if( true == $continue && !$disablecache ){     
-      $cache_results = $results;
-      if(!is_serialized( $cache_results  )) { $cache_results  = maybe_serialize( $cache_results ); }
-      $this->putCache($key, $cache_results);
-      $cachetime = $this->get_option( 'cache_time' );
-      if( $cachetime && is_numeric($cachetime) ){
-        $this->setExpiryInterval( $cachetime*60*60 );
+      if(!empty($this->photos) ){
+        $this->success = true;
+        $this->hidden  .= '<!-- Success using wp_remote_get() and PHP_Serial -->';
+      }else{
+        $this->success = false;
+        $this->feed_found = true;
+        $this->hidden .= '<!-- No photos found using wp_remote_get() and PHP_Serial @ '.$request.' -->';
       }
-    }
-    $this->results = $results;
-  }
-  
-/**
- *  Get Image Link
- *  
- *  @ Since 1.2.2
- */
-  function get_link($i){
-    $link = $this->options['flickr_image_link_option'];
-    $photocap = $this->results['image_captions'][$i];
-    $photourl = $this->results['image_urls'][$i];
-    $linkurl = $this->results['image_perms'][$i];
-    $url = $this->options['custom_link_url'];
-    $originalurl = $this->results['image_originals'][$i];
-    
-    if( 'original' == $link && !empty($photourl) ){
-      $this->out .= '<a href="' . $photourl . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap ."'".'>';
-      return true;
-    }elseif( ('flickr' == $link || '1' == $link)&& !empty($linkurl) ){
-      $this->out .= '<a href="' . $linkurl . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap ."'".'>';
-      return true;
-    }elseif( 'link' == $link && !empty($url) ){
-      $this->out .= '<a href="' . $url . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $photocap ."'".'>'; 
-      return true;
-    }elseif( 'fancybox' == $link && !empty($originalurl) ){
-      $this->out .= '<a href="' . $originalurl . '" class="AlpinePhotoTiles-link AlpinePhotoTiles-lightbox" title='."'". $photocap ."'".'>'; 
-      return true;
-    }  
-    return false;    
-  }
-  
-/**
- *  Update photo number count
- *  
- *  @ Since 1.2.2
- */
-  function updateCount(){
-    if( $this->options['flickr_photo_number'] != count( $this->results['image_urls'] ) ){
-      $this->options['flickr_photo_number'] = count( $this->results['image_urls'] );
-    }
-  }
-
-/**
- *  Get Parent CSS
- *  
- *  @ Since 1.2.2
- */
-  function get_parent_css(){
-    $opts = $this->options;
-    $return = 'width:100%;max-width:'.$opts['widget_max_width'].'%;padding:0px;';
-    if( 'center' == $opts['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
-      $return .= 'margin:0px auto;text-align:center;';
-    }
-    elseif( 'right' == $opts['widget_alignment'] || 'left' == $opts['widget_alignment'] ){                          //  Optional: Set text alignment (left/right) or center
-      $return .= 'float:' . $opts['widget_alignment'] . ';text-align:' . $opts['widget_alignment'] . ';';
-    }
-    else{
-      $return .= 'margin:0px auto;text-align:center;';
-    }
-    return $return;
- }
- 
-/**
- *  Add Image Function
- *  
- *  @ Since 1.2.2
- *
- ** Possible change: place original image as 'alt' and load image as needed
- */
-  function add_image($i,$css=""){
-    $this->out .= '<img id="'.$this->wid.'-tile-'.$i.'" class="AlpinePhotoTiles-image '.$this->shadow.' '.$this->border.' '.$this->curves.' '.$this->highlight.'" src="' . $this->results['image_urls'][$i] . '" ';
-    $this->out .= 'title='."'". $this->results['image_captions'][$i] ."'".' alt='."'". $this->results['image_captions'][$i] ."' "; // Careful about caps with ""
-    $this->out .= 'border="0" hspace="0" vspace="0" style="'.$css.'"/>'; // Override the max-width set by theme
-  }
-  
-/**
- *  Credit Link Function
- *  
- *  @ Since 1.2.2
- */
-  function add_credit_link(){
-    if( !$this->options['widget_disable_credit_link'] ){
-      $by_link  =  '<div id="'.$this->wid.'-by-link" class="AlpinePhotoTiles-by-link"><a href="http://thealpinepress.com/" style="COLOR:#C0C0C0;text-decoration:none;" title="Widget by The Alpine Press">TAP</a></div>';   
-      $this->out .=  $by_link;    
-    }  
-  }
-  
-/**
- *  User Link Function
- *  
- *  @ Since 1.2.2
- */
-  function add_user_link(){
-    $userlink = $this->results['user_link'];
-    if($userlink){ 
-      if($this->options['widget_alignment'] == 'center'){                          //  Optional: Set text alignment (left/right) or center
-        $this->out .= '<div id="'.$this->wid.'-display-link" class="AlpinePhotoTiles-display-link-container" ';
-        $this->out .= 'style="width:100%;margin:0px auto;">'.$userlink.'</div>';
-      }
-      else{
-        $this->out .= '<div id="'.$this->wid.'-display-link" class="AlpinePhotoTiles-display-link-container" ';
-        $this->out .= 'style="float:'.$this->options['widget_alignment'].';max-width:'.$this->options['widget_max_width'].'%;"><center>'.$userlink.'</center></div>'; 
-        $this->out .= '<div class="AlpinePhotoTiles_breakline"></div>'; // Only breakline if floating
-      }
-    }
-  }
-  
-/**
- *  Setup Lightbox Call
- *  
- *  @ Since 1.2.3
- */
-  function add_lightbox_call(){
-    if( "fancybox" == $this->options['flickr_image_link_option'] ){
-      $this->out .= '<script>jQuery(window).load(function() {'.$this->get_lightbox_call().'})</script>';
     }   
   }
-  
 /**
- *  Get Lightbox Call
+ *  Function for parsing results in php_serial format ( API v2 )
  *  
- *  @ Since 1.2.3
+ *  @ Since 1.2.4
  */
-  function get_lightbox_call(){
-    $this->set_lightbox_rel();
-  
-    $lightbox = $this->get_option('general_lightbox');
-    $lightbox_style = $this->get_option('general_lightbox_params');
-    $lightbox_style = str_replace( array("{","}"), "", $lightbox_style);
-    $lightbox_style = str_replace( "'", "\'", $lightbox_style);
-    
-    $setRel = 'jQuery( "#'.$this->wid.'-AlpinePhotoTiles_container a.AlpinePhotoTiles-lightbox" ).attr( "rel", "'.$this->rel.'" );';
-    
-    if( 'fancybox' == $lightbox ){
-      $lightbox_style = ($lightbox_style?$lightbox_style:'titleShow: false, overlayOpacity: .8, overlayColor: "#000"');
-      return $setRel.'if(jQuery().fancybox){jQuery( "a[rel^=\''.$this->rel.'\']" ).fancybox( { '.$lightbox_style.' } );}';  
-    }elseif( 'prettyphoto' == $lightbox ){
-      //theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook
-      $lightbox_style = ($lightbox_style?$lightbox_style:'theme:"facebook",social_tools:false');
-      return $setRel.'if(jQuery().prettyPhoto){jQuery( "a[rel^=\''.$this->rel.'\']" ).prettyPhoto({ '.$lightbox_style.' });}';  
-    }elseif( 'colorbox' == $lightbox ){
-      $lightbox_style = ($lightbox_style?$lightbox_style:'height:"80%"');
-      return $setRel.'if(jQuery().colorbox){jQuery( "a[rel^=\''.$this->rel.'\']" ).colorbox( {'.$lightbox_style.'} );}';  
-    }elseif( 'alpine-fancybox' == $lightbox ){
-      $lightbox_style = ($lightbox_style?$lightbox_style:'titleShow: false, overlayOpacity: .8, overlayColor: "#000"');
-      return $setRel.'if(jQuery().fancyboxForAlpine){jQuery( "a[rel^=\''.$this->rel.'\']" ).fancyboxForAlpine( { '.$lightbox_style.' } );}';  
-    }
-    return "";
-  }
-  
-/**
- *  Set Lightbox "rel"
- *  
- *  @ Since 1.2.3
- */
- function set_lightbox_rel(){
-    $lightbox = $this->get_option('general_lightbox');
-    $custom = $this->get_option('hidden_lightbox_custom_rel');
-    if( $custom && !empty($this->options['custom_lightbox_rel']) ){
-      $this->rel = $this->options['custom_lightbox_rel'];
-      $this->rel = str_replace('{rtsq}',']',$this->rel); // Decode right and left square brackets
-      $this->rel = str_replace('{ltsq}','[',$this->rel);
-    }elseif( 'fancybox' == $lightbox ){
-      $this->rel = 'alpine-fancybox-'.$this->wid;
-    }elseif( 'prettyphoto' == $lightbox ){
-      $this->rel = 'alpine-prettyphoto['.$this->wid.']';
-    }elseif( 'colorbox' == $lightbox ){
-      $this->rel = 'alpine-colorbox['.$this->wid.']';
-    }else{
-      $this->rel = 'alpine-fancybox-safemode-'.$this->wid;
-    }
- }
-  
-/**
- *  Function for printing vertical style
- *  
- *  @ Since 0.0.1
- *  @ Updated 1.2.2
- */
-  function display_vertical(){
-    $this->out = ""; // Clear any output;
-    $this->updateCount(); // Check number of images found
-    $opts = $this->options;
-    $this->shadow = ($opts['style_shadow']?'AlpinePhotoTiles-img-shadow':'AlpinePhotoTiles-img-noshadow');
-    $this->border = ($opts['style_border']?'AlpinePhotoTiles-img-border':'AlpinePhotoTiles-img-noborder');
-    $this->curves = ($opts['style_curve_corners']?'AlpinePhotoTiles-img-corners':'AlpinePhotoTiles-img-nocorners');
-    $this->highlight = ($opts['style_highlight']?'AlpinePhotoTiles-img-highlight':'AlpinePhotoTiles-img-nohighlight');
-                      
-    $this->out .= '<div id="'.$this->wid.'-AlpinePhotoTiles_container" class="AlpinePhotoTiles_container_class">';     
-    
-      // Align photos
-      $css = $this->get_parent_css();
-      $this->out .= '<div id="'.$this->wid.'-vertical-parent" class="AlpinePhotoTiles_parent_class" style="'.$css.'">';
+  function parse_php_serial_v2($_flickr_php){
+    $content =  $_flickr_php['photos'];
+    $photos = $_flickr_php['photos']['photo'];
 
-        for($i = 0;$i<$opts['flickr_photo_number'];$i++){
-          $has_link = $this->get_link($i);  // Add link
-          $css = "margin:1px 0 5px 0;padding:0;max-width:100%;";
-          $this->add_image($i,$css); // Add image
-          if( $has_link ){ $this->out .= '</a>'; } // Close link
+    // Check for photosets  
+    if( 'set' == $this->options['flickr_source']) {
+      $content =  $_flickr_php['photoset'];
+      $photos = $_flickr_php['photoset']['photo'];
+    }
+    if( is_array( $photos ) ){
+      // Remove offset
+      for($j=0;$j<$this->options['photo_feed_offset'];$j++){
+        if( !empty( $photos  ) ){
+          array_shift( $photos );
         }
-        
-        $this->add_credit_link();
-      
-      $this->out .= '</div>'; // Close vertical-parent
-
-      $this->add_user_link();
-
-    $this->out .= '</div>'; // Close container
-    $this->out .= '<div class="AlpinePhotoTiles_breakline"></div>';
-    
-    $highlight = $this->get_option("general_highlight_color");
-    $highlight = ($highlight?$highlight:'#64a2d8');
-
-    $this->add_lightbox_call();
-    
-    if( $opts['style_shadow'] || $opts['style_border'] || $opts['style_highlight']  ){
-      $this->out .= '<script>
-           jQuery(window).load(function() {
-              if(jQuery().AlpineAdjustBordersPlugin ){
-                jQuery("#'.$this->wid.'-vertical-parent").AlpineAdjustBordersPlugin({
-                  highlight:"'.$highlight.'"
-                });
-              }  
-            });
-          </script>';  
-    }
-  }  
-/**
- *  Function for printing cascade style
- *  
- *  @ Since 0.0.1
- *  @ Updated 1.2.2
- */
-  function display_cascade(){
-    $this->out = ""; // Clear any output;
-    $this->updateCount(); // Check number of images found
-    $opts = $this->options;
-    $this->shadow = ($opts['style_shadow']?'AlpinePhotoTiles-img-shadow':'AlpinePhotoTiles-img-noshadow');
-    $this->border = ($opts['style_border']?'AlpinePhotoTiles-img-border':'AlpinePhotoTiles-img-noborder');
-    $this->curves = ($opts['style_curve_corners']?'AlpinePhotoTiles-img-corners':'AlpinePhotoTiles-img-nocorners');
-    $this->highlight = ($opts['style_highlight']?'AlpinePhotoTiles-img-highlight':'AlpinePhotoTiles-img-nohighlight');
-    
-    $this->out .= '<div id="'.$this->wid.'-AlpinePhotoTiles_container" class="AlpinePhotoTiles_container_class">';     
-    
-      // Align photos
-      $css = $this->get_parent_css();
-      $this->out .= '<div id="'.$this->wid.'-cascade-parent" class="AlpinePhotoTiles_parent_class" style="'.$css.'">';
-      
-        for($col = 0; $col<$opts['style_column_number'];$col++){
-          $this->out .= '<div class="AlpinePhotoTiles_cascade_column" style="width:'.(100/$opts['style_column_number']).'%;float:left;margin:0;">';
-          $this->out .= '<div class="AlpinePhotoTiles_cascade_column_inner" style="display:block;margin:0 3px;overflow:hidden;">';
-          for($i = $col;$i<$opts['flickr_photo_number'];$i+=$opts['style_column_number']){
-            $has_link = $this->get_link($i); // Add link
-            $css = "margin:1px 0 5px 0;padding:0;max-width:100%;";
-            $this->add_image($i,$css); // Add image
-            if( $has_link ){ $this->out .= '</a>'; } // Close link
-          }
-          $this->out .= '</div></div>';
-        }
-        $this->out .= '<div class="AlpinePhotoTiles_breakline"></div>';
-          
-        $this->add_credit_link();
-      
-      $this->out .= '</div>'; // Close cascade-parent
-
-      $this->out .= '<div class="AlpinePhotoTiles_breakline"></div>';
-      
-      $this->add_user_link();
-
-    // Close container
-    $this->out .= '</div>';
-    $this->out .= '<div class="AlpinePhotoTiles_breakline"></div>';
-   
-    $highlight = $this->get_option("general_highlight_color");
-    $highlight = ($highlight?$highlight:'#64a2d8');
-    
-    $this->add_lightbox_call();
-    
-    if( $opts['style_shadow'] || $opts['style_border'] || $opts['style_highlight']  ){
-      $this->out .= '<script>
-           jQuery(window).load(function() {
-              if(jQuery().AlpineAdjustBordersPlugin ){
-                jQuery("#'.$this->wid.'-cascade-parent").AlpineAdjustBordersPlugin({
-                  highlight:"'.$highlight.'"
-                });
-              }  
-            });
-          </script>';  
-    }
-  }
-
-/**
- *  Function for printing and initializing JS styles
- *  
- *  @ Since 0.0.1
- *  @ Updated 1.2.2
- */
-  function display_hidden(){
-    $this->out = ""; // Clear any output;
-    $this->updateCount(); // Check number of images found
-    $opts = $this->options;
-    $this->shadow = ($opts['style_shadow']?'AlpinePhotoTiles-img-shadow':'AlpinePhotoTiles-img-noshadow');
-    $this->border = ($opts['style_border']?'AlpinePhotoTiles-img-border':'AlpinePhotoTiles-img-noborder');
-    $this->curves = ($opts['style_curve_corners']?'AlpinePhotoTiles-img-corners':'AlpinePhotoTiles-img-nocorners');
-    $this->highlight = ($opts['style_highlight']?'AlpinePhotoTiles-img-highlight':'AlpinePhotoTiles-img-nohighlight');
-    
-    $this->out .= '<div id="'.$this->wid.'-AlpinePhotoTiles_container" class="AlpinePhotoTiles_container_class">';     
-      // Align photos
-      $css = $this->get_parent_css();
-      $this->out .= '<div id="'.$this->wid.'-hidden-parent" class="AlpinePhotoTiles_parent_class" style="'.$css.'">';
-      
-        $this->out .= '<div id="'.$this->wid.'-image-list" class="AlpinePhotoTiles_image_list_class" style="display:none;visibility:hidden;">'; 
-        
-          for($i = 0;$i<$opts['flickr_photo_number'];$i++){
-            $has_link = $this->get_link($i); // Add link
-            $css = "";
-            $this->add_image($i,$css); // Add image
-            
-            // Load original image size
-            if( "gallery" == $opts['style_option'] && !empty( $this->results['image_originals'][$i] ) ){
-              $this->out .= '<img class="AlpinePhotoTiles-original-image" src="' . $this->results['image_originals'][$i]. '" />';
-            }
-            if( $has_link ){ $this->out .= '</a>'; } // Close link
-          }
-        $this->out .= '</div>';
-        
-        $this->add_credit_link();       
-      
-      $this->out .= '</div>'; // Close parent  
-
-      $this->add_user_link();
-      
-    $this->out .= '</div>'; // Close container
-    
-    $disable = $this->get_option("general_loader");
-    $highlight = $this->get_option("general_highlight_color");
-    $highlight = ($highlight?$highlight:'#64a2d8');
-    
-    $this->out .= '<script>';
-      if(!$disable){
-        $this->out .= '
-               jQuery(document).ready(function() {
-                jQuery("#'.$this->wid.'-AlpinePhotoTiles_container").addClass("loading"); 
-               });';
       }
-    $this->out .= '
-           jQuery(window).load(function() {
-            jQuery("#'.$this->wid.'-AlpinePhotoTiles_container").removeClass("loading");
-            if( jQuery().AlpinePhotoTilesPlugin ){
-              jQuery("#'.$this->wid.'-hidden-parent").AlpinePhotoTilesPlugin({
-                id:"'.$this->wid.'",
-                style:"'.($opts['style_option']?$opts['style_option']:'windows').'",
-                shape:"'.($opts['style_shape']?$opts['style_shape']:'square').'",
-                perRow:"'.($opts['style_photo_per_row']?$opts['style_photo_per_row']:'3').'",
-                imageLink:'.($opts['flickr_image_link']?'1':'0').',
-                imageBorder:'.($opts['style_border']?'1':'0').',
-                imageShadow:'.($opts['style_shadow']?'1':'0').',
-                imageCurve:'.($opts['style_curve_corners']?'1':'0').',
-                imageHighlight:'.($opts['style_highlight']?'1':'0').',
-                lightbox:'.($opts['flickr_image_link_option'] == "fancybox"?'1':'0').',
-                galleryHeight:'.($opts['style_gallery_height']?$opts['style_gallery_height']:'0').', // Keep for Compatibility
-                galRatioWidth:'.($opts['style_gallery_ratio_width']?$opts['style_gallery_ratio_width']:'800').',
-                galRatioHeight:'.($opts['style_gallery_ratio_height']?$opts['style_gallery_ratio_height']:'600').',
-                highlight:"'.$highlight.'",
-                pinIt:'.($opts['pinterest_pin_it_button']?'1':'0').',
-                siteURL:"'.get_option( 'siteurl' ).'",
-                callback: '.($opts['flickr_image_link_option'] == "fancybox"?'function(){'.$this->get_lightbox_call().'}':'""').'
-              });
-            }
-          });
-        </script>';
+      foreach( $photos as $info ){
+        $the_photo = array();
+        $the_photo['image_link'] = 'http://www.flickr.com/photos/'.($info['owner']?$info['owner']:$this->options['flickr_user_id']).'/'.$info['id'].'/';
+        $the_photo['image_title'] = (string) @str_replace('"','', @str_replace("'","\'",$info['title']) );
+        $the_photo['image_caption'] = (string) $info['description']['_content'];
+        $the_photo['image_caption'] = str_replace("'","\'",$the_photo['image_caption'] );
         
+        $the_photo['image_source'] = (string) $this->get_image_url($info);
+        $the_photo['image_original'] = (string) $this->get_image_orig($info);
+        $this->photos[] = $the_photo;
+      }
+    }
+    $this->set_user_link($content);
   }
- 
+/**
+ *  Function for parsing results in php_serial format ( API v1 )
+ *  
+ *  @ Since 1.2.4
+ */
+  function parse_php_serial_v1($_flickr_php){
+    $this->userlink = $_flickr_php['url']; // Store userlink for later
+    $content =  $_flickr_php['items'];
+
+    if( is_array( $content ) ){
+      foreach( $content as $info ){
+        $the_photo = array();
+        $the_photo['image_link'] = (string) $info['url'];
+        $the_photo['image_title'] = (string) @str_replace('"','', @str_replace("'","\'",$info['title']) );
+        $the_photo['image_caption'] = (string) $info['description_raw']; // retrieve image title
+        $the_photo['image_caption'] = str_replace("'","\'",$the_photo['image_caption'] );
+        
+        $the_photo['image_source'] = (string) $this->get_image_url($info);
+        $the_photo['image_original'] = (string) $this->get_image_orig($info);
+        $this->photos[] = $the_photo;
+      }
+    }
+  }
+  
+/**
+ *  Function for making flickr request with xml return format ( API v2 )
+ *  
+ *  @ Since 1.2.4
+ */
+  function try_rest(){
+    $request = $this->get_flickr_request('rest');
+
+    $_flickrurl  = @urlencode( $request );	// just for compatibility
+    $_flickr_xml = @simplexml_load_file( $_flickrurl,"SimpleXMLElement",LIBXML_NOCDATA); // @ is shut-up operator
+
+    if( $_flickr_xml === false || !$_flickr_xml || (!$_flickr_xml->photos && !$_flickr_xml->photoset) ){
+      $this->hidden .= '<!-- Failed using simplexml_load_file() and XML @ '.$request.' -->';
+      if( $_flickr_xml->err['msg'] ){
+        $this->message .= '- Attempt 2: '.$_flickr_xml->err['msg'].'<br>';
+      }
+      $this->success = false;
+    }else{
+      $this->parse_rest_v2($_flickr_xml);
+      if(!empty($this->photos) ){
+        $this->success = true;
+        $this->hidden  .= '<!-- Success using simplexml_load_file() and XML -->';
+      }else{
+        $this->success = false;
+        $this->feed_found = true;
+        $this->hidden .= '<!-- No photos found using simplexml_load_file() and XML @ '.$request.' -->';
+      }
+    }
+  }
+/**
+ *  Function for parsing results in xml format ( API v2 )
+ *  
+ *  @ Since 1.2.4
+ */  
+  function parse_rest_v2($_flickr_xml){
+    $_flickr_xml = $this->xml2array($_flickr_xml);
+
+    $content =  $_flickr_xml['photos'];
+    $photos = $content['photo'];
+      
+    // Check for photosets  
+    if( 'set' == $this->options['flickr_source']) {
+      $content =  $_flickr_xml['photoset'];
+      $photos = $content['photo'];
+    }
+    if( is_array( $photos ) ){
+      // Remove offset
+      for($j=0;$j<$this->options['photo_feed_offset'];$j++){
+        if( !empty( $photos  ) ){
+          array_shift( $photos );
+        }
+      }
+      foreach( $photos as $info ){ // $photos not indexed with ints
+        $the_photo = array();    
+        
+        if( is_array( $info['description'] ) ){
+          $the_photo['image_caption'] = "";
+        }else{
+          $the_photo['image_caption'] = (string) $info['description'];
+          $the_photo['image_caption'] = str_replace("'","\'",$the_photo['image_caption'] );
+        }
+
+        $info = $info['@attributes'];
+        $the_photo['image_link'] = (string) 'http://www.flickr.com/photos/'.($info['owner']?$info['owner']:$this->options['flickr_user_id']).'/'.$info['id'].'/';
+        $the_photo['image_title'] = (string) @str_replace('"','', @str_replace("'","\'",$info['title']) );
+        $the_photo['image_source'] = (string) $this->get_image_url($info);
+        $the_photo['image_original'] = (string) $this->get_image_orig($info);
+        $this->photos[] = $the_photo;
+      }
+    }
+    $this->set_user_link($content);
+  }
+/**
+ *  Convert SimpleXMLObject to PHP Array
+ *  
+ *  @ Since 1.2.4
+ */  
+  function xml2array ( $input, $out = array () ){
+    foreach ( (array) $input as $index => $node ){
+      $out[$index] = ( is_object ( $node ) ||  is_array ( $node ) ) ? $this->xml2array ( $node ) : $node;
+    }
+    return $out;
+  }
+  
+  
+  
+  
+
+  function set_user_link($content){
+    if( 'community' != $this->options['flickr_source'] && $this->options['flickr_display_link'] && $this->options['flickr_display_link_text']) {
+      switch ($this->options['flickr_source']) {
+        case 'user':
+          $this->userlink = 'http://www.flickr.com/photos/'.$this->options['flickr_user_id'].'/';
+        break;
+        case 'favorites':
+          $this->userlink = 'http://www.flickr.com/photos/'.$this->options['flickr_user_id'].'/favorites/';
+        break;
+        case 'group':
+          $this->userlink = 'http://www.flickr.com/groups/'.$this->options['flickr_group_id'].'/';
+        break;
+        case 'set':
+          if($content['owner'] && $content['id']){
+            $this->userlink = 'http://www.flickr.com/photos/'.$content['owner'].'/sets/'.$content['id'].'/';
+          }
+        break;
+      }
+    }
+  }
+  
+  
+//////////////////////////////////////////////////////////////////////////////////////
+////////////////////        Unique Admin Functions        ////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////    
+  
+ /**
+   * Alpine PhotoTile: Options Page
+   *
+   * @ Since 1.1.1
+   * @ Updated 1.2.4
+   */
+  function build_settings_page(){
+    $currenttab = $this->get_current_tab();
+    
+    echo '<div class="wrap AlpinePhotoTiles_settings_wrap">';
+    $this->admin_options_page_tabs( $currenttab );
+
+      echo '<div class="AlpinePhotoTiles-container '.$this->domain.'">';
+      
+      if( 'general' == $currenttab ){
+        $this->display_general();
+      }elseif( 'add' == $currenttab ){
+        $this->display_add();
+      }elseif( 'preview' == $currenttab ){
+        $this->display_preview();
+      }else{
+        $this->setup_options_form($currenttab);
+      }
+      echo '</div>'; // Close Container
+    echo '</div>'; // Close wrap
+  }  
+  
+  
+  function AddKey($key){
+    $options = get_option( $this->settings );
+    $options['api_key'] = $key;
+    update_option( $this->settings, $options );
+  }
+  function DeleteKey(){
+    $options = get_option( $this->settings );
+    $options['api_key'] = 0;
+    update_option( $this->settings, $options );
+  }
+/**
+ * Display add page
+ *
+ * @ Since 1.2.3
+ *
+ */
+  function display_add(){ 
+    $currenttab = 'add';
+    $options = $this->get_all_options();  
+
+    $settings_section = $this->id . '_'.$currenttab.'_tab';
+    $submitted = ( ( isset($_POST[ "hidden" ]) && ($_POST[ "hidden" ]=="Y") ) ? true : false );
+    $success = false;
+    $errormessage = null;
+    $errortype = null;
+    $options = array();
+     
+    // Check that key works
+    if($submitted && !empty( $_POST['api_key']) ) {
+      $key = $_POST['api_key'];
+
+      $request = 'http://api.flickr.com/services/rest/?method=flickr.test.echo&format=php_serial&api_key='.$key;
+      
+      $response = wp_remote_get( $request );
+
+      if(!is_wp_error($response) && $response['response']['code'] < 400 && $response['response']['code'] >= 200) {
+        $echo = @unserialize($response['body']);
+        if( $key == $echo['api_key']['_content'] ){
+          $this->AddKey($key);
+          $success = true;
+        }elseif( $echo['stat'] == 'fail' ){
+          $errormessage = "  ".$echo['message']."  ";
+          $success = false;
+        }else{
+          $errormessage = "API Key saved but not verified";
+          $this->AddKey($key);
+          $success = true;
+        }
+      }elseif( !is_wp_error($response) && $response['response']['code'] >= 400 ) {
+        $error = unserialize($response['body']);
+        $errormessage = $error->error;
+      }elseif( is_wp_error($response) ){
+        $errormessage = $response->get_error_message();
+      }
+    }elseif($submitted && $_POST[ $this->settings.'_add']['submit-add'] == 'Delete Your API Key'){
+      $this->DeleteKey();
+      $delete = true;
+    }
+
+    
+    
+    
+    echo '<div class="AlpinePhotoTiles-add">';
+    if( $success ){
+      echo '<div class="announcement"> API key verified and saved. </div>';
+    }elseif( $delete ){
+      echo '<div class="announcement"> API key deleted. </div>';
+    }elseif( $errormessage ){
+      echo '<div class="announcement"> An error occured ('.$errormessage.'). </div>';
+    }
+      
+      
+
+    $key = $this->get_option('api_key');
+    if( !empty($key) ){
+     echo '<h4>Thank you for adding an API Key</h4>'; 
+     echo '<div id="AlpinePhotoTiles-user-form" style="margin-bottom:20px;padding-bottom:20px;overflow:hidden;border-bottom: 1px solid #DDDDDD;">'; 
+      echo '<form id="'.$this->settings.'"-add-user" action="" method="post">';
+      echo '<input type="hidden" name="hidden" value="Y">';
+      echo '<input id="'.$this->settings.'-submit" name="'.$this->settings.'_'.$currenttab .'[submit-'. $currenttab.']" type="submit" class="button-primary" style="margin-top:15px;" value="Delete Your API Key" />';
+      echo '</form>';
+     echo '</div>';
+      
+    }else{
+      $defaults = $this->option_defaults();
+      $positions = $this->get_option_positions_by_tab( $currenttab );
+        if( count($positions) ){
+          foreach( $positions as $position=>$positionsinfo){
+            echo '<div id="AlpinePhotoTiles-user-form" style="margin-bottom:20px;padding-bottom:20px;overflow:hidden;border-bottom: 1px solid #DDDDDD;">'; 
+
+              ?>
+              <form id="<?php echo $this->settings."-add-user";?>" action="" method="post">
+              <input type="hidden" name="hidden" value="Y">
+                <?php 
+              echo '<div class="'. $position .'">'; 
+                if( $positionsinfo['title'] ){ echo '<h4>'. $positionsinfo['title'].'</h4>'; } 
+                echo '<table class="form-table">';
+                  echo '<tbody>';
+                    if( count($positionsinfo['options']) ){
+                      foreach( $positionsinfo['options'] as $optionname ){
+                        $option = $defaults[$optionname];
+                        $fieldname = ( $option['name'] );
+                        $fieldid = ( $option['name'] );
+
+                        echo '<tr valign="top"><td>';
+                          $this->AdminDisplayCallback($options,$option,$fieldname,$fieldid); // Don't display previously input info
+                        echo '</td></tr>';   
+                            
+                      }
+                    }
+                  echo '</tbody>';
+                echo '</table>';
+              echo '</div>';
+              echo '<input id="'.$this->settings.'-submit" name="'.$this->settings.'_'.$currenttab .'[submit-'. $currenttab.']" type="submit" class="button-primary" style="margin-top:15px;" value="Save API Key" />';
+              echo '</form>';
+              echo '<br style="clear:both;">';
+            echo '</div>';
+            
+          }
+        }
+      
+    }
+    echo '</div>'; // close add div
+          ?>
+        <div style="max-width:680px;">
+          <h1><?php _e('What is an API Key and why do I need one?');?> :</h1>
+          <p><?php _e('Photo sharing websites like Flickr want to protect their users and to prevent abuses by keeping track of how their services are being used. ');
+          _e('Two of the ways that Flickr does this is by assigning API Keys to plugins, like the Alpine PhotoTile, to keep track of who is who and by limiting the number of times a plugin can talk to the Flickr network.  ');
+          _e('While serveral hundred websites could share an API Key without reaching this limit, the Alpine PhotoTile plugin has become popular enough that users now need API Keys of their own. ');
+          ?></p>
+          <p><?php
+          _e('An API Key is free and easy to get. Because this plugin uses multiple methods of talking with the Flickr network, signing up for an API Key is optional. However, users without an API Key will experience the following limitations: ');?>
+            <ul style="text-align:left;padding-left:15px;">
+            <li>- <?php _e('Images size options limited to 75px, 240px, 500px, and 800px.');?></li>
+            <li>- <?php _e('"Photo Offset" option will not work.');?></li>
+            <li>- <?php _e('"Shuffle/Randomize Photos" option will not work.');?></li>
+            <li>- <?php _e('Lack of helpful error messages if something does not work.');?></li>
+            <li>- <?php _e('Possibly slower plugin loading time (It is hard to tell).');?></li>
+            <li>- <?php _e('Future options added to this plugin will likely require an API Key.');?></li>
+            </ul> 
+          <?php _e('If you are fine with these limitations, feel free to use this plugin without an API Key. Otherwise, please add an API Key using the directions below. Thank you for your understanding.');?>
+         </p>
+          
+        </div>
+        <div style="max-width:680px;">
+          <h1><?php _e('How to get a Flickr API Key');?> :</h1>
+          <h2 style="font-size: 18px;padding:0px;">(<?php _e("Don't worry. I promise it's EASY");?>!!!)</h2>
+          <p><?php _e('Please <a href="'.$this->info.'" target="_blank">let me know</a> if these directions become outdated.');?></p>
+          <ol>
+            <li>
+              <?php _e("Make sure you are logged into Flickr.com and then visit");?> <a href="http://www.flickr.com/services/apps/create/" target="_blank">http://www.flickr.com/services/apps/create/</a>.
+            </li>
+            <li>
+              <?php _e('Under "Get your API Key", click the "Request an API Key" link.');?>
+            </li>
+            <li>
+              <?php _e('Next, click the button that says "APPLY FOR A NON-COMMERCIAL KEY". Even if your website is commercial, this plugin is non-commercial.');?>
+            </li>
+            <li>
+              <p><?php _e('A form will appear. Fill in the form with the following infomation. Feel free to add details wherever you like. Check the two boxes and finish by clicking "Submit":');?></p>
+              <dl>
+                <dt><strong><?php _e('What\'s the name of your app');?></strong></dt>
+                <dd><em><?php echo $this->name;?> WordPress plugin</em></dd>
+                <dt><strong><?php _e('What are you building?');?></strong></dt>
+                <dd><em>A simple plugin to display images from Flickr on my WordPress website.</em></dd>
+              </dl>
+            </li>
+            <li>
+              <?php _e('Copy and paste the Key into the form above. Click "Save API Key" and you are all done. I hope you enjoy the plugin.');?>
+            </li>
+          </ol>
+        </div>  
+    <?php
+  }  
 }
+
 
 ?>

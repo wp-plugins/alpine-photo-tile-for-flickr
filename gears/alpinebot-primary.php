@@ -1,7 +1,12 @@
 <?php
-
-
-class PhotoTileForFlickrBase {  
+/**
+ * AlpineBot Primary
+ * 
+ * Holds paramaters and settings specific to this plugin
+ * Some universal functions, but mostly unique
+ * 
+ */
+class PhotoTileForFlickrPrimary {  
 
   /* Set constants for plugin */
   public $url;
@@ -15,8 +20,10 @@ class PhotoTileForFlickrBase {
   public $info = 'http://thealpinepress.com/alpine-phototile-for-flickr/';
   public $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
   public $page = 'AlpineTile: Flickr';
+  public $src = 'flickr';
   public $hook = 'APTFFbyTAP_hook';
-  public $plugins = array('pinterest','tumblr','instagram','picasa-and-google-plus');
+  public $plugins = array('pinterest','tumblr','instagram','picasa-and-google-plus','smugmug');
+  public $termsofservice = "By using this plugin, you are agreeing to the Flickr API <a href='http://www.flickr.com/services/api/tos/' target='_blank'>Terms of Service</a>. This is why the plugin is limited to displaying 30 photos.";
 
   public $root = 'AlpinePhotoTiles';
   public $wjs = 'AlpinePhotoTiles_script';
@@ -66,9 +73,12 @@ class PhotoTileForFlickrBase {
         'right' => array( 'title' => 'Style Settings' ),
         'bottom' => array( 'title' => 'Format Settings' )
       ),
+      'add' => array(
+        'center' => array( 'title' => 'Add API Key (See Directions Below)' )
+      ),
       'plugin-settings' => array(
         'top' => array( 'title' => 'Global Style Options', 'description' => "Below are style settings that will be applied to every instance of the plugin. " ),
-        'center' => array( 'title' => 'Hidden Options', 'description' => "Below are additional options that you can choose to enable by checking the box." ),
+        'center' => array( 'title' => 'Hidden Options', 'description' => "Below are additional options that you can choose to enable by checking the box. <br>Once enabled, the option will appear in the Widget Menu and Shortcode Generator." ),
         'bottom' => array( 'title' => 'Cache Options' )
       )
     );
@@ -86,13 +96,13 @@ class PhotoTileForFlickrBase {
         'name' => 'general',
         'title' => 'General',
       ),
+      'add' => array(
+        'name' => 'add',
+        'title' => 'Add API Key',
+      ),
       'generator' => array(
         'name' => 'generator',
         'title' => 'Shortcode Generator',
-      ),
-      'preview' => array(
-        'name' => 'preview',
-        'title' => 'Shortcode Preview',
       ),
       'plugin-settings' => array(
         'name' => 'plugin-settings',
@@ -223,10 +233,6 @@ class PhotoTileForFlickrBase {
             'name' => 'none',
             'title' => 'Do not link images'
           ),
-          'original' => array(
-            'name' => 'original',
-            'title' => 'Link to Image Source'
-          ),
           'flickr' => array(
             'name' => 'flickr',
             'title' => 'Link to Flickr Page'
@@ -281,6 +287,20 @@ class PhotoTileForFlickrBase {
         'since' => '1.2.3',
         'default' => ''
       ),
+      'photo_feed_shuffle' => array(
+        'name' => 'photo_feed_shuffle',
+        'short' => 'shuffle',
+        'title' => 'Shuffle/Randomize Photos',
+        'type' => 'checkbox',
+        'description' => '(API Key Required)',
+        'widget' => true,
+        'hidden-option' => true,
+        'check' => 'hidden_photo_feed_shuffle',
+        'tab' => 'generator',
+        'position' => 'left',
+        'since' => '1.2.4',
+        'default' => ''
+      ),    
       'flickr_display_link' => array(
         'name' => 'flickr_display_link',
         'short' => 'dl',
@@ -392,7 +412,7 @@ class PhotoTileForFlickrBase {
         'type' => 'text',
         'sanitize' => 'int',
         'min' => '1',
-        'max' => '500',
+        'max' => '30',
         'description' => '',
         'child' => 'style_option',
         'hidden' => 'vertical cascade windows',
@@ -455,12 +475,28 @@ class PhotoTileForFlickrBase {
         'type' => 'text',
         'sanitize' => 'int',
         'min' => '1',
-        'max' => '500',
-        'description' => 'Max of 500, though under 20 is recommended',
+        'max' => '30',
+        'description' => 'Max of 30',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'right',
         'default' => '4'
+      ),
+      'photo_feed_offset' => array(
+        'name' => 'photo_feed_offset',
+        'short' => 'offset',
+        'title' => 'Photo Offset: ',
+        'type' => 'text',
+        'sanitize' => 'int',
+        'min' => '1',
+        'max' => '500',
+        'description' => 'Skip over this many photos. <br>(API Key Required)',
+        'widget' => true,
+        'tab' => 'generator',
+        'position' => 'right',
+        'hidden-option' => true,
+        'check' => 'hidden_photo_feed_offset',
+        'default' => '0'
       ),
       'flickr_photo_size' => array(
         'name' => 'flickr_photo_size',
@@ -497,10 +533,10 @@ class PhotoTileForFlickrBase {
             'title' => '800px'
           )     
         ),
-        'description' => '',
+        'description' => 'Some sizes require an API Key',
         'widget' => true,
         'tab' => 'generator',
-        'position' => 'right',
+        'position' => 'left',
         'default' => '240'
       ),
       'style_shadow' => array(
@@ -577,12 +613,12 @@ class PhotoTileForFlickrBase {
       'widget_max_width' => array(
         'name' => 'widget_max_width',
         'short' => 'max',
-        'title' => 'Max widget width (%) : ',
+        'title' => 'Maximum widget width : ',
         'type' => 'text',
         'sanitize' => 'numeric',
         'min' => '1',
         'max' => '100',
-        'description' => "To reduce the widget width, input a percentage (between 1 and 100). <br> If photos are smaller than widget area, reduce percentage until desired width is achieved.",
+        'description' => "Percentage (%) between 1 and 100.",
         'widget' => true,
         'tab' => 'generator',
         'position' => 'bottom',
@@ -591,7 +627,7 @@ class PhotoTileForFlickrBase {
       'widget_disable_credit_link' => array(
         'name' => 'widget_disable_credit_link',
         'short' => 'nocredit',
-        'title' => 'Disable the tiny "TAP" link in the bottom left corner, though I have spent several months developing this plugin and would appreciate the credit.',
+        'title' => 'Disable the tiny "TAP" link in the bottom left corner, though I would appreciate the credit.',
         'type' => 'checkbox',
         'description' => '',
         'widget' => true,
@@ -599,6 +635,16 @@ class PhotoTileForFlickrBase {
         'position' => 'bottom',
         'default' => ''
       ), 
+      'general_disable_right_click' => array(
+        'name' => 'general_disable_right_click',
+        'title' => 'Disable Right-Click: ',
+        'type' => 'checkbox',
+        'description' => 'Prevent visitors from right-clicking and downloading images.',
+        'since' => '1.2.4',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => ''
+      ),
       'general_loader' => array(
         'name' => 'general_loader',
         'title' => 'Disable Loading Icon: ',
@@ -662,6 +708,7 @@ class PhotoTileForFlickrBase {
         'name' => 'general_lightbox_params',
         'title' => 'Custom Lightbox Parameters:',
         'type' => 'textarea',
+        'sanitize' => 'css',
         'description' => 'Add custom parameters to the lighbox call.',
         'section' => 'settings',
         'tab' => 'general',
@@ -684,17 +731,17 @@ class PhotoTileForFlickrBase {
         'name' => 'hidden_display_link',
         'title' => 'Link Below Widget: ',
         'type' => 'checkbox',
-        'description' => 'Add an option to place a link with custom text below widget display.',
+        'description' => 'Place a link with custom text below widget display.',
         'since' => '1.2.3',
         'tab' => 'plugin-settings',
         'position' => 'center',
-        'default' => true
+        'default' => ''
       ), 
       'hidden_widget_alignment' => array(
         'name' => 'hidden_widget_alignment',
         'title' => 'Photo Alignment: ',
         'type' => 'checkbox',
-        'description' => 'Add an option to align photos to the left, right, or center.',
+        'description' => 'Align photos to the left, right, or center.',
         'since' => '1.2.3',
         'tab' => 'plugin-settings',
         'position' => 'center',
@@ -704,8 +751,28 @@ class PhotoTileForFlickrBase {
         'name' => 'hidden_lightbox_custom_rel',
         'title' => 'Custom "rel" for Lightbox: ',
         'type' => 'checkbox',
-        'description' => 'Add an option to set custom "rel" to widget options.',
+        'description' => 'Set custom "rel" to widget options.',
         'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'center',
+        'default' => ''
+      ), 
+      'hidden_photo_feed_offset' => array(
+        'name' => 'hidden_photo_feed_offset',
+        'title' => 'Photo Offset: ',
+        'type' => 'checkbox',
+        'description' => 'Skip over certain number of photos (API Key Required).',
+        'since' => '1.2.3',
+        'tab' => 'plugin-settings',
+        'position' => 'center',
+        'default' => ''
+      ), 
+      'hidden_photo_feed_shuffle' => array(
+        'name' => 'hidden_photo_feed_shuffle',
+        'title' => 'Photo Shuffle: ',
+        'type' => 'checkbox',
+        'description' => 'Randomize photos (API Key Required).',
+        'since' => '1.2.4',
         'tab' => 'plugin-settings',
         'position' => 'center',
         'default' => ''
@@ -732,6 +799,18 @@ class PhotoTileForFlickrBase {
         'position' => 'bottom',
         'default' => '4'
       ), 
+      
+      'api_key' => array(
+        'name' => 'api_key',
+        'title' => 'API Key : ',
+        'type' => 'text',
+        'sanitize' => 'nospaces',
+        'description' => '',
+        'tab' => 'add',
+        'position' => 'center',
+        'default' => ''
+      ),    
+      
     );
     return $options;
   }

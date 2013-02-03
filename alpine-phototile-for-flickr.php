@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr, the first plugin in the Alpine PhotoTile series, is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. The photos can be linked to the your Flickr page, a specific URL, or to a Lightbox slideshow. Also, the Shortcode Generator makes it easy to insert the widget into posts without learning any of the code. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.2.3
+Version: 1.2.4
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 License: GNU General Public License v3.0
@@ -51,6 +51,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
   include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/alpinebot-primary.php' );
   include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/alpinebot-secondary.php' );
   include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/alpinebot-tertiary.php' );
+  include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/alpinebot-quaternary.php' );
   include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/plugin-widget.php' );
   include_once( WP_PLUGIN_DIR.'/'.basename(dirname(__FILE__)).'/gears/plugin-shortcode.php' );
 
@@ -105,7 +106,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Load JS to highlight and select shortcode upon hovering
  *  
  * @ Since 1.0.0
- *
+ * @ Updated 1.2.4
  */
   function APTFFbyTAP_shortcode_select(){
     $bot = new PhotoTileForFlickrBot();
@@ -114,10 +115,13 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
       jQuery(".auto_select").mouseenter(function(){
         jQuery(this).select();
       }); 
-      var div = jQuery('#<?php echo $bot->settings; ?>-shortcode');
-      if( div && div.offset() ){
-        jQuery("html,body").animate({ scrollTop: (40) }, 2000);
-      } 
+     var div = jQuery('#<?php echo $bot->settings; ?>-shortcode #shortcode');
+     var contain = jQuery('.AlpinePhotoTiles_container_class');
+     if( div.length && !contain.length ){
+        for(i=0;i<3;i++) {
+          div.animate({'opacity':'.7'}, 500).animate({'opacity':'1'}, 500);
+        }
+     } 
     </script>  
     <?php
   }
