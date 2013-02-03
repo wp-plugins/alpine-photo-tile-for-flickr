@@ -95,7 +95,7 @@ class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{
       }
     }
     
-    $this->results = array('continue'=>$this->success,'message'=>$this->message,'hidden'=>$this->hidden,'photos'=>$this->photos);
+    $this->results = array('continue'=>$this->success,'message'=>$this->message,'hidden'=>$this->hidden,'photos'=>$this->photos,'user_link'=>$this->userlink);
 
     $this->store_in_cache( $key );  // Store in cache
 
