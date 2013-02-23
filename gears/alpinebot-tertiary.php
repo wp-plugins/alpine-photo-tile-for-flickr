@@ -130,7 +130,7 @@ class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{
         break;
         case 'set':
           $flickr_set = apply_filters( $this->hook, empty($options['flickr_set_id']) ? '' : $options['flickr_set_id'], $options );
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=url_sq,url_t,url_s,url_m,url_o';
+          $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c,url_o'; // API claims no n, z, or c. Add o to cover missing sizes
         break;
         case 'community':
           $flickr_tags = apply_filters( $this->hook, empty($options['flickr_tags']) ? '' : $options['flickr_tags'], $options );
@@ -237,11 +237,11 @@ class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{
   function get_image_orig($info){
     $size = $this->options['size_id'];
     if( !empty( $this->options['api_key'] ) ){
-      if( 'url_c' == $size && isset($info['url_c']) ){
+      if( isset($info['url_c']) ){
         return $info['url_c'];
-      }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
+      }elseif( isset($info['url_o']) ){
         return $info['url_o'];
-      }elseif( isset($info['url_z']) ){
+      }elseif( isset($info['url_z']) ){ // Checking url_o is same as src==set
         return $info['url_z'];
       }elseif( isset($info['url_m']) ){
         return $info['url_m'];
