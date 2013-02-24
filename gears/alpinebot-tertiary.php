@@ -205,7 +205,7 @@ class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{
     if( !empty( $this->options['api_key'] ) ){
       if( isset($info[$size]) ){
         return $info[$size];
-      }elseif( 'url_c' == $size && isset($info['url_o']) ){ // Checking url_o is same as src==set
+      }elseif( 'url_c' == $size && (isset($info['url_o']) && ($info['height_o']<1200 && $info['width_o']<1200) ) ){ // Checking url_o is same as src==set
         return $info['url_o'];
       }elseif( 'url_c' == $size && isset($info['url_z']) ){
         return $info['url_z'];
@@ -239,7 +239,7 @@ class PhotoTileForFlickrTertiary extends PhotoTileForFlickrSecondary{
     if( !empty( $this->options['api_key'] ) ){
       if( isset($info['url_c']) ){
         return $info['url_c'];
-      }elseif( isset($info['url_o']) ){
+      }elseif( isset($info['url_o']) && $info['height_o']<1200 && $info['width_o']<1200 ){
         return $info['url_o'];
       }elseif( isset($info['url_z']) ){ // Checking url_o is same as src==set
         return $info['url_z'];
