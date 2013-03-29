@@ -27,7 +27,7 @@ Copyright 2013  Eric Burger
     
 */
         
-  error_reporting(E_ALL);
+  //error_reporting(E_ALL);
   
   // Prevent direct access to the plugin 
   if (!defined('ABSPATH')) {
