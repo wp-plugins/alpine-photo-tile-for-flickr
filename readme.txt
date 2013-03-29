@@ -4,7 +4,7 @@ Donate link: thealpinepress.com
 Tags: photos, flickr, photostream, stylish, pictures, images, widget, sidebar, gallery, lightbox, fancybox, colorbox, prettybox
 Requires at least: 2.8
 Tested up to: 3.5.1
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,8 +32,10 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 2. To add the plugin to a sidebar, go to Appearance->Widgets in the left menu.
 3. Find the rectangle labeled Alpine PhotoTile for Flickr. Click and drag the rectangle to one of the sidebar containers on the right.
 4. Once you drop the rectangle in a sidebar area, it should open to reveal a menu of options. The only required information for the plugin to work is Flickr User ID. See "How do I find my Flickr user ID or group ID?" in the FAQ section for further guidance about finding your ID. Enter this ID and click save in the right bottom corner of the menu.
-5. Open another page/window in your web browser and navigate to your WordPress site to see how the sidebar looks with the Alpine PhotoTile for Flickr included.
-6. Play around with the various styles and options to find what works best for your site.
+5. If you want to add the plugin to a post or page, you will need to use a Shortcode. A Shortcode is a line of text that tells WordPress to load a plugin inside a post along with what settings to use. The Alpine PhotoTile comes with an interactive Shortcode Generator to make this as easy as possible. To find the Shortcode Generator, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Shortcode Generator and follow the instructions there.
+6. It is recommended that you read through the additional options on the plugin's settings page. To find the settings page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Plugin Settings. It is very challenging to create a plugin that does not interfere with other plugins or themes. Many common issues can be resolved by changing the Lightbox option, preventing the plugin from loading Lightbox files, or loading Styles and Scripts in the Header.
+7. (Optional: To enable all the plugin's features, add an API Key). To find the API Key page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Add API Key. The page will explain what an API Key is and how to get one.
+8. Play around with the various styles and options to find what works best for your site.
 
 == Installation ==
 
@@ -60,6 +62,18 @@ Yes, rather than explaining how to setup the shortcode, I've created a method of
 **Why doesn't the widget show my most recent photos?**
 
 The plugin caches or stores the Flickr photo feed for three hours or the time set on the Settings->AlpineTile: Flickr->Plugin Settings page (see Caching above).  If the new photos have still not appeared after this time, it is possible that Flickr is responsible for the delay. While Flickr is fairly prompt about updating photo feeds, periods of high traffic (especially on weekdays between 10am and 4pm) can cause a delay in feed updates.
+
+**Can I put captions below the photos?**
+
+No, I have not yet found a good way to add captions to the images, but I am working on it.
+
+**Why does it take so long for the plugin to load?**
+
+The Apline PhotoTile plugin actually takes less than a second to load. The reason you may see the loading icon for several seconds is because the plugin is programmed to wait until all the images and the rest of the webpage are done loading before displaying anything. The intent is for the plugin to avoid slowing down your website by waiting patiently for everything else to finish loading. If you are still looking to speed up your website's loading time, selecting smaller photo sizes should always help.
+
+**The plugin works in display mode but when I put the shortcode in my page, nothing happens and there is no error message. What's wrong?**
+
+A number of users have reported this problem and unfortunately I am not sure exactly what is going wrong. However, one simple fix has been to go to the plugin's settings page  (Settings->AlpineTile: Flickr->Plugin Settings) and put a check next to the option "Always Load Styles and Scripts in Header".
 
 If you have any more questions, please leave a message at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
 I am a one-man development team and I distribute these plugins for free, so please be patient with me.
@@ -135,3 +149,18 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Added updateGlobalOptions and removed individual option calls
 * Added donate button
 * Fixed lightbox param option
+
+= 1.2.5 =
+* Added fallback to dynamic style and script loading using jQuery
+* Various small fixes
+* Moved cache location
+* Updated ColorBox plugin
+* Set Object params to private and implemeted set, check, and get function
+* Implemeted do_alpine_method call
+* Created active options and results functions
+
+= TODO =
+* Add caption to display
+* Rebuild jQuery display
+* "Anded" Tag option
+* Check with Contact Form 7
