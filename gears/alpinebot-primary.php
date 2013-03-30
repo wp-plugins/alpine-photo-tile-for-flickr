@@ -668,7 +668,7 @@ class PhotoTileForFlickrPrimary {
         'short' => 'dltext',
         'title' => 'Text for display link: ',
         'type' => 'text',
-        'sanitize' => 'nohtml',
+        'sanitize' => 'html',
         'description' => '',
         'child' => 'flickr_source', 
         'hidden' => 'community',
