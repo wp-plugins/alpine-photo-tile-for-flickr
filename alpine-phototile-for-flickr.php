@@ -3,7 +3,7 @@
 Plugin Name: Alpine PhotoTile for Flickr
 Plugin URI: http://thealpinepress.com/alpine-phototile-for-flickr/
 Description: The Alpine PhotoTile for Flickr, the first plugin in the Alpine PhotoTile series, is capable of retrieving photos from a particular Flickr user, a group, a set, or the Flickr community. The photos can be linked to the your Flickr page, a specific URL, or to a Lightbox slideshow. Also, the Shortcode Generator makes it easy to insert the widget into posts without learning any of the code. This lightweight but powerful widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like.
-Version: 1.2.5.1
+Version: 1.2.5.3
 Author: the Alpine Press
 Author URI: http://thealpinepress.com/
 License: GNU General Public License v3.0
@@ -26,8 +26,6 @@ Copyright 2013  Eric Burger
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     
 */
-        
-  //error_reporting(E_ALL);
   
   // Prevent direct access to the plugin 
   if (!defined('ABSPATH')) {
@@ -198,12 +196,31 @@ Copyright 2013  Eric Burger
  */
   function APTFFbyTAP_plugin_settings_link($links) { 
     $bot = new PhotoTileForFlickrPrimary();
-    $settings_link = '<a href="options-general.php?page='.$bot->get_private('settings').'&tab=plugin-settings">Settings</a>'; 
-    array_push($links, $settings_link); 
+    $api_link = '<a href="options-general.php?page='.$bot->get_private('settings').'&tab=add">API Key</a>'; 
+    array_push($links, $api_link);
     $generator_link = '<a href="options-general.php?page='.$bot->get_private('settings').'&tab=generator">Shortcode</a>'; 
     array_push($links, $generator_link); 
+    $settings_link = '<a href="options-general.php?page='.$bot->get_private('settings').'&tab=plugin-settings">Settings</a>'; 
+    array_push($links, $settings_link);     
     return $links; 
   }
   $plugin = plugin_basename(__FILE__); 
   add_filter("plugin_action_links_$plugin", 'APTFFbyTAP_plugin_settings_link' );
-?>
+
+/**
+ * Meta link on plugin page
+ *
+ * @ Since 1.2.5
+ */
+  function APTFFbyTAP_plugin_meta_links($links, $file) {  
+    $plugin = plugin_basename(__FILE__);
+    $bot = new PhotoTileForFlickrPrimary();
+    if ($file == $plugin){ // only for this plugin  
+      $donate_link =  '<a href="'.$bot->get_private('donatelink').'" target="_blank">' . __('Donate') . '</a>';
+      array_push($links, $donate_link);
+    }
+    return $links;  
+  }  
+  add_filter( 'plugin_row_meta', 'APTFFbyTAP_plugin_meta_links', 10, 2 );  
+  
+  ?>

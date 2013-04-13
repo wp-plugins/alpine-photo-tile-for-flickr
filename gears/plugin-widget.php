@@ -47,7 +47,9 @@ class Alpine_PhotoTile_for_Flickr extends WP_Widget {
     }
     // If user does not have necessary extensions 
     // or error occured before content complete, report such...
-    else{
+    elseif( $bot->check_active_option('general_hide_message') ){
+      echo '<!-- Sorry:<br>'.$bot->get_active_result('message').'-->';
+    }else{
       echo 'Sorry:<br>'.$bot->get_active_result('message');
     }
     echo $after_widget;

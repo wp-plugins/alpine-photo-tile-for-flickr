@@ -39,7 +39,9 @@
     }
     // If user does not have necessary extensions 
     // or error occured before content complete, report such...
-    else{
+    elseif( $bot->check_active_option('general_hide_message') ){
+      $return .= '<!-- Sorry:<br>'.$bot->get_active_result('message').'-->';
+    }else{
       $return .= 'Sorry:<br>'.$bot->get_active_result('message');
     }
     $return .= '</div>';

@@ -197,22 +197,21 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
  * Function displays donation request
  *  
  * @ Since 1.2.4
- *
+ * @ Updated 1.2.5
  */
   function admin_donate_button(){
     $phrases = array('Pocket change is appreciated.','Buy me a cup of tea?','Help me pay my rent?','You tip your waiter. Why not your WordPress developer?','You tip the pizza deliver boy. Why not your WordPress programmer?');
     ?>
     <div>
-      <p>Please support further development of this plugin with a small  <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eric%40thealpinepress%2ecom&lc=US&item_name=Alpine%20PhotoTile%20Donation&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted" title="Donate">donation</a>.
+      <p>Please support further development of this plugin with a small  <a target="_blank" href="<?php echo $this->get_private('donatelink');?>" title="Donate">donation</a>.
       <br><?php echo $phrases[rand(0,count($phrases)-1)];?></p>
       <p>
-        <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eric%40thealpinepress%2ecom&lc=US&item_name=Alpine%20PhotoTile%20Donation&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted" title="Donate">
+        <a target="_blank" href="<?php echo $this->get_private('donatelink');?>" title="Donate">
         <img class="image-icon" src="<?php echo $this->get_private('url');?>/css/images/paypal_donate.png" style="width:150px;">
         </a>
       </p>
     </div>
     <?php
-  
   }
 /**
  * First function for printing options page
@@ -252,7 +251,7 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
  * Second function for printing options page
  *  
  * @ Since 1.1.0
- * @ Updated 1.2.4
+ * @ Updated 1.2.5
  *
  */
   function admin_display_opt_form($options,$currenttab){
@@ -268,6 +267,12 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
       }elseif( $submitted ){
         $short = $this->admin_generate_shortcode( $_POST, $defaults );
       }
+      ?>
+      <div>
+        <h3>This tool allows you to create shortcodes for the Alpine PhotoTile plugin.</h3>
+        <p>A shortcode is a line of text that tells WordPress how to load a plugin inside the content of a page or post. Rather than explaining how to put together a shortcode, this tool will create the shortcode for you.</p>
+      </div>
+      <?php       
       if( !empty($short) ){
         ?>
         <div id="<?php echo $this->get_private('settings');?>-shortcode" style="position:relative;clear:both;margin-bottom:20px;" ><div class="announcement" style="margin:0 0 10px 0;">

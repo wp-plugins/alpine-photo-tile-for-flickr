@@ -20,6 +20,7 @@ class PhotoTileForFlickrPrimary {
   private $name = 'Alpine PhotoTile for Flickr';
   private $info = 'http://thealpinepress.com/alpine-phototile-for-flickr/';
   private $wplink = 'http://wordpress.org/extend/plugins/alpine-photo-tile-for-flickr/';
+  private $donatelink = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eric%40thealpinepress%2ecom&lc=US&item_name=Alpine%20PhotoTile%20for%20Flickr%20Donation&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted';
   private $page = 'AlpineTile: Flickr';
   private $src = 'flickr';
   private $hook = 'APTFFbyTAP_hook';
@@ -814,36 +815,6 @@ class PhotoTileForFlickrPrimary {
         'since' => '1.2.3',
         'default' => '600'
       ),
-      'flickr_photo_number' => array(
-        'name' => 'flickr_photo_number',
-        'short' => 'num',
-        'title' => 'Number of photos : ',
-        'type' => 'text',
-        'sanitize' => 'int',
-        'min' => '1',
-        'max' => '30',
-        'description' => 'Maximum of 30.',
-        'widget' => true,
-        'tab' => 'generator',
-        'position' => 'right',
-        'default' => '4'
-      ),
-      'photo_feed_offset' => array(
-        'name' => 'photo_feed_offset',
-        'short' => 'offset',
-        'title' => 'Photo Offset: ',
-        'type' => 'text',
-        'sanitize' => 'int',
-        'min' => '1',
-        'max' => '500',
-        'description' => 'Skip over this many photos. <br>(API Key Required)',
-        'widget' => true,
-        'tab' => 'generator',
-        'position' => 'right',
-        'hidden-option' => true,
-        'check' => 'hidden_photo_feed_offset',
-        'default' => '0'
-      ),
       'flickr_photo_size' => array(
         'name' => 'flickr_photo_size',
         'short' => 'size',
@@ -882,8 +853,38 @@ class PhotoTileForFlickrPrimary {
         'description' => 'Some sizes require an <a href="options-general.php?page='.$this->settings.'&tab=add">API Key</a>.',
         'widget' => true,
         'tab' => 'generator',
-        'position' => 'left',
+        'position' => 'right',
         'default' => '240'
+      ),      
+      'flickr_photo_number' => array(
+        'name' => 'flickr_photo_number',
+        'short' => 'num',
+        'title' => 'Number of photos : ',
+        'type' => 'text',
+        'sanitize' => 'int',
+        'min' => '1',
+        'max' => '30',
+        'description' => 'Maximum of 30.',
+        'widget' => true,
+        'tab' => 'generator',
+        'position' => 'right',
+        'default' => '4'
+      ),
+      'photo_feed_offset' => array(
+        'name' => 'photo_feed_offset',
+        'short' => 'offset',
+        'title' => 'Photo Offset: ',
+        'type' => 'text',
+        'sanitize' => 'int',
+        'min' => '1',
+        'max' => '500',
+        'description' => 'Skip over this many photos. <br>(API Key Required)',
+        'widget' => true,
+        'tab' => 'generator',
+        'position' => 'right',
+        'hidden-option' => true,
+        'check' => 'hidden_photo_feed_offset',
+        'default' => '0'
       ),
       'style_shadow' => array(
         'name' => 'style_shadow',
@@ -1013,6 +1014,16 @@ class PhotoTileForFlickrPrimary {
         'position' => 'top',
         'default' => '#64a2d8'
       ),
+      'general_hide_message' => array(
+        'name' => 'general_hide_message',
+        'title' => 'Hide error messages: ',
+        'type' => 'checkbox',
+        'description' => 'Prevent the plugin from displaying error messages.',
+        'since' => '1.2.1',
+        'tab' => 'plugin-settings',
+        'position' => 'top',
+        'default' => ''
+      ), 
       'general_load_header' => array(
         'name' => 'general_load_header',
         'title' => 'Load Styles and <br>Scripts in Header: ',
