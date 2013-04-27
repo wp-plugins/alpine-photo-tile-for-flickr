@@ -864,7 +864,7 @@ class PhotoTileForFlickrPrimary {
         'sanitize' => 'int',
         'min' => '1',
         'max' => '30',
-        'description' => 'Maximum of 30.',
+        'description' => 'Maximum of 30, due to Flickr <a href="http://www.flickr.com/services/api/tos/" target="_blank">Terms of Service</a>.',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'right',
