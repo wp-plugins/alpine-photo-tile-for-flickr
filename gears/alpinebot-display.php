@@ -1122,14 +1122,28 @@ jQuery(window).load(function() {
  *  Function for shuffleing photo feed
  *  
  *  @ Since 1.2.4
+ *  @ Updated 1.2.5
  */
   function randomize_display(){
-    if( $this->check_active_option('photo_feed_shuffle') && function_exists('shuffle') ){ // Shuffle the results
+    if( $this->check_active_option('photo_feed_shuffle') ){ // Shuffle the results
       $photos = $this->get_active_result('photos');
-      @shuffle( $photos );
-      $this->set_active_result('photos',$photos);
+      if( function_exists('shuffle') ){
+        @shuffle( $photos );
+      }elseif( function_exists('mt_rand') ){
+        $i = count($photos);
+        while(--$i){
+          $j = @mt_rand(0,$i);
+          if($i != $j){
+            // swap items
+            $tmp = $photos[$j];
+            $photos[$j] = $photos[$i];
+            $photos[$i] = $tmp;
+          }
+        }
+      }
+      $this->set_active_result('photos',$photos); 
     }  
-  }  
+  } 
 /**
  *  Get Parent CSS
  *  
