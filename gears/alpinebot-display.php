@@ -402,17 +402,17 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
       $this->try_php_serial();
     }
     
-    if ( !$this->check_active_result('success') && function_exists('simplexml_load_file') ) {
-      if( $this->check_active_option('api_key') ){
-        $this->try_rest();
-      }else{
-        // Use my API key
-        $this->append_active_result('hidden','<!-- Using stored API key -->');
-        $this->set_active_option('api_key','68b8278a33237f1f369cbbf3c9a9f45c');
-        $this->try_rest();
-      }
+    if ( !$this->check_active_result('success') && function_exists('simplexml_load_file') && $this->check_active_option('api_key') ) {
+      $this->try_rest();
     }
-
+    
+    if ( !$this->check_active_result('success') && function_exists('simplexml_load_file') ){
+      // Use my API key
+      $this->append_active_result('hidden','<!-- Using stored API key -->');
+      $this->set_active_option('api_key','68b8278a33237f1f369cbbf3c9a9f45c');
+      $this->try_rest();
+    }
+    
     if( $this->check_active_result('success') ){
       $src = $this->get_private('src');
       if( $this->check_active_result('userlink') && $this->check_active_option($src.'_display_link') && $this->check_active_option($src.'_display_link_text') && 'community' != $this->get_active_option($src.'_source') ){
@@ -842,7 +842,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing vertical style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.5
+ *  @ Updated 1.2.6
  */
   function display_vertical(){
     $this->set_private('out',''); // Clear any output;
@@ -910,7 +910,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing cascade style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.5
+ *  @ Updated 1.2.6
  */
   function display_cascade(){
     $this->set_private('out',''); // Clear any output;
@@ -988,7 +988,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing and initializing JS styles
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.5
+ *  @ Updated 1.2.6
  */
   function display_hidden(){
     $this->set_private('out',''); // Clear any output;
@@ -1125,25 +1125,12 @@ jQuery(window).load(function() {
  *  @ Updated 1.2.5
  */
   function randomize_display(){
-    if( $this->check_active_option('photo_feed_shuffle') ){ // Shuffle the results
+    if( $this->check_active_option('photo_feed_shuffle') && function_exists('shuffle') ){ // Shuffle the results
       $photos = $this->get_active_result('photos');
-      if( function_exists('shuffle') ){
-        @shuffle( $photos );
-      }elseif( function_exists('mt_rand') ){
-        $i = count($photos);
-        while(--$i){
-          $j = @mt_rand(0,$i);
-          if($i != $j){
-            // swap items
-            $tmp = $photos[$j];
-            $photos[$j] = $photos[$i];
-            $photos[$i] = $tmp;
-          }
-        }
-      }
+      @shuffle( $photos );
       $this->set_active_result('photos',$photos); 
-    }  
-  } 
+    }
+  }  
 /**
  *  Get Parent CSS
  *  
@@ -1205,6 +1192,7 @@ jQuery(window).load(function() {
  *  Get Image Link
  *  
  *  @ Since 1.2.2
+ *  @ Updated 1.2.6
  */
   function get_link($i){
     $src = $this->get_private('src');
@@ -1223,7 +1211,7 @@ jQuery(window).load(function() {
       $this->add('<a href="' . $linkurl . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $phototitle ."'".' alt='."'". $phototitle ."'".'>');
       return true;
     }elseif( 'link' == $link && !empty($url) ){
-      $this->add('<a href="' . $url . '" class="AlpinePhotoTiles-link" target="_blank" title='."'". $phototitle ."'".' alt='."'". $phototitle ."'".'>'); 
+      $this->add('<a href="' . $url . '" class="AlpinePhotoTiles-link" title='."'". $phototitle ."'".' alt='."'". $phototitle ."'".'>'); 
       return true;
     }elseif( 'fancybox' == $link && !empty($originalurl) ){
       $light = $this->get_option( 'general_lightbox' );
@@ -1267,7 +1255,7 @@ jQuery(window).load(function() {
  *  Setup Lightbox Call
  *  
  *  @ Since 1.2.3
- *  @ Updated 1.2.5
+ *  @ Updated 1.2.6
  */
   function add_lightbox_call(){
     $src = $this->get_private('src');

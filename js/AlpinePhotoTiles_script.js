@@ -487,7 +487,7 @@
             });
           },function(){
             s(this).css({
-              "background-color": "#fff"
+              "background-color": ""
             });
           });
         }
@@ -587,7 +587,7 @@
             });
           },function(){
             s(this).css({
-              "background-color": "#fff"
+              "background-color": ""
             });
           });
         }

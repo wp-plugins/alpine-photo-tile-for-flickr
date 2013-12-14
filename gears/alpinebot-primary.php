@@ -13,8 +13,8 @@ class PhotoTileForFlickrPrimary {
   private $dir;
   private $cacheUrl;
   private $cacheDir;
-  private $ver = '1.2.5';
-  private $vers = '1-2-5';
+  private $ver = '1.2.6';
+  private $vers = '1-2-6';
   private $domain = 'APTFFbyTAP_domain';
   private $settings = 'alpine-photo-tile-for-flickr-settings'; // All lowercase
   private $name = 'Alpine PhotoTile for Flickr';
@@ -128,6 +128,7 @@ class PhotoTileForFlickrPrimary {
       return false;
     }
   }  
+   
 /**
  * Simple get function
  *  
@@ -721,7 +722,7 @@ class PhotoTileForFlickrPrimary {
             'title' => 'Gallery'
           )           
         ),
-        'description' => '',
+        'description' => 'If nothing displays, try Vertical or Cascade.',
         'parent' => 'AlpinePhotoTiles-parent',
         'trigger' => 'style_option',
         'widget' => true,
@@ -864,7 +865,7 @@ class PhotoTileForFlickrPrimary {
         'sanitize' => 'int',
         'min' => '1',
         'max' => '30',
-        'description' => 'Maximum of 30, due to Flickr <a href="http://www.flickr.com/services/api/tos/" target="_blank">Terms of Service</a>.',
+        'description' => 'Maximum of 30, due to <br>Flickr <a href="http://www.flickr.com/services/api/tos/" target="_blank">Terms of Service</a>.',
         'widget' => true,
         'tab' => 'generator',
         'position' => 'right',
@@ -1075,7 +1076,7 @@ class PhotoTileForFlickrPrimary {
         'name' => 'general_lightbox_params',
         'title' => 'Custom Lightbox Parameters:',
         'type' => 'textarea',
-        'sanitize' => 'css',
+        'sanitize' => 'stripslashes',
         'description' => 'Add custom parameters to the lighbox call.',
         'section' => 'settings',
         'tab' => 'general',
