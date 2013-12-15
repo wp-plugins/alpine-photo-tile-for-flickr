@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eric%
 Tags: photos, flickr, photostream, stylish, pictures, images, widget, sidebar, gallery, lightbox, fancybox, colorbox, prettybox
 Requires at least: 2.8
 Tested up to: 3.8
-Stable tag: 1.2.6.1
+Stable tag: 1.2.6.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -169,7 +169,13 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Check compatibility with WP 3.8
 * Small CSS changes
 
+= 1.2.6.2  =
+* Replaced deprecated jQuery APIs  ( .load() and .browser )
+* Updated prettyPhoto and colorbox
+
+
 = TODO =
+* Change to FancyBox 2
 * Add caption to display
 * Rebuild jQuery display
 * "Anded" Tag option

@@ -1,7 +1,7 @@
 /*
  * Alpine PhotoTile : jQuery Tile Display Functions
  * By: Eric Burger, http://thealpinepress.com
- * Version: 1.0.3
+ * Version: 1.0.4
  * Updated: April  2013
  * 
  */
@@ -416,7 +416,7 @@
       }
       
       function newRow(height,i){
-        if(s.browser.msie && !d.querySelector){
+        if(!s.support.leadingWhitespace && !d.querySelector){
           currentRow = s('<div></div>');
           currentRow.css({'height':height+'px'});
           parent.append(currentRow);
@@ -428,7 +428,7 @@
         }  
       }
       function addDiv(i){
-        if(s.browser.msie && !d.querySelector){
+        if(!s.support.leadingWhitespace && !d.querySelector){
           newDiv = s('<div id="'+parent.attr('id')+'-image-'+i+'" class="AlpinePhotoTiles-image-div" style='+"'"+'background:'+url+' no-repeat center center;'+"'"+'></div>');                
         }else{
           newDiv = s('<div id="'+parent.attr('id')+'-image-'+i+'" class="AlpinePhotoTiles-image-div"></div>');   
@@ -443,7 +443,7 @@
         
         newDivContainer = s('<div class="AlpinePhotoTiles-image-div-container '+theClasses+'"></div>');
         
-        if(s.browser.msie && !d.querySelector){
+        if(!s.support.leadingWhitespace && !d.querySelector){
           newDivContainer.css({
             "height":(theHeight*0.99)+"px",
             "width":(theWidth)+"px",

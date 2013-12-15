@@ -251,7 +251,7 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
  * Second function for printing options page
  *  
  * @ Since 1.1.0
- * @ Updated 1.2.5
+ * @ Updated 1.2.6.1
  *
  */
   function admin_display_opt_form($options,$currenttab){
@@ -352,11 +352,11 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
 //////////////////////      Menu Display Functions       /////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////  
 /**
-  * Function for displaying forms in the widget page
-  *
-  *  @ Since 1.0.0
-  *  @ Updated 1.2.5
-  */
+ * Function for displaying forms in the widget page
+ *
+ * @ Since 1.0.0
+ * @ Updated 1.2.6.1
+ */
   function MenuDisplayCallback($options,$option,$fieldname,$fieldid){
     $default = (isset($option['default'])?$option['default']:'');
     $optionname = (isset($option['name'])?$option['name']:'');
@@ -444,10 +444,10 @@ class PhotoTileForFlickrAdminSecondary extends PhotoTileForFlickrPrimary{
   }
 
 /**
- *  Function for displaying forms in the admin page
+ * Function for displaying forms in the admin page
  *  
- *  @ Since 1.0.0
- *  @ Updated 1.2.6
+ * @ Since 1.0.0
+ * @ Updated 1.2.6.1
  */
   function AdminDisplayCallback($options,$option,$fieldname,$fieldid){
     $default = (isset($option['default'])?$option['default']:'');

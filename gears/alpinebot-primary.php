@@ -301,6 +301,7 @@ class PhotoTileForFlickrPrimary {
  * Simply get function for JS files
  *  
  * @ Since 1.2.5
+ * @ Updated 1.2.6.1
  * 
  */
   function get_script($string){
@@ -311,9 +312,9 @@ class PhotoTileForFlickrPrimary {
     }elseif( 'fancybox' == $string ){
       return $this->url.'/js/fancybox/jquery.fancybox-1.3.4.pack.js?ver=1.3.4';
     }elseif( 'prettyphoto' == $string ){
-      return $this->url.'/js/prettyPhoto/js/jquery.prettyPhoto.js?ver=3.1.4';
+      return $this->url.'/js/prettyPhoto/js/jquery.prettyPhoto.js?ver=3.1.5';
     }elseif( 'colorbox' == $string ){
-      return $this->url.'/js/colorbox/jquery.colorbox-min.js?ver=1.4.5';	
+      return $this->url.'/js/colorbox/jquery.colorbox-min.js?ver=1.4.33';	
     }elseif( 'alpine-fancybox' == $string ){
       return $this->url.'/js/fancybox-alpine-safemode/jquery.fancyboxForAlpine-1.3.4.pack.js?ver=1.3.4';
     }
@@ -323,6 +324,7 @@ class PhotoTileForFlickrPrimary {
  * Simply get function for CSS files
  *  
  * @ Since 1.2.5
+ * @ Update 1.2.6.1
  * 
  */
   function get_style($string){
@@ -333,9 +335,9 @@ class PhotoTileForFlickrPrimary {
     }elseif( 'fancybox' == $string ){
       return $this->url.'/js/fancybox/jquery.fancybox-1.3.4.css?ver=1.3.4';
     }elseif( 'prettyphoto' == $string ){
-      return $this->url.'/js/prettyPhoto/css/prettyPhoto.css?ver=3.1.4';
+      return $this->url.'/js/prettyPhoto/css/prettyPhoto.css?ver=3.1.5';
     }elseif( 'colorbox' == $string ){
-      return $this->url.'/js/colorbox/colorbox.css?ver=1.3.21';	
+      return $this->url.'/js/colorbox/colorbox.css?ver=1.4.33';	
     }elseif( 'alpine-fancybox' == $string ){
       return $this->url.'/js/fancybox-alpine-safemode/jquery.fancyboxForAlpine-1.3.4.css?ver=1.3.4';
     }
@@ -464,7 +466,7 @@ class PhotoTileForFlickrPrimary {
  * Option Parameters and Defaults
  *  
  * @ Since 1.0.0
- * @ Updated 1.2.3
+ * @ Updated 1.2.6.1
  */
   function option_defaults(){
     $options = array(
@@ -722,7 +724,7 @@ class PhotoTileForFlickrPrimary {
             'title' => 'Gallery'
           )           
         ),
-        'description' => 'If nothing displays, try Vertical or Cascade.',
+        'description' => 'If nothing displays, try Vertical or Cascade. Also, try clicking the box for "Load Styles and Scripts in Header" on the <a href="options-general.php?page='.$this->get_private('settings').'&tab=plugin-settings" target="_blank">settings page</a>.',
         'parent' => 'AlpinePhotoTiles-parent',
         'trigger' => 'style_option',
         'widget' => true,
