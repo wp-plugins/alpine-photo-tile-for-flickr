@@ -2,7 +2,7 @@
  * Alpine PhotoTile : jQuery Tile Display Functions
  * By: Eric Burger, http://thealpinepress.com
  * Version: 1.0.4
- * Updated: April  2013
+ * Updated: December  2013
  * 
  */
 
@@ -486,9 +486,15 @@
               "background": options.highlight
             });
           },function(){
-            s(this).css({
-              "background-color": ""
-            });
+            if( options.imageBorder ){
+              s(this).css({
+                'background-color': '#fff'
+              });
+            }else{
+              s(this).css({
+                'background-color': ''
+              });
+            }
           });
         }
         if(options.imageShadow){
@@ -504,6 +510,7 @@
           var link = s('<div class="AlpinePhotoTiles-pin-it small" ><a href="http://pinterest.com/pin/create/button/?media='+media+'&url='+(options.siteURL)+'" class="pin-it-button" count-layout="horizontal" target="_blank" style="height:100%;width:100%;display:block;"></a></div>');
           newDiv.append(link);
         }
+        
       }
       
       function updateHeight(aDiv,aHeight){
@@ -532,6 +539,7 @@
       s.each(images,function(){
         var currentImg = s(this);
         var width = currentImg.parent().width();
+        var wBorder = false;
         
         // Remove and replace ! important classes
         if( currentImg.hasClass('AlpinePhotoTiles-img-border') ){
@@ -540,9 +548,11 @@
           currentImg.css({
             'max-width':(width)+'px',
             'padding':'4px',
-            "margin-left": "1px",
-            "margin-right": "1px"
+            'margin-left': '1px',
+            'margin-right': '1px',
+            'background-color':'#fff'
           });
+          wBorder = true;
         }else if( currentImg.hasClass('AlpinePhotoTiles-img-noborder') ){
           currentImg.removeClass('AlpinePhotoTiles-img-noborder');
           currentImg.css({
@@ -586,9 +596,15 @@
               "background-color": options.highlight
             });
           },function(){
-            s(this).css({
-              "background-color": ""
-            });
+            if( wBorder ){
+              s(this).css({
+                'background-color': '#fff'
+              });
+            }else{
+              s(this).css({
+                'background-color': ''
+              });
+            }
           });
         }
       });
