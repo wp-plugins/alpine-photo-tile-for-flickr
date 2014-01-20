@@ -15,7 +15,7 @@ The Alpine PhotoTile for Flickr, the first plugin in the Alpine PhotoTile series
 user, a group, a set, or the Flickr community. The photos can be linked to the your Flickr page, a specific URL, or to a Fancybox slideshow.
 Also, the Shortcode Generator makes it easy to insert the widget into posts without learning any of the code. This lightweight but powerful
 widget takes advantage of WordPress's built in JQuery scripts to create a sleek presentation that I hope you will like. A full description
-and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
+and demonstration is available at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Flickr Plugin Demo").
 
 **Features:**
 
@@ -29,12 +29,12 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 **Quick Start Guide:**
 
 1. After installing the Alpine PhotoTile for Flickr plugin on your WordPress site, make sure it is activated by logging into your admin area and going to Plugins in the left menu.
-2. To add the plugin to a sidebar, go to Appearance->Widgets in the left menu.
+2. To add the Flickr plugin to a sidebar, go to Appearance->Widgets in the left menu.
 3. Find the rectangle labeled Alpine PhotoTile for Flickr. Click and drag the rectangle to one of the sidebar containers on the right.
 4. Once you drop the rectangle in a sidebar area, it should open to reveal a menu of options. The only required information for the plugin to work is Flickr User ID. See "How do I find my Flickr user ID or group ID?" in the FAQ section for further guidance about finding your ID. Enter this ID and click save in the right bottom corner of the menu.
-5. If you want to add the plugin to a post or page, you will need to use a Shortcode. A Shortcode is a line of text that tells WordPress to load a plugin inside a post along with what settings to use. The Alpine PhotoTile comes with an interactive Shortcode Generator to make this as easy as possible. To find the Shortcode Generator, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Shortcode Generator and follow the instructions there.
-6. It is recommended that you read through the additional options on the plugin's settings page. To find the settings page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Plugin Settings. It is very challenging to create a plugin that does not interfere with other plugins or themes. Many common issues can be resolved by changing the Lightbox option, preventing the plugin from loading Lightbox files, or loading Styles and Scripts in the Header.
-7. (Optional: To enable all the plugin's features, add an API Key). To find the API Key page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Add API Key. The page will explain what an API Key is and how to get one.
+5. If you want to add the Flickr plugin to a post or page, you will need to use a Shortcode. A Shortcode is a line of text that tells WordPress to load a plugin inside a post along with what settings to use. The Alpine PhotoTile comes with an interactive Shortcode Generator to make this as easy as possible. To find the Shortcode Generator, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Shortcode Generator and follow the instructions there.
+6. It is recommended that you read through the additional options on the Flickr plugin's settings page. To find the settings page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Plugin Settings. It is very challenging to create a plugin that does not interfere with other plugins or themes. Many common issues can be resolved by changing the Lightbox option, preventing the plugin from loading Lightbox files, or loading Styles and Scripts in the Header.
+7. (Optional: To enable all the Flickr plugin's features, add an API Key). To find the API Key page, click on Settings in the left menu of your admin area. Under Settings, click on AlpineTile. Lastly, click on the tab labeled Add API Key. The page will explain what an API Key is and how to get one.
 8. Play around with the various styles and options to find what works best for your site.
 
 == Installation ==
@@ -66,7 +66,7 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 
 **I'm getting the message "Flickr feed was successfully retrieved, but no photos found". What does that mean?**
 
-This message simply means that while no distinguishable errors occurred, the plugin found your feed to be empty. This might occur if you set the plugin source to Favorites, but you have not actually "favorited" any of your photos.
+This message simply means that while no distinguishable errors occurred, the plugin found your Flickr feed to be empty. This might occur if you set the Flickr plugin source to Favorites, but you have not actually "favorited" any of your photos.
 
 **I'm getting the message "Flickr feed not found. Please recheck your ID". What does that mean?**
 
@@ -87,23 +87,23 @@ No, I have not yet found a good way to add captions to the images, but I am work
 
 **Why does it take so long for the Flickr plugin to load?**
 
-The Apline PhotoTile for Flickr plugin actually takes less than a second to load. The reason you may see the loading icon for several seconds is because the plugin is programmed to wait until all the images and the rest of the webpage are done loading before displaying anything. The intent is for the plugin to avoid slowing down your website by waiting patiently for everything else to finish loading. If you are still looking to speed up your website's loading time, selecting smaller photo sizes should always help.
+The Apline PhotoTile for Flickr plugin actually takes less than a second to load. The reason you may see the loading icon for several seconds is because the Flickr plugin is programmed to wait until all the images and the rest of the webpage are done loading before displaying anything. The intent is for the plugin to avoid slowing down your website by waiting patiently for everything else to finish loading. If you are still looking to speed up your website's loading time, selecting smaller photo sizes should always help.
 
 **The Flickr plugin works in display mode but when I put the shortcode in my page, nothing happens and there is no error message. What's wrong?**
 
-A number of users have reported this problem and unfortunately I am not sure exactly what is going wrong. However, one simple fix has been to go to the plugin's settings page  (Settings->AlpineTile: Flickr->Plugin Settings) and put a check next to the option "Always Load Styles and Scripts in Header".
+A number of users have reported this problem and unfortunately I am not sure exactly what is going wrong. However, one simple fix has been to go to the Flickr plugin's settings page  (Settings->AlpineTile: Flickr->Plugin Settings) and put a check next to the option "Always Load Styles and Scripts in Header".
 
 **What is an API Key and why do I need one?*
 
-Photo sharing websites like Flickr want to protect their users and to prevent abuses by keeping track of how their services are being used. Two of the ways that Flickr does this is by assigning API Keys to plugins, like the Alpine PhotoTile, to keep track of who is who and by limiting the number of times a plugin can talk to the Flickr network. While serveral hundred websites could share an API Key without reaching this limit, the Alpine PhotoTile plugin has become popular enough that users now need API Keys of their own. A Flickr API Key is free and easy to get. Because the Flickr plugin uses multiple methods of talking with the Flickr network, signing up for a Flickr API Key is optional. However, users without a Flickr API Key will experience the following limitations:
+Photo sharing websites like Flickr want to protect their users and to prevent abuses by keeping track of how their services are being used. Two of the ways that Flickr does this is by assigning API Keys to plugins, like the Alpine PhotoTile, to keep track of who is who and by limiting the number of times a plugin can talk to the Flickr network. While serveral hundred websites could share an API Key without reaching this limit, the Alpine PhotoTile for Flickr plugin has become popular enough that users now need API Keys of their own. A Flickr API Key is free and easy to get. Because the Flickr plugin uses multiple methods of talking with the Flickr network, signing up for a Flickr API Key is optional. However, users without a Flickr API Key will experience the following limitations:
 * Flickr image size options limited to 75px, 240px, 500px, and 800px.
 * "Photo Offset" option will not work.
 * "Shuffle/Randomize Photos" option will not work.
 * Lack of helpful error messages if something does not work.
 * Possibly slower plugin loading time (It is hard to tell).
-* Future options added to this plugin will likely require a Flickr API Key.
+* Future options added to the plugin will likely require a Flickr API Key.
 
-If you have any more questions, please leave a message at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
+If you have any more questions, please leave a message at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Flickr Plugin Demo").
 I am a one-man development team and I distribute these plugins for free, so please be patient with me.
 
 == Changelog ==
