@@ -650,6 +650,7 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
  *  Function for parsing results in php_serial format ( API v2 )
  *  
  *  @ Since 1.2.4
+ *  @ Updated 1.2.6
  */
   function parse_php_serial_v2($_flickr_php){
     $content =  isset($_flickr_php['photos'])?$_flickr_php['photos']:null;
@@ -674,9 +675,14 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
         $the_photo = array();
         $owner = (isset($info['owner'])?$info['owner']:$this->get_active_option('flickr_user_id'));
         $the_photo['image_link'] = 'http://www.flickr.com/photos/'.$owner.'/'.(isset($info['id'])?$info['id'].'/':'');
-        $the_photo['image_title'] = (string) (isset($info['title'])? @str_replace('"','', @str_replace("'","",$info['title']) ):'');
+        $the_photo['image_title'] = (string) (isset($info['title'])? $info['title']:'');
+        $the_photo['image_title'] = @esc_attr( $the_photo['image_title']  ); // Encodes <, >, &, " and ' characters
+        $the_photo['image_title'] = @str_replace('"','',@str_replace("'",'',$the_photo['image_title']));  // Not necessary, but just to be safe.
+        
         $the_photo['image_caption'] = (string) (isset($info['description']['_content'])?$info['description']['_content']:'');
-        $the_photo['image_caption'] = str_replace("'","",$the_photo['image_caption'] );
+        $the_photo['image_caption'] = @esc_attr( $the_photo['image_caption']  ); // Encodes <, >, &, " and ' characters
+        $the_photo['image_caption'] = @str_replace('"','',@str_replace("'",'',$the_photo['image_caption']));  // Not necessary, but just to be safe.
+        
         
         $the_photo['image_source'] = (string) $this->get_image_url($info);
         $the_photo['image_original'] = (string) $this->get_image_orig($info);
@@ -842,7 +848,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing vertical style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.1
+ *  @ Updated 1.2.6.3
  */
   function display_vertical(){
     $this->set_private('out',''); // Clear any output;
@@ -881,7 +887,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
     if( !empty($opts['style_shadow']) || !empty($opts['style_border']) || !empty($opts['style_highlight'])  ){
       $this->add("
 <script>
-  jQuery(window).on('load',function() {
+  var alpineOnLoad = function(){
     if( jQuery().AlpineAdjustBordersPlugin ){
       jQuery('#".$this->get_private('wid')."-vertical-parent').AlpineAdjustBordersPlugin({
         highlight:'".$highlight."'
@@ -902,7 +908,15 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
         } 
       });
     }
-  });
+  }
+  
+  if( jQuery.isFunction( jQuery(window).on ) ){
+    jQuery(window).on('load', alpineOnLoad );
+  }else if( jQuery.isFunction( jQuery(window).bind ) ){
+    jQuery(window).bind('load', alpineOnLoad );
+  }else{
+    jQuery(window).bind('load', alpineOnLoad );
+  }
 </script>");  
     }
   }  
@@ -910,7 +924,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing cascade style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.1
+ *  @ Updated 1.2.6.3
  */
   function display_cascade(){
     $this->set_private('out',''); // Clear any output;
@@ -958,7 +972,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
     if( !empty($opts['style_shadow']) || !empty($opts['style_border']) || !empty($opts['style_highlight'])  ){
       $this->add("
 <script>
-  jQuery(window).on('load',function() {
+  var alpineOnLoad = function(){
     if( jQuery().AlpineAdjustBordersPlugin ){
       jQuery('#".$this->get_private('wid')."-cascade-parent').AlpineAdjustBordersPlugin({
         highlight:'".$highlight."'
@@ -979,7 +993,15 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
         } 
       });
     }
-  });
+  }
+  
+  if( jQuery.isFunction( jQuery(window).on ) ){
+    jQuery(window).on('load', alpineOnLoad );
+  }else if( jQuery.isFunction( jQuery(window).bind ) ){
+    jQuery(window).bind('load', alpineOnLoad );
+  }else{
+    jQuery(window).bind('load', alpineOnLoad );
+  }
 </script>");  
     }
   }
@@ -988,7 +1010,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing and initializing JS styles
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.1
+ *  @ Updated 1.2.6.3
  */
   function display_hidden(){
     $this->set_private('out',''); // Clear any output;
@@ -1048,63 +1070,74 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
 });");
       }
 $this->add("
-jQuery(window).on('load',function() {
-  jQuery('#".$wid."-AlpinePhotoTiles_container').removeClass('loading');
-  if( jQuery().AlpinePhotoTilesPlugin ){
-    AlpinePhotoTilesPlugin();
-  }else{
-    var css = '".($this->get_private('url').'/css/'.$this->get_private('wcss').'.css')."';
-    var link = jQuery(document.createElement('link')).attr({'rel':'stylesheet','href':css,'type':'text/css','media':'screen'});
-    jQuery.getScript('".($this->get_private('url').'/js/'.$this->get_private('wjs').'.js')."', function(){
-      if(document.createStyleSheet){
-        document.createStyleSheet(css);
-      }else{
-        jQuery('head').append(link);
-      }");
-    if( $hasLight ){    
-    $check = ($lightbox=='fancybox'?'fancybox':($lightbox=='prettyphoto'?'prettyPhoto':($lightbox=='colorbox'?'colorbox':'fancyboxForAlpine')));    
-    $this->add("
-      if( !jQuery().".$check." ){ // Load Lightbox
-        jQuery.getScript('".$lightScript."', function(){
-          css = '".$lightStyle."';
-          link = jQuery(document.createElement('link')).attr({'rel':'stylesheet','href':css,'type':'text/css','media':'screen'});
-          if(document.createStyleSheet){
-            document.createStyleSheet(css);
-          }else{
-            jQuery('head').append(link);
-          }
-          AlpinePhotoTilesPlugin();
-        });
-      }else{
-        AlpinePhotoTilesPlugin();
-      }");
+  
+  var alpineLoadPlugin = function(){
+    jQuery('#".$wid."-hidden-parent').AlpinePhotoTilesPlugin({
+      id:'".$wid."',
+      style:'".(isset($opts['style_option'])?$opts['style_option']:'windows')."',
+      shape:'".(isset($opts['style_shape'])?$opts['style_shape']:'square')."',
+      perRow:".(isset($opts['style_photo_per_row'])?$opts['style_photo_per_row']:'3').",
+      imageBorder:".(!empty($opts['style_border'])?'1':'0').",
+      imageShadow:".(!empty($opts['style_shadow'])?'1':'0').",
+      imageCurve:".(!empty($opts['style_curve_corners'])?'1':'0').",
+      imageHighlight:".(!empty($opts['style_highlight'])?'1':'0').",
+      lightbox:".((isset($opts[$src.'_image_link_option']) && $opts[$src.'_image_link_option'] == 'fancybox')?'1':'0').",
+      galleryHeight:".(isset($opts['style_gallery_height'])?$opts['style_gallery_height']:'0').", // Keep for Compatibility
+      galRatioWidth:".(isset($opts['style_gallery_ratio_width'])?$opts['style_gallery_ratio_width']:'800').",
+      galRatioHeight:".(isset($opts['style_gallery_ratio_height'])?$opts['style_gallery_ratio_height']:'600').",
+      highlight:'".$highlight."',
+      pinIt:".(!empty($opts['pinterest_pin_it_button'])?'1':'0').",
+      siteURL:'".get_option( 'siteurl' )."',
+      callback: ".(!empty($hasLight)?'function(){'.$this->get_lightbox_call().'}':"''")."
+    });
+  }
+  
+  var alpineOnLoad = function(){
+    jQuery('#".$wid."-AlpinePhotoTiles_container').removeClass('loading');
+    if( jQuery().AlpinePhotoTilesPlugin ){
+      alpineLoadPlugin();
     }else{
-    $this->add('AlpinePhotoTilesPlugin();');
+      var css = '".($this->get_private('url').'/css/'.$this->get_private('wcss').'.css')."';
+      var link = jQuery(document.createElement('link')).attr({'rel':'stylesheet','href':css,'type':'text/css','media':'screen'});
+      jQuery.getScript('".($this->get_private('url').'/js/'.$this->get_private('wjs').'.js')."', function(){
+        if(document.createStyleSheet){
+          document.createStyleSheet(css);
+        }else{
+          jQuery('head').append(link);
+        }");
+      if( $hasLight ){    
+      $check = ($lightbox=='fancybox'?'fancybox':($lightbox=='prettyphoto'?'prettyPhoto':($lightbox=='colorbox'?'colorbox':'fancyboxForAlpine')));    
+      $this->add("
+        if( !jQuery().".$check." ){ // Load Lightbox
+          jQuery.getScript('".$lightScript."', function(){
+            css = '".$lightStyle."';
+            link = jQuery(document.createElement('link')).attr({'rel':'stylesheet','href':css,'type':'text/css','media':'screen'});
+            if(document.createStyleSheet){
+              document.createStyleSheet(css);
+            }else{
+              jQuery('head').append(link);
+            }
+            alpineLoadPlugin();
+          });
+        }else{
+          alpineLoadPlugin();
+        }");
+      }else{
+      $this->add('alpineLoadPlugin();');
+      }
+      $this->add("
+      }); //Close getScript
     }
-    $this->add("
-    }); //Close getScript
   }
-  function AlpinePhotoTilesPlugin() {
-      jQuery('#".$wid."-hidden-parent').AlpinePhotoTilesPlugin({
-        id:'".$wid."',
-        style:'".(isset($opts['style_option'])?$opts['style_option']:'windows')."',
-        shape:'".(isset($opts['style_shape'])?$opts['style_shape']:'square')."',
-        perRow:".(isset($opts['style_photo_per_row'])?$opts['style_photo_per_row']:'3').",
-        imageBorder:".(!empty($opts['style_border'])?'1':'0').",
-        imageShadow:".(!empty($opts['style_shadow'])?'1':'0').",
-        imageCurve:".(!empty($opts['style_curve_corners'])?'1':'0').",
-        imageHighlight:".(!empty($opts['style_highlight'])?'1':'0').",
-        lightbox:".((isset($opts[$src.'_image_link_option']) && $opts[$src.'_image_link_option'] == 'fancybox')?'1':'0').",
-        galleryHeight:".(isset($opts['style_gallery_height'])?$opts['style_gallery_height']:'0').", // Keep for Compatibility
-        galRatioWidth:".(isset($opts['style_gallery_ratio_width'])?$opts['style_gallery_ratio_width']:'800').",
-        galRatioHeight:".(isset($opts['style_gallery_ratio_height'])?$opts['style_gallery_ratio_height']:'600').",
-        highlight:'".$highlight."',
-        pinIt:".(!empty($opts['pinterest_pin_it_button'])?'1':'0').",
-        siteURL:'".get_option( 'siteurl' )."',
-        callback: ".(!empty($hasLight)?'function(){'.$this->get_lightbox_call().'}':"''")."
-      });
+
+  if( jQuery.isFunction( jQuery(window).on ) ){
+    jQuery(window).on('load', alpineOnLoad );
+  }else if( jQuery.isFunction( jQuery(window).bind ) ){
+    jQuery(window).bind('load', alpineOnLoad );
+  }else{
+    jQuery(window).bind('load', alpineOnLoad );
   }
-}); //Close load
+
 </script>");      
   }
 /**
@@ -1255,7 +1288,7 @@ jQuery(window).on('load',function() {
  *  Setup Lightbox Call
  *  
  *  @ Since 1.2.3
- *  @ Updated 1.2.6
+ *  @ Updated 1.2.6.1
  */
   function add_lightbox_call(){
     $src = $this->get_private('src');
