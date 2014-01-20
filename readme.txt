@@ -28,7 +28,7 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 
 **Quick Start Guide:**
 
-1. After installing the plugin on your WordPress site, make sure it is activated by logging into your admin area and going to Plugins in the left menu.
+1. After installing the Alpine PhotoTile for Flickr plugin on your WordPress site, make sure it is activated by logging into your admin area and going to Plugins in the left menu.
 2. To add the plugin to a sidebar, go to Appearance->Widgets in the left menu.
 3. Find the rectangle labeled Alpine PhotoTile for Flickr. Click and drag the rectangle to one of the sidebar containers on the right.
 4. Once you drop the rectangle in a sidebar area, it should open to reveal a menu of options. The only required information for the plugin to work is Flickr User ID. See "How do I find my Flickr user ID or group ID?" in the FAQ section for further guidance about finding your ID. Enter this ID and click save in the right bottom corner of the menu.
@@ -39,10 +39,28 @@ and demonstration is available at [the Alpine Press](http://thealpinepress.com/a
 
 == Installation ==
 
-1. Upload `alpine-photo-tile-for-flickr` folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Use the widget like any other widget.
-4. Customize based on your preference.
+**Flickr Plugin Installation**
+
+1. Go to the *Plugins->Add New* section of the Admin Panel.
+2. Either search for "Alpine PhotoTile for Flickr" or upload the `alpine-photo-tile-for-flickr` folder using the upload tool.
+3. Go to the *Plugins->Installed Plugins* and activate the "Alpine PhotoTile for Flickr" plugin.
+
+**Add a Flickr API Key**
+
+4. Make sure you are logged into Flickr.com and then visit http://www.flickr.com/services/apps/create/.
+5. Under "Get your API Key", click the "Request an API Key" link.
+6. Next, click the button that says "APPLY FOR A NON-COMMERCIAL KEY". Even if your website is commercial, the Alpine Flickr plugin is non-commercial.
+7. A form will appear. Fill in the form with your information. Check the two boxes and finish by clicking "Submit".
+8. Copy and paste the Key into the form on the Flickr plugin's "Add API Key" page. Click "Save API Key" and you are all done.
+
+**Using the Flickr Widget**
+
+9. Use the widget like any other widget. Go to *Appearance->Widgets* in the left menu. Find the rectangle labeled "Alpine PhotoTile for Flickr". Click and drag the rectangle to one of the sidebar containers on the right.
+10. Customize Alpine PhotoTile for Flickr plugin based on your preference.
+
+**Using the Flickr Shortcode**
+
+11. A shortcode is a line of texted used for loading plugins within WordPress pages or posts. Rather than explaining how to setup the shortcode, I have added a tool to the Alpine PhotoTile for Flickr plugin that generates the shortcode for you. Visit the "Shortcode Generator" on the Flickr plugin's settings page (*Settings->AlpineTile: Flickr->Shortcode Generator*).
 
 == Frequently Asked Questions ==
 
@@ -52,28 +70,38 @@ This message simply means that while no distinguishable errors occurred, the plu
 
 **I'm getting the message "Flickr feed not found. Please recheck your ID". What does that mean?**
 
-This message can mean two things. First, it can indicate that the user ID, group ID, or set ID were input incorrectly, causing the feed to fail. In this case, you should try to correct and re-save your IDs.
-Second, this message can also mean that the server your WordPress site is being hosted on has prevented the feed from being retrieved. While it is rare, we have encountered web-hosts that disable the feed fetching functions used in the PhotoTile plugin. If this is the case, there is nothing we can do to override or work around the settings on your host server.
+This message can mean two things. First, it can indicate that the Flickr user ID, group ID, or set ID were input incorrectly, causing the Flickr feed to fail. In this case, you should try to correct and re-save your IDs.
+Second, this message can also mean that the server your WordPress site is being hosted on has prevented the feed from being retrieved. While it is rare, we have encountered web-hosts that disable the feed fetching functions used in the PhotoTile for Flickr plugin. If this is the case, there is nothing we can do to override or work around the settings on your host server.
 
-**Can I insert the plugin in posts or pages? Is there a shortcode function?**
+**Can I insert the Flickr plugin in posts or pages? Is there a shortcode function?**
 
-Yes, rather than explaining how to setup the shortcode, I've created a method of generating the shortcode. Check out the Shortcode Generator on the plugin's settings page ( Settings->AlpineTile: Flickr->Shortcode Generator).
+Yes, rather than explaining how to setup the shortcode, I've created a method of generating the shortcode. Check out the Shortcode Generator on the Flickr plugin's settings page ( Settings->AlpineTile: Flickr->Shortcode Generator).
 
-**Why doesn't the widget show my most recent photos?**
+**Why doesn't the Flickr widget show my most recent photos?**
 
-The plugin caches or stores the Flickr photo feed for three hours or the time set on the Settings->AlpineTile: Flickr->Plugin Settings page (see Caching above).  If the new photos have still not appeared after this time, it is possible that Flickr is responsible for the delay. While Flickr is fairly prompt about updating photo feeds, periods of high traffic (especially on weekdays between 10am and 4pm) can cause a delay in feed updates.
+The Flickr plugin caches or stores the Flickr photo feed for three hours or the time set on the Settings->AlpineTile: Flickr->Plugin Settings page (see Caching above).  If the new Flickr photos have still not appeared after this time, it is possible that Flickr is responsible for the delay. While Flickr is fairly prompt about updating photo feeds, periods of high traffic (especially on weekdays between 10am and 4pm) can cause a delay in feed updates.
 
-**Can I put captions below the photos?**
+**Can I put captions below the Flickr photos?**
 
 No, I have not yet found a good way to add captions to the images, but I am working on it.
 
-**Why does it take so long for the plugin to load?**
+**Why does it take so long for the Flickr plugin to load?**
 
-The Apline PhotoTile plugin actually takes less than a second to load. The reason you may see the loading icon for several seconds is because the plugin is programmed to wait until all the images and the rest of the webpage are done loading before displaying anything. The intent is for the plugin to avoid slowing down your website by waiting patiently for everything else to finish loading. If you are still looking to speed up your website's loading time, selecting smaller photo sizes should always help.
+The Apline PhotoTile for Flickr plugin actually takes less than a second to load. The reason you may see the loading icon for several seconds is because the plugin is programmed to wait until all the images and the rest of the webpage are done loading before displaying anything. The intent is for the plugin to avoid slowing down your website by waiting patiently for everything else to finish loading. If you are still looking to speed up your website's loading time, selecting smaller photo sizes should always help.
 
-**The plugin works in display mode but when I put the shortcode in my page, nothing happens and there is no error message. What's wrong?**
+**The Flickr plugin works in display mode but when I put the shortcode in my page, nothing happens and there is no error message. What's wrong?**
 
 A number of users have reported this problem and unfortunately I am not sure exactly what is going wrong. However, one simple fix has been to go to the plugin's settings page  (Settings->AlpineTile: Flickr->Plugin Settings) and put a check next to the option "Always Load Styles and Scripts in Header".
+
+**What is an API Key and why do I need one?*
+
+Photo sharing websites like Flickr want to protect their users and to prevent abuses by keeping track of how their services are being used. Two of the ways that Flickr does this is by assigning API Keys to plugins, like the Alpine PhotoTile, to keep track of who is who and by limiting the number of times a plugin can talk to the Flickr network. While serveral hundred websites could share an API Key without reaching this limit, the Alpine PhotoTile plugin has become popular enough that users now need API Keys of their own. A Flickr API Key is free and easy to get. Because the Flickr plugin uses multiple methods of talking with the Flickr network, signing up for a Flickr API Key is optional. However, users without a Flickr API Key will experience the following limitations:
+* Flickr image size options limited to 75px, 240px, 500px, and 800px.
+* "Photo Offset" option will not work.
+* "Shuffle/Randomize Photos" option will not work.
+* Lack of helpful error messages if something does not work.
+* Possibly slower plugin loading time (It is hard to tell).
+* Future options added to this plugin will likely require a Flickr API Key.
 
 If you have any more questions, please leave a message at [the Alpine Press](http://thealpinepress.com/alpine-phototile-for-flickr/ "Plugin Demo").
 I am a one-man development team and I distribute these plugins for free, so please be patient with me.
@@ -84,7 +112,7 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * First Release
 
 = 1.0.1 =
-* Added caching functions
+* Added Flickr caching functions
 
 = 1.0.2 =
 * Fixed AJAX menu plugin loading problem
@@ -93,7 +121,7 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Rebuilt photo retrieval method using Flickr API
 * Changed "per row" and "image number" options
 * Added int high and low to sanitization function
-* Repaired photo linking issue with rift and bookshelf styles
+* Repaired Flickr photo linking issue with rift and bookshelf styles
 * Added height option to gallery style
 * Renamed functions where needed
 * Custom display link (and removed display link option from Community source option)
@@ -109,7 +137,7 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Added highlight, highlight color option, cache option, and cache time
 * Made option callbacks plugin specific (not global names)
 * Edited style layouts
-* Fixed url generation for set links
+* Fixed url generation for Flickr set links
 * Enqueue JS and CSS on pages containing widget or shortcode only
 
 = 1.2.0 =
@@ -119,7 +147,7 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Added custom image link options
 * Added Fancybox jQuery option
 * Fixed galleryHeight bug
-* Implemented fetch with wp_remote_get()
+* Implemented Flickr fetch with wp_remote_get()
 
 = 1.2.1 =
 * Rebuilt admin div structure
@@ -139,13 +167,13 @@ I am a one-man development team and I distribute these plugins for free, so plea
 * Added hidden options, including custom rel for lightbox
  
 = 1.2.3.1 =
-* Fixed cache retrieval
+* Fixed Flickr cache retrieval
 
 = 1.2.4 =
-* Added "Add API Key" page and API Key option
+* Added "Add API Key" page and Flickr API Key option
 * Restructured plugin objects and reassinged functions
 * Object oriented message, hidden, etc.
-* Added option to disable right-clicking on images
+* Added option to disable right-clicking on Flickr images
 * Added updateGlobalOptions and removed individual option calls
 * Added donate button
 * Fixed lightbox param option
@@ -153,7 +181,7 @@ I am a one-man development team and I distribute these plugins for free, so plea
 = 1.2.5 =
 * Added fallback to dynamic style and script loading using jQuery
 * Various small fixes
-* Moved cache location
+* Moved Flickr cache location
 * Updated ColorBox plugin
 * Set Object params to private and implemeted set, check, and get function
 * Implemeted do_alpine_method call
