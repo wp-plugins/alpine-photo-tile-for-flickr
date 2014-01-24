@@ -848,7 +848,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing vertical style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.5
+ *  @ Updated 1.2.6.4
  */
   function display_vertical(){
     $this->set_private('out',''); // Clear any output;
@@ -879,19 +879,21 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
     $this->add('</div>'); // Close container
     $this->add('<div class="AlpinePhotoTiles_breakline"></div>');
     
+    // Add Lightbox call (if necessary)
+    $this->add_lightbox_call();
+    
     $parentID = $wid."-vertical-parent";
     $borderCall = $this->get_borders_call( $parentID );
-    $lightboxCall = $this->add_lightbox_call();
 
     if( !empty($opts['style_shadow']) || !empty($opts['style_border']) || !empty($opts['style_highlight'])  ){
       $this->add("
 <script>  
   // Check for on() ( jQuery 1.7+ )
   if( jQuery.isFunction( jQuery(window).on ) ){
-    jQuery(window).on('load', function(){".$borderCall." ".$lightboxCall."}); // Close on()
+    jQuery(window).on('load', function(){".$borderCall."}); // Close on()
   }else{
     // Otherwise, use bind()
-    jQuery(window).bind('load', function(){".$borderCall." ".$lightboxCall."}); // Close bind()
+    jQuery(window).bind('load', function(){".$borderCall."}); // Close bind()
   }
 </script>");  
     }
@@ -900,7 +902,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing cascade style
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.5
+ *  @ Updated 1.2.6.4
  */
   function display_cascade(){
     $this->set_private('out',''); // Clear any output;
@@ -940,19 +942,21 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
     $this->add('</div>');
     $this->add('<div class="AlpinePhotoTiles_breakline"></div>');
     
+    // Add Lightbox call (if necessary)
+    $this->add_lightbox_call();
+    
     $parentID = $wid."-cascade-parent";
     $borderCall = $this->get_borders_call( $parentID );
-    $lightboxCall = $this->add_lightbox_call();
 
     if( !empty($opts['style_shadow']) || !empty($opts['style_border']) || !empty($opts['style_highlight'])  ){
       $this->add("
 <script>
   // Check for on() ( jQuery 1.7+ )
   if( jQuery.isFunction( jQuery(window).on ) ){
-    jQuery(window).on('load', function(){".$borderCall." ".$lightboxCall."}); // Close on()
+    jQuery(window).on('load', function(){".$borderCall."}); // Close on()
   }else{
     // Otherwise, use bind()
-    jQuery(window).bind('load', function(){".$borderCall." ".$lightboxCall."}); // Close bind()
+    jQuery(window).bind('load', function(){".$borderCall."}); // Close bind()
   }
 </script>");  
     }
@@ -960,7 +964,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
 /**
  *  Get jQuery borders plugin string
  *  
- *  @ Since 1.2.6.5
+ *  @ Since 1.2.6.4
  */
   function get_borders_call( $parentID ){
     $highlight = $this->get_option("general_highlight_color");
@@ -994,7 +998,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Function for printing and initializing JS styles
  *  
  *  @ Since 0.0.1
- *  @ Updated 1.2.6.5
+ *  @ Updated 1.2.6.4
  */
   function display_hidden(){
     $this->set_private('out',''); // Clear any output;
@@ -1073,7 +1077,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
 /**
  *  Get jQuery loading string
  *  
- *  @ Since 1.2.6.5
+ *  @ Since 1.2.6.4
  */
   function get_loading_call($opts,$wid,$src,$lightbox,$hasLight,$lightScript,$lightStyle){
     $return = "
@@ -1123,7 +1127,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
 /**
  *  Get jQuery plugin string
  *  
- *  @ Since 1.2.6.5
+ *  @ Since 1.2.6.4
  */
   function get_plugin_call($opts,$wid,$src,$hasLight){
     $highlight = $this->get_option("general_highlight_color");
@@ -1235,7 +1239,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
  *  Get Image Link
  *  
  *  @ Since 1.2.2
- *  @ Updated 1.2.6.5
+ *  @ Updated 1.2.6.4
  */
   function get_link($i){
     $src = $this->get_private('src');
@@ -1295,13 +1299,12 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
   }
   
 /**
- *  Setup Lightbox call and return string
+ *  Setup Lightbox call
  *  
  *  @ Since 1.2.3
- *  @ Updated 1.2.6.5
+ *  @ Updated 1.2.6.4
  */
   function add_lightbox_call(){
-    $return = "";
     $src = $this->get_private('src');
     $lightbox = $this->get_option('general_lightbox');
     $prevent = $this->get_option('general_lightbox_no_load');
@@ -1311,7 +1314,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
       $lightStyle = $this->get_style( $lightbox );
       if( !empty($lightScript) && !empty($lightStyle) ){
         $lightCall = $this->get_lightbox_call();
-        $return = "
+        $lightboxSetup = "
       if( !jQuery().".$check." ){
         var css = '".$lightStyle."';
         var link = jQuery(document.createElement('link')).attr({'rel':'stylesheet','href':css,'type':'text/css','media':'screen'});
@@ -1327,9 +1330,18 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
         ".$lightCall."
       }
     ";
+        $this->add("
+  <script>
+  // Check for on() ( jQuery 1.7+ )
+  if( jQuery.isFunction( jQuery(window).on ) ){
+    jQuery(window).on('load', function(){".$lightboxSetup."}); // Close on()
+  }else{
+    // Otherwise, use bind()
+    jQuery(window).bind('load', function(){".$lightboxSetup."}); // Close bind()
+  }
+  </script>"); 
       }
-    } 
-    return $return;
+    }
   }
   
 /**
