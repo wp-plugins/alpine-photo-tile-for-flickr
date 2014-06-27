@@ -533,7 +533,7 @@ class PhotoTileForFlickrPrimary {
       'flickr_group_id' => array(
         'name' => 'flickr_group_id',
         'short' => 'gid',
-        'title' => 'Flickr Group ID : ',
+        'title' => 'Flickr Group ID (Public Groups Only): ',
         'type' => 'text',
         'sanitize' => 'nospaces',
         'description' => "Don't know the ID? Use <a href='http://idgettr.com/' target='_blank'>idgettr.com</a> to find it.",

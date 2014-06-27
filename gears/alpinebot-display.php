@@ -457,43 +457,43 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
       $key = $options['api_key'];
       switch ($options['flickr_source']) {
         case 'user':
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+          $request = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
         break;
         case 'favorites':
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+          $request = 'https://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&user_id='. $flickr_uid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
         break;
         case 'group':
           $flickr_groupid = ( empty($options['flickr_group_id']) ? '' : $options['flickr_group_id']);
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+          $request = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&group_id='. $flickr_groupid .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
         break;
         case 'set':
           $flickr_set = (empty($options['flickr_set_id']) ? '' : $options['flickr_set_id']);
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c,url_o'; // API claims no n, z, or c. Add o to cover missing sizes
+          $request = 'https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&photoset_id='. $flickr_set .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c,url_o'; // API claims no n, z, or c. Add o to cover missing sizes
         break;
         case 'community':
           $flickr_tags = (empty($options['flickr_tags']) ? '' : $options['flickr_tags']);
-          $request = 'http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
+          $request = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key='.$key.'&per_page='.$num.'&format='.$format.'&privacy_filter=1&tags='. $flickr_tags .'&page=1&extras=description,url_sq,url_t,url_s,url_m,url_n,url_z,url_c';
         break;
       } 
     }else{
       switch ($options['flickr_source']) {
         case 'user':
-          $request = 'http://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid .'&lang=en-us&format='.$format.'';
+          $request = 'https://api.flickr.com/services/feeds/photos_public.gne?id='. $flickr_uid .'&lang=en-us&format='.$format.'';
         break;
         case 'favorites':
-          $request = 'http://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
+          $request = 'https://api.flickr.com/services/feeds/photos_faves.gne?nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
         break;
         case 'group':
           $flickr_groupid = (empty($options['flickr_group_id']) ? '' : $options['flickr_group_id']);
-          $request = 'http://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid .'&lang=en-us&format='.$format.'';
+          $request = 'https://api.flickr.com/services/feeds/groups_pool.gne?id='. $flickr_groupid .'&lang=en-us&format='.$format.'';
         break;
         case 'set':
           $flickr_set = (empty($options['flickr_set_id']) ? '' : $options['flickr_set_id']);
-          $request = 'http://api.flickr.com/services/feeds/photoset.gne?set=' . $flickr_set . '&nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
+          $request = 'https://api.flickr.com/services/feeds/photoset.gne?set=' . $flickr_set . '&nsid='. $flickr_uid .'&lang=en-us&format='.$format.'';
         break;
         case 'community':
           $flickr_tags = (empty($options['flickr_tags']) ? '' : $options['flickr_tags']);
-          $request = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='. $flickr_tags .'&lang=en-us&format='.$format.'';
+          $request = 'https://api.flickr.com/services/feeds/photos_public.gne?tags='. $flickr_tags .'&lang=en-us&format='.$format.'';
         break;
       } 
     }
@@ -674,7 +674,7 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
       foreach( $photos as $info ){
         $the_photo = array();
         $owner = (isset($info['owner'])?$info['owner']:$this->get_active_option('flickr_user_id'));
-        $the_photo['image_link'] = 'http://www.flickr.com/photos/'.$owner.'/'.(isset($info['id'])?$info['id'].'/':'');
+        $the_photo['image_link'] = 'https://www.flickr.com/photos/'.$owner.'/'.(isset($info['id'])?$info['id'].'/':'');
         $the_photo['image_title'] = (string) (isset($info['title'])? $info['title']:'');
         $the_photo['image_title'] = @esc_attr( $the_photo['image_title']  ); // Encodes <, >, &, " and ' characters
         $the_photo['image_title'] = @str_replace('"','',@str_replace("'",'',$the_photo['image_title']));  // Not necessary, but just to be safe.
@@ -779,7 +779,7 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
         $info = $info['@attributes'];
         
         $owner = (isset($info['owner'])?$info['owner']:$this->get_active_option('flickr_user_id'));
-        $the_photo['image_link'] = 'http://www.flickr.com/photos/'.$owner.'/'.(isset($info['id'])?$info['id'].'/':'');
+        $the_photo['image_link'] = 'https://www.flickr.com/photos/'.$owner.'/'.(isset($info['id'])?$info['id'].'/':'');
         $the_photo['image_title'] = (string) (isset($info['title'])? @str_replace('"','', @str_replace("'","",$info['title']) ):'');
         
         $the_photo['image_source'] = (string) $this->get_image_url($info);
@@ -809,17 +809,17 @@ class PhotoTileForFlickrBotTertiary extends PhotoTileForFlickrBotSecondary{
     if( 'community' != $this->get_active_option('flickr_source') && $this->check_active_option('flickr_display_link') && $this->check_active_option('flickr_display_link_text') ) {
       switch ($this->get_active_option('flickr_source')) {
         case 'user':
-          $this->set_active_result('userlink','http://www.flickr.com/photos/'.$this->get_active_option('flickr_user_id').'/');
+          $this->set_active_result('userlink','https://www.flickr.com/photos/'.$this->get_active_option('flickr_user_id').'/');
         break;
         case 'favorites':
-          $this->set_active_result('userlink','http://www.flickr.com/photos/'.$this->get_active_option('flickr_user_id').'/favorites/');
+          $this->set_active_result('userlink','https://www.flickr.com/photos/'.$this->get_active_option('flickr_user_id').'/favorites/');
         break;
         case 'group':
-          $this->set_active_result('userlink','http://www.flickr.com/groups/'.$this->get_active_option('flickr_group_id').'/');
+          $this->set_active_result('userlink','https://www.flickr.com/groups/'.$this->get_active_option('flickr_group_id').'/');
         break;
         case 'set':
           if( !empty($content['owner']) && !empty($content['id']) ){
-            $this->set_active_result('userlink','http://www.flickr.com/photos/'.$content['owner'].'/sets/'.$content['id'].'/');
+            $this->set_active_result('userlink','https://www.flickr.com/photos/'.$content['owner'].'/sets/'.$content['id'].'/');
           }
         break;
       }
