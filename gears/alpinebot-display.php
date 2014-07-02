@@ -1053,18 +1053,15 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
     $this->add('<script>');
       if(!$disable){
         $this->add(
-    "
-    jQuery(document).ready(function() {
+    "jQuery(document).ready(function() {
       jQuery('#".$wid."-AlpinePhotoTiles_container').addClass('loading'); 
-    });
-    ");
+    });");
     
       }
   
     $pluginCall = $this->get_loading_call($opts,$wid,$src,$lightbox,$hasLight,$lightScript,$lightStyle);
     
-    $this->add("
-    // Check for on() ( jQuery 1.7+ )
+    $this->add("// Check for on() ( jQuery 1.7+ )
     if( jQuery.isFunction( jQuery(window).on ) ){
       jQuery(window).on('load', function(){".$pluginCall."});
     }else{ 
@@ -1082,9 +1079,7 @@ class PhotoTileForFlickrBot extends PhotoTileForFlickrBotTertiary{
   function get_loading_call($opts,$wid,$src,$lightbox,$hasLight,$lightScript,$lightStyle){
     $return = "
         jQuery('#".$wid."-AlpinePhotoTiles_container').removeClass('loading');
-        
         var alpineLoadPlugin = function(){".$this->get_plugin_call($opts,$wid,$src,$hasLight)."}
-        
         // Load Alpine Plugin
         if( jQuery().AlpinePhotoTilesPlugin ){
           alpineLoadPlugin();

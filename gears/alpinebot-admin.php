@@ -765,7 +765,7 @@ class PhotoTileForFlickrAdmin extends PhotoTileForFlickrAdminSecondary{
     if($submitted && !empty( $_POST['api_key']) ) {
       $key = $_POST['api_key'];
 
-      $request = 'http://api.flickr.com/services/rest/?method=flickr.test.echo&format=php_serial&api_key='.$key;
+      $request = 'https://api.flickr.com/services/rest/?method=flickr.test.echo&format=php_serial&api_key='.$key;
       
       $response = wp_remote_get( $request );
 
